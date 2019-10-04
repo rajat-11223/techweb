@@ -1,0 +1,107 @@
+<style type="text/css">
+ 
+ .iradio_square-blue.checked1 {
+    background-position: -168px 0;
+} 
+
+</style>
+<div class="row">
+
+<% if params[:view] %> 
+
+  <% if params[:view] == "by_class" %>
+    
+    <%= render 'homes/partials/view_by_class' %>
+
+  <% elsif params[:view].in? ["all", "by_tutor_group", "by_phase", "realm"] %>
+    
+    <%= render 'homes/partials/view_by_students' %>
+
+  <% end %>
+
+<% else %>
+
+    <%= render 'homes/partials/current_view' %>
+
+<% end %>
+    
+</div><!--.row-->
+
+<script type="text/javascript">
+
+
+function myFunction(){
+    var table = document.getElementById('workerTimes');
+    var loc_value1 = document.getElementById('student_learning_objective_observation_student_learning_objective_id').value;
+    if (loc_value1 == "") 
+    {
+    var loc_value = document.getElementsByClassName("student_card_radio")[0].value;
+    var newdata = document.getElementById("student_learning_objective_observation_student_learning_objective_id").value = loc_value;
+    $('tr').first().find('.iradio_square-blue').addClass('checked').change();
+  }
+    else
+    {
+      
+    }
+    
+    
+    
+    //alert(loc_value); 
+   // $('tr').first().find('#student_learning_objective_observation_student_learning_objective_id').value = "true";
+   
+   //alert ("The value was changed to: " + newdata);
+}
+
+
+	$('.photoupload').on('change',function(){
+// alert("hy");
+//var fileSelect = document.getElementById('upload_file');
+//var filelist = [];
+//var files = fileSelect.files;
+  var fd = new FormData();  
+  $.each($("#upload_file"), function (i, obj) {                
+            $.each(obj.files, function (j, file) {                    
+                fd.append('Attachment[' + j + ']', file); // is the var i against the var j, because the i is incremental the j is ever 0
+            });
+        });
+  //var file_data = $('input[type="file"]')[0].files; 
+                    // for multiple files
+    //fd.append("file", 'input[type="file"]'.files[0]);
+                   
+     // fd.append( 'file', $(this)[0].files[0] );
+      var studentid = $(this).attr('studentid');
+      fd.append('student_id',studentid);
+      $('.loader').show();
+      $.ajax({
+        beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+        type:"POST",
+        data: fd,
+        cache: false,
+        contentType: false,
+        processData: false,
+        url:"<%= save_only_evidence_path %>"
+        // enter url here, url: "<%#= path %>"
+            
+      });
+      return false;
+});
+</script>
+
+  <script>
+  //$('.file_upload_field').each(function(){
+    $(document).on('change','.file_upload_field',function(){
+      // alert("hey");
+        if($(this).val){
+          $(this).parents('.file_upload_fields_for').find('.to_remove').show();
+        }
+    });
+  //});
+  // $('.first_file').on('click',function(){
+  //     $('.file_main_div').removeClass('display-none');
+  //     $('.file_main_div').find('input[type=file]').first().trigger('click');
+  //     $(this).hide();
+  // });
+  // $(document).on('click','.add_new_file_link',function(){
+  //   $(this).parent('.file_main_div').find('.file_upload_fields_for').find('input[type=file]').last().trigger('click');
+  // });
+  </script>

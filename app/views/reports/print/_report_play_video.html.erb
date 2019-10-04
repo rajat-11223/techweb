@@ -1,0 +1,10 @@
+      <% if @file.evidence_content_type.in? ["image/jpg" ,"image/png","image/jpeg"]%>
+				<%=image_tag(@file.evidence,height:"500px",width:"auto;") %>
+		
+				
+	
+
+        <%else%>
+    <%= videojs_rails sources: { mp4: @file.evidence}, autoplay: true, setup: "{}", controls: true,   width:"640",height:"360",class: "video-js vjs-default-skin vjs-big-play-centered" %>
+    
+	<%end%>

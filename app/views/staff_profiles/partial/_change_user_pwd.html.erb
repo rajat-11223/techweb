@@ -1,0 +1,57 @@
+<div class="col-md-10 col-md-offset-1 col-sm-10 col-sm-offset-1 col-xs-10 col-xs-offset-1">
+            <%= form_for @user, :url=>url_for(:action=>"save_new_pwd"), method: :post, :html=>{:class=>"form-horizontal"} do |f| %>
+              <% if @user.errors.any? %>
+                <div id="error_explanation">
+                  <h2><%= pluralize(@user.errors.count, "error") %> prohibited this staff_profile from being saved:</h2>
+
+                  <ul>
+                  <% @user.errors.full_messages.each do |message| %>
+                    <li><%= message %></li>
+                  <% end %>
+                  </ul>
+                </div>
+              <% end %>
+    
+
+                <%=hidden_field_tag "user_id" ,@user.id%>
+                 <div class="form-group">
+                  <div class="col-md-3">
+                    <label class="control-label required">Current Password</label>
+                  </div>
+                  <div class="col-md-9">
+                     <%= f.password_field :current_password, autofocus: true, autocomplete: "off", :class=>"form-control",:required=>true %>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="col-md-3">
+                    <label class="control-label required">New Password</label>
+                  </div>
+                  <div class="col-md-9">
+                     <%= f.password_field :password, autofocus: true, autocomplete: "off", :class=>"form-control",:required=>true %>
+                  </div>
+                </div>
+                    <div class="form-group">
+                  <div class="col-md-3">
+                    <label class="control-label required">Confirm Password</label>
+                  </div>
+                  <div class="col-md-9">
+                     <%= f.password_field :password_confirmation, autofocus: true, autocomplete: "off", :class=>"form-control",:required=>true %>
+                             <span class="pwd_match display-none font-size-15 color-red" >Passwords do not match</span>
+                  </div>
+                </div>
+
+                <div class="modal-footer">
+                <div class="form-actions">
+                  <div class="row">
+                    <div class="pull-right">
+                      <%= f.submit "Save", :class=>"btn btn-beatrice text-white update_pwd " %>
+                    </div>
+                    <div class="pull-left">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                  </div>
+                </div>
+                </div>
+        <% end %>
+</div>
+

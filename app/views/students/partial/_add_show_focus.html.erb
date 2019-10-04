@@ -1,0 +1,44 @@
+  <%= form_for @student_learning_objectives_focus ,:url=>url_for(:controller=>'students', :action=>'save_focus') do |f| %>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="col-md-4">
+        <label class="control-label "><b>Learning Objective:</b> </label>
+      </div>
+      <div class="col-md-8">
+        <%=@lo_id.title%>
+      </div>
+    </div>
+  </div> 
+
+  <div class="col-md-12">
+    <label class="control-label ">Select the focus classes for this Learning Objective: </label>
+      <%=f.hidden_field :student_learning_objectives_id ,:value=>@lo_id.id%>
+      <% focus_subjects_array = @lo_id.focus_classes.where(academic_session_id: session[:global_academic_session], term_id: session[:global_current_term], user_id: current_user.id).pluck(:sub_subject_id).uniq %>
+
+      <% @lo_id.student.slot_schedule_students.joins(:slot_schedule).where("slot_schedules.academic_session_id = ? AND user_id = ?", session[:global_academic_session], current_user.id).pluck(:sub_subject_id).uniq.collect{|s| SubSubject.with_deleted.find(s)}.each do |sub| %>
+        <div class="icheck icheck-square-blue">
+          <div class="checkbox">
+            <%= check_box :sub_subject_id, sub.id, {checked: focus_subjects_array.include?(sub.id), :class=>"icheck icheck-square-blue"} %>
+              <%=sub.show_name%>
+          </div>
+        </div>
+      <%end%>
+    </div>
+   
+
+    <div class="form-actions p-10">
+      <div class="row">
+         <div class="pull-right">
+           <%= f.submit "Save", :class=>"btn btn-primary" %>
+          </div>
+          <div class="pull-left">
+             <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+       </div>
+     </div>
+  <%end%>
+               <script type="text/javascript">
+                    $(document).ready(function(){
+        $('.loader').fadeOut('slow')
+      })     
+      </script>

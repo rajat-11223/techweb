@@ -1,0 +1,127 @@
+ <div class="row">
+      <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="panel">
+          <div class="panel-heading">
+            <div class="panel-title">
+          <h4>Unassigned Observations</h4>
+          <footer class="font-size-15" > 
+Unassigned observations for the student will appear in this section once added to the system.</footer>
+            </div>
+          </div>
+     
+          <div class="panel-body">
+
+          <% if @student.individual_observations.where(student_learning_objective_id: nil, term_id: session[:global_current_term], academic_session_id: session[:global_academic_session]).blank? %>
+                  No unassigned observations found for current term.
+          
+          <% else %>
+
+            <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+
+                 	<th>Date</th>
+									<th>Teacher</th>
+									<th>Subject</th>
+									<th>Class</th>
+									<th>Observation</th>
+									<th>Action</th>
+                </tr>
+              </thead>
+
+
+              <tbody>
+                
+                <%@student.individual_observations.where(student_learning_objective_id: nil, term_id: session[:global_current_term], academic_session_id: session[:global_academic_session]).collect do |observation|%>
+                  <tr>
+
+                    <td class="col-md-2"><%=observation.date.present? ? observation.date.strftime("%d %b %Y") : "no date present"%></td>
+			        
+			             <td class="col-md-2"><%=observation.user.name%></td>
+                   <td class="col-md-2"><%=observation.sub_subject.present? ? observation.sub_subject.subject.name : "N/A" %></td>
+                   <td class="col-md-2"><%=observation.sub_subject.present? ? observation.sub_subject.name : "N/A" %></td>
+			             <td class=" col-md-2">
+
+			               <div class="row">
+			                 <div class="col-md-12"><p class="align-justify p-10"><%=observation.description%></p></div>
+                  			<div class="col-md-12" style="display: -webkit-box;" > 
+				                  <%if observation.student_learning_objective_observation_files.present?%>
+                            <div class="row">
+                              <% observation.student_learning_objective_observation_files.each do |file|%>
+
+                              <!--   <%# if file.evidence_content_type.in? ["image/jpg" ,"image/png","image/jpeg"]%>
+                                  <div style="position:relative;">
+  				                          <%=image_tag(file.show_evidence(:thumb)) %>
+                                      <%#=link_to download_path(:id=>file) ,:class=>"btn btn-primary btn-sm", :style=>"position:absolute;top:0px;right:0px;" do %>
+                                        <i class="fa fa-download"></i>
+                                      <%#end%>
+                                   </div>   
+                                <%#else%>
+                                  <div style="position:relative;">
+                                    
+                                      <img src="/assets/play.png" >
+                                   
+                                     <%#=link_to download_path(:id=>file), :class=>"btn btn-primary btn-sm", :style=>"position:absolute;top:0px;right:0px;" do%>
+                                      <i class="fa fa-download"></i>
+                                    <%#end%>
+                                    </div>
+                              <%#end%> -->
+
+                                <% if file.evidence_content_type.in? ["image/jpg" ,"image/png","image/jpeg"]%>
+                                  <div style="position:relative;">
+                                    <%=link_to image_tag(file.show_evidence(:thumb)),show_individual_evidence_path(:file_id=>file) ,:remote=>true,method: :post %>
+                                      <%=link_to download_path(:id=>file), :class=>"btn btn-primary btn-sm", :style=>"position:absolute;top:0px;right:0px;" do %>
+                                        <i class="fa fa-download">&nbsp;</i>
+                                      <%end%>
+                                   
+                                   </div>   
+                                <%else%>
+                                  <div class="play_vid" style="position:relative;">
+
+                                    <%=link_to show_individual_evidence_path(:file_id=>file) ,:remote=>true,method: :post do %>
+                                      <%= videojs_rails sources: { mp4: file.evidence},controls: false, autoplay:false ,:poster=>file.evidence(:thumb), width:"200px;", height:"200px" %>
+
+                                   <i class="play_vid_hover fa fa-4x fa-play-circle-o text-white" style="position: absolute;top: 72px;right: 76px;"></i>
+                                    <%end%>
+                                    <%=link_to download_path(:id=>file), :class=>"btn btn-primary btn-sm", :style=>"position:absolute;top:0px;right:0px;" do%>
+                                      <i class="fa fa-download">&nbsp;</i>
+                                    <%end%>
+                                    </div>
+                                     
+                              <%end%>
+                          <%end%>
+                            </div>
+                          <%end%>
+		                    </div>
+                      </div>
+                    </td>
+   
+			 <td class="action_column col-md-2">
+			 <% if @student.student_learning_objectives.present?%>
+			       <%= link_to "Assign", assign_individual_observation_path(:observation_id=>observation.id,:student_id=>@student.id), remote: true, method: :post,:class=>"m-r-5"%>
+			                       
+			                  
+         <%else%>
+         No LO available to assign<br />
+         <%end%>
+         <%= link_to "Remove" ,delete_individual_observation_path(:observation_id=>observation.id,:student_id=>@student.id), data: {confirm: "Are you sure you wish to delete this observation?"}, method: :post%>
+			                     
+        </td>
+                  
+                </tr>
+                
+              <%end%>
+              </tbody>
+            </table>
+            </div>
+            <!--.overflow-table-->
+            <%end%>
+
+          </div>
+          <!--.panel-body-->
+        </div>
+        <!--.panel-->
+      </div>
+      <!--.col-md-12-->
+    </div>

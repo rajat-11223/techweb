@@ -1,0 +1,166 @@
+<%= form_for @student_lo ,:url=>url_for(:controller=>'students', :action=>'update_pivats_learning_objective') do |f| %>
+<%=f.hidden_field  :id,:value=>@student_lo.id%>
+<div class="col-md-10 col-md-offset-1 col-sm-10 col-sm-offset-1 col-xs-10 col-xs-offset-1">
+  <div class="row  m-b-20">
+   <div class="col-md-3">
+      <label class="control-label">Subject:</label>
+    </div>
+    <div id="sub_subjects">
+    <div class="col-md-9">
+     <%#= f.select(:subject_id, @pivats_subjects.collect {|u| [u.name, u.id]},{:include_blank=>"Select Subject"},{:class=>"selectpicker required",:disabled=>"disabled",:onchange=>"show_pivats_sub_subjects()"}) %>
+     <%= text_field_tag nil, :subject_name, :class=>"form-control", :value=>@subject_name ,:readonly=>true %>
+    </div> 
+    </div>
+  </div>
+
+ <div class="row form-group m-b-20">
+   <div class="col-md-3">
+      <label class="control-label">Sub-Subject:</label>
+    </div>
+ 
+    <div class="col-md-9">
+            <%#= f.select(:sub_subject_id, @sub_subjects.collect {|u| [u.name, u.id]},{:include_blank=>"Select Sub-Subject"},{:disabled=>"disabled",:class=>"selectpicker required"}) %>
+            <%= text_field_tag nil, :sub_subject_name, :class=>"form-control", :value=>@sub_subject_name ,:readonly=>true %>
+    </div> 
+   
+  </div>
+
+<!--  <div class="row form-group m-b-20">
+   <div class="col-md-3">
+      <label class="control-label">P level:</label>
+    </div>
+
+    <div class="col-md-9">
+            <%#= f.select(:p_level, @global_pivats_objectives.collect {|u| [u.p_level, u.id]},{},{:disabled=>"disabled",:class=>"selectpicker required"}) %>
+            <%#= text_field_tag nil, :p_level, :class=>"form-control", :value=>@p_level ,:readonly=>true %>
+            CHANGE THIS TO PROVIDE P LEVEL & SUBLEVEL EDITING
+    </div> 
+   
+  </div> -->
+
+
+<% if @student_lo.global_lo_type == "GlobalPivatsSublevel" ||  @student_lo.global_lo_type == "GlobalCustomObjective" %>
+ <div class="row form-group m-b-20">
+   <div class="col-md-3">
+      <label class="control-label">P-Level:</label>
+    </div>
+   
+    <div class="col-md-2">
+      <%= select_tag("custom_plevel",options_for_select(@custom_p_level.collect {|u| u },:selected=>@student_lo.p_level.split(" ").join),{:class=>"selectpicker m-b-20"}) %>
+      </div>
+
+    <div class="col-md-2">
+
+ <%= select_tag("custom_psublevel",options_for_select(@p_sublevel.collect {|u| u},:selected=>@student_lo.p_sublevel),{:class=>"selectpicker"}) %>
+    </div>
+  </div>
+<%end%>
+
+<div class="form-group">
+    <div class="row"> 
+  <div class="col-md-3">
+  <label class="control-label required">Title</label>
+  </div>
+  <div class="col-md-9">
+      <%= raw f.text_area :title,:class=>"width-100", :required=>true%>
+        
+    </div>
+  </div>
+</div>
+<div class="form-group">
+		<div class="row">	
+	<div class="col-md-3">
+	<label class="control-label required">Description</label>
+	</div>
+	<div class="col-md-9">
+			<%=raw f.text_area :description,:class=>" description_field width-100 summernote", :rows=>"5",:required=>true %>
+                          <label style="display:none;color:red;" class="description_missing">Please select a description</label>
+
+				
+		</div>
+	</div>
+</div>
+
+<!-- <div class="form-group"> -->
+  <div class="row m-b-20">
+    <div class = "col-md-3"><label class="control-label required"> Baseline/ Target:</label><br><label style="display:none; color:red;" class="baseline_target_missing">Please select base and target for all</label></div>
+    <% @master_csd_axis.each do |axis| %>
+
+    <input type="hidden" name="master_axis_id[]" value="<%= axis.id %>">
+
+    <div class="col-md-9 pull-right">
+      <div class="col-md-3"><small><%= axis.display_name %> </small></div>
+
+
+      <div class="col-md-9 axis_parent">
+        <input type="hidden" class="min_axis base_axis_class" name="base_axis_value[]">
+        <input type="hidden" class="max_axis target_axis_class" name="target_axis_value[]"> 
+        <input type="hidden" class="check_first" value="0">
+
+        <% @base_value = StudentLearningObjectiveTarget.find_by(:student_learning_objective_id=>@student_lo.id, :master_csd_axis_id=>axis.id) %>
+        <% for x in (axis.min_value)..(axis.max_value) do %>  
+        <% if (x.to_i >= @base_value.baseline_value) && (x.to_i <= @base_value.target_value) %>
+
+        <% if x.to_i==@base_value.baseline_value %>
+        <a class="axis_setting_width bg-beatrice btn btn-xs pull-left text-white" value-of-axis="<%= x.to_i %>" id="axis<%= x.to_i %>">B</a>
+
+
+        <% elsif x.to_i==@base_value.target_value %>
+        <a class="axis_setting_width bg-beatrice btn btn-xs pull-left text-white" value-of-axis="<%= x.to_i %>" id="axis<%= x.to_i %>">T</a>
+
+        <% else %>
+
+        <a class="axis_setting_width btn btn-success btn-xs pull-left" value-of-axis="<%= x.to_i %>" id="axis<%= x.to_i %>"><%= x.to_i %></a>
+
+        <% end %>
+
+        <% else %>
+
+        <a class="axis_setting_width btn btn-success btn-xs pull-left" value-of-axis="<%= x.to_i %>" id="axis<%= x.to_i %>" style="border-color: rgb(162, 162, 162); color: rgb(0, 0, 0); background-color: rgb(157, 157, 157);"><%= x.to_i %></a>
+
+        <% end %> 
+        <% end %>
+        <a class="clear_axis m-l-10">clear</a> 
+      </div>
+    </div> 
+    <% end %>
+  </div>
+<!-- </div> -->
+
+
+
+ <div class="form-group row m-b-20">
+    <div class="col-md-3">
+      <label class="control-label required"> Target Date</label>
+    </div>
+    <div class="col-md-9">
+      <!-- <div class="input-group"> -->
+        <%#= f.text_field :target_date,:class=>"form-control datepicker",:placeholder=>"dd-mm-yyyy",:value=>f.object.target_date.strftime('%d-%m-%Y') %>
+          <%= f.text_field :target_date,:class=>"form-control datepicker",:placeholder=>"dd-mm-yyyy",:required=>true,:value=>f.object.target_date.present? ? f.object.target_date.strftime('%d-%m-%Y') : "",:readonly=>true %>
+      <!-- </div> -->
+    </div>
+  </div>
+
+
+  	<div class="form-actions">
+      <div class="row">
+         <div class="pull-right">
+           <%= f.submit "Update", :class=>"btn btn-beatrice text-white update_lo" %>
+          </div>
+          <div class="pull-left">
+             <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+       </div>
+     </div>
+</div>
+  <%end%>
+
+
+<script type="text/javascript">
+  $('.selectpicker').selectpicker();
+</script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.loader').fadeOut('slow')
+      })   
+</script>

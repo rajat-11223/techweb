@@ -1,0 +1,43 @@
+<div class="close_lo">
+	<div class="row">
+			<div class="col-md-12">
+				<div class="panel">
+				<div class="panel-heading">
+						<div class="panel-title"><h4>Learning Objectives</h4></div>
+					</div>
+			
+<div class="panel-heading">
+						<div class="panel-title">
+						<div class="icheck icheck-square-blue">
+                        <div class="checkbox">
+						<h4>Show : </h4>
+                          <label>
+                            <input type="checkbox"  class="filter_checkbox current_lo"   student-id='<%=@student.id%>' checked-value="1" unchecked-value="0" <% if @current_lo.present?%> checked <%end%> > Current
+                          </label>
+                          <label>
+                            <input type="checkbox" class="filter_checkbox completed_lo"  student-id='<%=@student.id%>' checked-value="1" unchecked-value="0" <% if @completed_lo.present?%> checked <%end%>> Completed
+                          </label>
+                          <label>
+                            <input type="checkbox" class="filter_checkbox closed_lo"  student-id='<%=@student.id%>' checked-value="1" unchecked-value="0" <% if @closed_lo.present?%> checked <%end%>> Closed
+                          </label>
+                      	<%= link_to "Add Learning Objective", assign_new_learning_objective_path(:id=>@student.id), remote: true, method: :post, :class => 'btn btn-primary btn-condensed pull-right'  %>
+		<!-- <button class="print_student_lo btn btn-beatrice text-white pull-right show_loader m-r-10">Print</button>	 -->
+		<a target="_blank" href= "<%= print_student_lo_path(id: @student.id, current_lo: @current_lo, completed_lo: @completed_lo, closed_lo: @closed_lo)%>" class="print_student_lo btn btn-beatrice text-white pull-right m-r-10">Print</a>	
+
+                        </div>
+                        </div>
+                  
+						
+						</div>
+					</div>
+
+			<%= render "students/partial/student_show"%>
+</div>
+				</div>
+			</div>
+		</div>
+				<script type="text/javascript">
+		 $(document).ready(function(){
+      	$('.loader').fadeOut('slow')
+      })     
+		 </script>

@@ -1,0 +1,67 @@
+<div class="clearfix login-div text-white col-md-8 col-md-offset-2">
+<h2 class="text-center m-b-50 text-white m-t-50">Assessment Recording and Reporting</h2>
+<h4 class="text-center m-b-50 text-white m-t-50">Change your password</h4>
+
+<%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
+  <%= devise_error_messages! %>
+  <%= f.hidden_field :reset_password_token %>
+
+  <div class="row m-b-20">
+    <!-- <div class="form-group"> -->
+  <div class="form-group col-md-8 col-md-offset-2">
+
+      <%= f.label :password, "New Password",:class=>"control-label col-md-4"  %>
+      <div class="col-md-8">
+      <% if @minimum_password_length %>
+     <!--  <em>(<%#= @minimum_password_length %> characters minimum)</em> -->
+      <% end %>
+      <%= f.password_field :password, autofocus: true, autocomplete: "off", :class=>"form-control text-white",:required=>true %>
+      </div>
+    <!-- </div> -->
+  </div>
+  </div>
+
+  <div class="row m-b-20">
+  <div class="form-group col-md-8 col-md-offset-2">
+
+      <%= f.label :password_confirmation, "Confirm Password",:class=>"control-label col-md-4" %>
+      <div class="col-md-8">
+      <%= f.password_field :password_confirmation, autocomplete: "off", :class=>"form-control text-white",:required=>true %>
+      </div>
+  </div>
+  </div>
+
+
+  <div class="row m-b-50">
+  <div class="form-group col-md-8 col-md-offset-2">
+  <div class="col-md-4"></div>
+  <div class="col-md-2">
+  <%- if controller_name != 'sessions' %>
+  <%= link_to "Log in", new_session_path(resource_name), :class=>"text-white" %>
+<% end -%>
+</div>
+  <div class="actions col-md-6 pull-right align-right">
+    <%= f.submit "Change Password", :class=>"btn btn-primary" %>
+    </div>
+  </div>
+<% end %>
+</div>
+<%#= render "users/shared/links" %>
+<script>
+<% if devise_error_messages! != "" %>
+
+$(document).ready(function() {
+                toastr.options = {
+                    closeButton: true,
+                    progressBar: true,
+                    showMethod: 'slideDown',
+                    timeOut: 0
+                };
+                toastr.error('<%= raw escape_javascript(devise_error_messages!) %>');
+
+       }); 
+
+
+<% end %>
+
+</script>

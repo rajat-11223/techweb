@@ -1,0 +1,153 @@
+<div class="col-md-10 col-md-offset-1 col-sm-10 col-sm-offset-1">
+  <div class="row form-group m-b-20">
+    <div class="col-md-3">
+      <label class="control-label">
+        Student name:  
+      </label>
+    </div>
+    <div class="col-md-9">
+      <%= @observation.student_learning_objective.student.name%>
+    </div>    
+  </div>
+  <div class="row form-group m-b-20">
+    <div class="col-md-3">
+      <label class="control-label">
+        Tutor group:
+      </label>
+    </div>
+    <div class="col-md-9">
+      <%= @observation.student_learning_objective.student.show_tutor_group_name(session[:global_academic_session])%>
+    </div>    
+  </div>
+  <div class="row form-group m-b-20">
+    <div class="col-md-3">
+      <label class="control-label required">
+        Class:
+      </label>
+    </div>
+    <div class="col-md-9">
+      <%= f.select(:sub_subject_id,@student_slot_schedule,{:selected=> @observation.sub_subject_id,:include_blank=>"Select Subject"},{:class=>"selectpicker edit_ob_subject",:required=>true}) %>
+      <span class="text-red font-size-10 err-ob display-none" >
+        This field is required
+      </span>
+    </div>    
+  </div>
+  <div class="row form-group m-b-20">
+    <div class="col-md-3">
+      <label class="control-label required">
+        Date:
+      </label>
+    </div>
+    <div class="col-md-9">
+      <%= f.text_field :date,:class=>"form-control datepicker",:placeholder=>"dd-mm-yyyy",:value=>f.object.date.strftime('%d-%m-%Y')  %>
+    </div>    
+  </div>
+  <div class="row form-group m-b-20">
+    <div class="col-md-3">
+      <label class="control-label">
+        Learning Objective:
+      </label>
+    </div>
+    <div class="col-md-9 bullets">
+      <p class="align-justify">
+        <% if @student_lo.present? %>
+        <% @student_lo.each_with_index do |lo,index|%>         
+       <li> <%= f.radio_button :student_learning_objective_id, lo.id ,:class=>"student_card_radio" %> <%=lo.title %></li>    
+        <% raw lo.description %>              
+        <% end %>
+        <% else %>
+          <b>
+          <%=@observation.student_learning_objective.title %>
+        </b>
+        <br>
+        <%= raw @observation.student_learning_objective.description %>
+        <% end %>
+
+      </p>
+      
+    </div>    
+  </div> 
+  <div class="row form-group m-b-20">
+    <div class="col-md-3">
+      <label class="control-label required"> Evidence: </label>
+    </div>
+    <div class="col-md-9">
+      <%= f.text_area :description,rows: "5" ,:class=>"form-control",:required=>true %>
+    </div>
+  </div>
+
+
+    <div class="row form-group m-b-20">
+    <div class="col-md-3">
+      <label class="control-label"> Attachments: </label>
+    </div>
+
+
+        <div class="col-md-9 ">
+          <%=f.fields_for :student_learning_objective_observation_files do |a| %>
+          <div class="m-b-20">
+            <div class="fileinput fileinput-new" data-provides="fileinput" style="position:relative;">
+              <span style="position:absolute;top:5px;right:5px;z-index: 1;">
+                <%= a.link_to_remove  class: "btn btn-sm btn-danger pull-left"  do %>
+                <i class="fa fa-times"></i>
+                <% end %> 
+              </span>
+              <div class="fileinput-new thumbnail" style="width: 300px; height: 200px; position: relative;">
+
+                <%=a.object.check_content%>
+              </div>
+              <div class="fileinput-preview fileinput-exists thumbnail" style="width: 300px; height: 200px;position:relative;"> 
+              </div>
+              <div>
+                <span class="btn btn-default btn-file">
+                  <span class="fileinput-new">
+                    <% if !a.object.evidence.present? %>Select file<% else %> Change <% end %>
+                  </span>
+                  <span class="fileinput-exists">
+                    Change
+                  </span>
+                  <%= a.file_field :evidence %>
+                </span>
+                <!-- <a href="#" class="btn btn-default fileinput-exists" data-dismiss="fileinput">
+                  Remove
+                </a> -->
+              </div>
+            </div>     
+          </div>
+          <% end %> 
+          <%= f.link_to_add :student_learning_objective_observation_files, class: "btn btn-primary btn-sm pull-left add_new_file_link" do %>
+          <i class="fa fa-plus"></i> 
+          Add New
+          <%end%>
+        </div>
+        <br>
+        
+      </div>  
+
+
+  <div class="modal-footer">
+    <div class="form-actions">
+      <div class="row">
+        <div class="pull-right">
+          <%= submit_tag "Save", :class=>"btn btn-beatrice text-white edit_ob_submit" %>
+        </div>
+        <div class="pull-left">
+          <button type="button" class="btn btn-default" data-dismiss="modal">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+$(document).ready(function(){
+  $('input').iCheck({
+    checkboxClass: 'icheckbox_square',
+    radioClass: 'iradio_square-blue',
+    //increaseArea: '20%' // optional
+  });
+});
+</script>

@@ -1,0 +1,71 @@
+<%@learning_group_students.map(&:id).each do |id|%>
+<%= hidden_field_tag "students[]", id %>
+<%end%>
+Selected Students: 
+<div class="panel-group">
+  <div class="panel bg-beatricegreen">
+    <div class="panel-heading">
+    </div>
+    <div class="panel-body">
+      <% if @learning_group_students.present?%>
+      <% @learning_group_students.where(:temp_schedule_user_id=>current_user.id).each do |student|%>
+      <div class="row form-group p-10">
+        <span class="col-md-1">
+          <div class="nav-user" style="  position: inherit;">
+            <div class="user" style="padding: 0">
+              <img src="<%= student.show_avatar(:thumb) %>" alt="<%=student.fname%>" title="<%=student.fname%>"  border="0" style="background-color: #ffffff;">
+            </div>
+          </div>
+        </span>
+        <span class="col-md-9 text-danger">
+          <%=student.fname + " " + student.lname.to_s%>
+          <footer class="font-size-15 text-black"> Learning Group: <%=student.show_learning_group_name(session[:global_academic_session])%> | Tutor Group: <%=student.show_tutor_group_name(session[:global_academic_session])%> </footer>
+        </span>
+        <span class="col-md-2">
+          <%=link_to "Remove",remove_lg_student_schedule_path(:student_id=>student.id,:lg_id=>@learning_group.id) ,remote: true,method: :post%> 
+        </span>
+      </div>
+      <%end%>
+      <%else%>
+      No student present.
+      <%end%>
+    </div>
+  </div>
+</div>
+<div class="row form-group m-b-20">
+  <div class="col-md-3">
+    <label class="control-label">Select a phase:</label>
+  </div>
+  <div class="col-md-9">
+    <select class="selectpicker" id="school_dropdown">
+      <option>Select a Phase..</option>
+      <%@phases.each do |phase|%>
+      <option id="phase<%= phase.id %>"  <% if phase.id == current_user.lead_phase_id(session[:global_academic_session]) %> selected <% end %>><%= phase.name %></option>
+      <% end %>
+    </select>
+  </div>
+</div>
+Available Students:
+<%@phases.each do |phase|%>
+<div class="panel-group toggle phase_div phase<%= phase.id %>" <% if phase.id == current_user.lead_phase_id(session[:global_academic_session]) %> style="display:block;" <% end %> >
+  <div class="panel bg-antiquewhite">
+    <div class="panel-heading ">
+    </div>
+    <%=render partial: '/schedules/partial/new/phase_students_partial', locals: {phase: phase} %>
+  </div>
+</div>
+<% end %>
+
+
+<script>
+  $('.selectpicker').selectpicker();
+</script>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    $('.loader').fadeOut('slow')
+  })   
+</script>
+
+
+

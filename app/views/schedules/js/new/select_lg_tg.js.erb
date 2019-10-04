@@ -1,0 +1,26 @@
+<% if params[:is_tutor_group] == 'true' %>
+lg_hide_empty();
+$('.show_tutor_group_students').empty();
+$('.tutor_group_select').show();
+
+<%if @tutor_groups.present?%>
+$('.tutor_group_select').html("<%=escape_javascript(render 'schedules/partial/new/show_only_tutorial')%>");
+$('input.create[type="submit"]').prop('disabled', false);
+$('.selectpicker').selectpicker();
+<%else%>
+$('.learning_group_select').html("Sorry, there is no tutor group assigned.");
+$('.show_learning_group_students').hide();
+$('.check_student').hide();
+$('input.create[type="submit"]').prop('disabled', true);
+<%end%>
+<% else %>
+tg_hide_empty();
+$('.learning_group_select').show();
+$('.learning_group_select').html("<%=escape_javascript(render 'schedules/partial/show_learning_groups')%>");
+$('input.create[type="submit"]').prop('disabled', false);
+$('.selectpicker').selectpicker();
+<% end %>
+$('.updated_lg_tg').hide();
+$('.present_students').hide();
+$('.updated_lg_tg').empty();
+$('.present_students').empty();

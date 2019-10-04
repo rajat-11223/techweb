@@ -1,0 +1,27 @@
+<div class="panel-body m-t-20">
+	<div class="col-md-12 m-b-20">
+		<div class="col-md-offset-2 col-md-1">
+			<b>Subject</b>
+		</div>
+		<div class="col-md-5">
+			<b>P-Level Score</b>  
+		</div>
+	</div>
+	<% report_core_subjects.each do |report_core| %>
+	<div class="col-md-12 m-b-20">
+		<div class=" col-md-offset-2 col-md-1">
+			<%=report_core.subject.name%>
+		</div>
+		<div class="col-md-3">
+			<%= select_tag("custom_plevel",options_for_select(@p_level.collect {|u| u },:selected=>report_core.p_level),{:include_blank=>"Select",:class=>"selectpicker report_plevel",:report_core_subject_id=>report_core.id}) %>
+		</div>
+		<div class="col-md-3">
+			<%= select_tag("custom_psublevel",options_for_select(@p_sublevel.collect {|u| u},:selected=>report_core.p_sub_level),{:include_blank=>"Select",:class=>"selectpicker report_sublevel",:report_core_subject_id=>report_core.id}) %>
+		</div>
+	</div>
+
+	<% end %> 
+	<div class="col-md-12 col-sm-12 col-lg-12">
+	<h4 style="padding: 50px;" class="text-center"> --- END OF REPORT ---</h4>
+	</div>        	
+</div>

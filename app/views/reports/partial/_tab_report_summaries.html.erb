@@ -1,0 +1,144 @@
+ <div class="row">
+      <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="panel">
+          <div class="panel-heading">
+            <div class="panel-title">
+          <h4>Teacher Summaries</h4>
+            </div>
+          </div>
+     
+          <div class="panel-body">
+
+            <% if @student_lo_observation.where(is_summary: true,term_id: @report_objective.report.term_id,academic_session_id: @report_objective.report.academic_session_id).count == 0 %>
+                <p>  No summaries available </p> 
+            <% else %>
+            <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                <th></th>
+                  <th>Date</th>
+                  <th>Teacher</th>
+                  <!-- <th>Subject</th> -->
+                  <th>Class</th>
+                  <th>Progress</th>
+                  <th>Observation</th>
+                  
+                </tr>
+              </thead>
+
+
+              <tbody>
+
+                <% @student_lo_observation.where(is_summary: true,term_id: @report_objective.report.term_id,academic_session_id: @report_objective.report.academic_session_id).collect do |observation|%>
+                  
+                  <tr>
+                    <td class="col-md-1">
+                        <div class="icheck icheck-square-blue report_checkbox ">
+                            <input type="checkbox"  class="report_checkbox" name="ids[]" observation="<%=observation.id%>"  <%if observation.report_objective_observation.present? %> checked  <%end%> >
+           
+                            </div>
+                    </td>
+                    <td class="col-md-1"><%=observation.date.present? ? observation.date.strftime("%d %b %Y") : "Unavailable"%></td>
+              
+                   <td class="col-md-1"><%=observation.user.name%></td>
+                   <!-- <td class="col-md-2"><%#=observation.sub_subject.present? ? observation.sub_subject.subject.name : "N/A" %></td> -->
+                   <td class="col-md-1"><%=observation.summary_subject_name.present? ? observation.summary_subject_name : "Unavailable" %></td>
+                   <td class="width-100">
+                     <div class="axis_data col-md-9 m-b-20">
+                      <% @master_csd_axis.each do |axis| %>
+                      <input type="hidden" name="master_axis_id[]" value="<%= axis.id %>">
+
+                      <div class="row">
+                        <div class = "col-md-3"><small><%= axis.display_name %> </small></div>
+                        <div class="col-md-9 pull-right summary-axis_parent" id="axisparent<%= axis.id %>">
+
+                          <% for x in (axis.min_value)..(axis.max_value) do %>
+                          <% target_btn = (x.to_i == observation.summary_achievement_value(axis.id) ? 'btn-success' : 'btn-default') %>
+
+                          <%# btn_state = (@lo.is_completed || @lo.is_closed ? 'disabled' : '') %>
+                          <% btn_state = 'disabled' %>
+
+                          <%= x.to_i < @lo.target_lower_bound(axis.id).to_i ? 
+
+                          raw("<a class='btn btn-grey disabled btn-xs pull-left summary-axis'>" << x.to_s << "</a>") : x.to_i > @lo.target_upper_bound(axis.id) ? 
+                          raw("<a class='btn btn-grey disabled btn-xs pull-left summary-axis'>" << x.to_s << "</a>") : x.to_i == @lo.target_lower_bound(axis.id) ? 
+                          raw("<a class='btn btn-success #{btn_state} bg-success border-success btn-xs pull-left  min-value summary-axis  axis-value#{x.to_s}' axis-value=" << x.to_s << " id=minaxis" << x.to_s << ">B</a>") : x.to_i == @lo.target_upper_bound(axis.id) ? 
+                          raw("<a class='btn #{target_btn} btn-xs pull-left summary-axis max-value max-value border-grey #{btn_state} no-box-shadow  axis-value#{x.to_s}' axis-value="<< x.to_s << " id=axisvalue"<< @lo.id.to_s << axis.id.to_s << x.to_s << ">T</a>") : x.to_i <= observation.summary_achievement_value(axis.id) ? 
+                          raw("<a class='btn btn-deep-orange border-grey btn-xs pull-left summary-axis #{btn_state} no-box-shadow  axis-value#{x.to_s}' axis-value="<< x.to_s << " id=axisvalue"<< @lo.id.to_s << axis.id.to_s << x.to_s << ">" << x.to_s << "</a>") : 
+                          raw("<a class='btn btn-default btn-xs pull-left summary-axis #{btn_state} no-box-shadow border-grey  axis-value#{x.to_s}' axis-value="<< x.to_s << " id=axisvalue"<< @lo.id.to_s << axis.id.to_s << x.to_s << ">" << x.to_s << "</a>") %>
+                          <% end %>
+                        </div>
+                      </div>
+                      <% end %>
+                    </div>
+                  </td>
+                   <td class="observation_column col-md-6">
+
+                     <div class="row">
+                       <div class="col-md-12"><p class="align-justify p-10"><%= raw observation.description%></p></div>
+
+                       
+                        <div class="col-md-12" style="display: -webkit-box;" > 
+                          <%if observation.student_learning_objective_observation_files.present?%>
+                        
+                              <% observation.student_learning_objective_observation_files.each do |file|%>
+
+                                <% if file.evidence_content_type.in? ["image/jpg" ,"image/png","image/jpeg"]%>
+                                  <div style="position:relative;">
+                                    <%=link_to image_tag(file.show_evidence(:thumb)),show_evidence_from_modal_path(:file_id=>file) ,:remote=>true,method: :post %>
+                                      
+                                   
+                                   </div>   
+                                <%else%>
+                                  <div style="position:relative;">
+                                    <%#=link_to show_evidence_from_modal_path(:file_id=>file) ,:remote=>true,method: :post do %>
+                                      <!-- <img src="/assets/play.png" > -->
+                                    <%#end%>
+                                     <%= videojs_rails sources: { mp4: file.evidence},controls: false, autoplay: false,:poster=>file.evidence(:thumb), width:"200px;", height:"200px" %>
+                                       <i class="fa fa-4x fa-play-circle-o text-white play-fa-center"></i>
+
+                                    </div>
+                                     
+                              <%end%>
+                           
+                          <%end%>
+                          <%end%>
+                        </div>
+                      </div>
+                    </td>
+   
+      
+                  
+                </tr>
+                
+              <% end %>
+          
+              </tbody>
+            </table>
+            </div>
+            <!--.overflow-table-->
+            <% end %>
+<!--    <div class="modal-footer">              
+        
+                  <div class="form-actions">
+                  <div class="row">
+                    <div class="pull-right">
+                     
+                      <%#= submit_tag "SAVE", :class=>"btn btn-success btn-beatrice add_evidence" %>
+                      <span class="btn btn-success btn-beatrice add_evidence <%#= @student_lo_observation.count == 0 ? 'disabled' : nil %>" report="<%=@report_objective.id%>" >Add Selected</span>
+                    </div>
+                    <div class="pull-left">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                  </div>
+                  </div>
+                  </div> -->
+          </div>
+          <!--.panel-body-->
+        </div>
+        <!--.panel-->
+      </div>
+      <!--.col-md-12-->
+    </div>
+    <!-- </div> -->

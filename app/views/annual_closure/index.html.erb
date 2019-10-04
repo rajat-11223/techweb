@@ -1,0 +1,53 @@
+<style>
+.error-container{
+	width: 800px!important;
+	overflow: auto;
+}
+
+.error-text{
+	font-size: 36px!important;
+}
+.error-subtext{
+	font-size: 18px!important;
+	text-align: left!important;
+}
+</style>
+<div class="error-container">
+    <!-- <div class="error-code">Attention</div> -->
+    <div class="error-text">Attention: Annual Closure</div>
+    <div class="error-subtext">
+    		This action is only meant to be performed after the school session has ended and data for new session needs to be created. <br/> 
+    		<br/> 
+    		Please do not perform this action if : <br/>
+    		<br/>
+    		1. The school session has not yet ended.<br />
+    		2. The End of term reports have not been created and approved.<br/>
+    		3. There is impending data to be created for the current term. <br /> 
+    		<br />
+    		Performing this action will : <br />
+    		<br />
+    		1. Move the school session to the next year, <br />
+    		2. Create related terms if they have not been scheduled already and; <br />
+    		3. Perform other related operations. <br />
+			<br />
+			What this means for the users : <br/> 
+			<br/>
+    		1. Data for current session would not be directly visible and;<br />
+    		2. New data can be recreated w.r.t the next session.<br />
+    		<br />
+			This operation is not reversible and may take a few minutes.
+			<br />
+    </div>
+    <div class="error-actions">                                
+        <div class="row">
+            <div class="col-md-6">
+                <button class="btn btn-success btn-block btn-lg text-black" onClick="document.location.href='<%= root_url %>'">Back to home</button>
+            </div>
+            <div class="col-md-6">
+            	<%= link_to "I understand, perform Annual Closure.", perform_annual_closure_path, method: :get, data: { confirm: ' WARNING : This action would log-out all the other users currently logged in to the system and may cause them to lose their unsaved work. Please make sure no users are in the middle of any important actions before proceeding. Do you wish to continue?'}, :class => 'btn btn-warning btn-block btn-lg text-black'  %>
+            </div>
+
+
+        </div>                                
+    </div>            
+</div>

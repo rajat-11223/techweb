@@ -1,0 +1,553 @@
+
+<style type="text/css">
+
+/*td{
+  width:10%;
+}
+td.axis_data{
+  width:30%!important;
+}
+td.actions{
+  width:80%!important;
+}*/
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .hidden-sm{
+    display:none!important;
+  }
+  } 
+.xtable > tbody >  tr > td{height: 100px!important; max-height: 100px!important; width: 200px!important; max-width: 200px!important;}
+
+.xtable > tbody >  tr > th{height: 100px!important; max-height: 100px!important; width: 150px!important; max-width: 1500px!important;}
+
+a:hover, a:focus{
+  text-decoration: none;
+}
+
+</style>
+
+<div class="row m-b-15">
+<div class="col-md-12">
+		<div class="col-md-3">
+			<div class="nav-user" style="  position: inherit;">
+         <div class="" style="padding: 0">
+           <!-- <img src="<%#= @user.show_avatar(:medium) %>" style="height: 200px; width: 200px; "> -->
+           <%= image_tag @user.show_avatar(:medium), :style=>"height: 200px; width: 200px; "%>
+         </div>
+         
+       </div>
+			</div>
+
+		<div class="col-md-9 no-p">
+<!-- 			<div class="card-heading "> -->
+
+		<span class="font-size-20"><%=@user.fname.capitalize + " " + @user.lname.capitalize %></span>
+				<footer>
+        <% if current_user.id == @user.id%>
+                 <%= link_to "Change Password",change_user_pwd_path(:user_id=>@user.id), method: :post, :remote=>true %><br>
+<%end%>
+                  <a class="" onclick="edit_show_staff(<%=@user.id%>)" data-toggle=tooltip data-title="Edit Profile">Edit Profile</a>
+               
+                </footer>
+								
+
+			<!-- </div> -->
+		<!-- 	<div class="card-body">
+				<p style="text-align: justify;font-size: 15px;"><%#=@user.description.present? ? @user.description : "No description"%></p>
+			</div> -->
+		</div>
+
+	</div>
+</div>
+
+<div class="header-tabs scrollable-tabs sticky position-inherit">
+			<ul class="nav nav-tabs tabs-active-text-white tabs-active-border-yellow" role="tablist">
+									<li class="active"><a href="#objective" data-toggle="tab">Learning Objectives</a></li>
+									<li><a href="#schedule" data-toggle="tab">Timetable</a></li>
+								
+								</ul>
+
+
+</div>
+
+
+<div class="tab-content without-border">
+		<div class="tab-pane active" id="objective">
+					<div class="row">
+			<div class="col-md-12">
+				<div class="panel">
+					<div class="panel-heading">
+						<div class="panel-title"><h4>Assigned Learning Objectives</h4></div>
+					</div>
+				<div class="panel-body">
+
+						<div class="unseen">
+							<table class="table table-bordered table-striped table-condensed">
+								<thead>
+									<tr>
+
+										<th>Student</th>
+                    <th>Objective</th>
+										<th class="hidden-xs hidden-sm">Level</th>
+										<th class="hidden-xs hidden-sm">Subject</th>
+										<th>Progress</th>
+										<th>Target</th>
+										<th>Status</th>
+								  </tr>
+								</thead>
+								<tbody>
+
+								<% @student_learning_objectives.each do |lo| %>
+              
+									<tr>
+                    <td class="col-md-2"><%= link_to lo.student.name,student_path(lo.student.id) %></td>
+										    <td class="col-md-2"><%= raw lo.title %>
+                      <% if !(lo.is_completed || lo.is_closed) %>
+                      <%# if current_user.is_team_lead? || current_user.is_student_tutor?(session[:global_academic_session], @student.id) %>
+                      <% if current_user.is_team_lead? || current_user.is_student_tutor?(session[:global_academic_session], lo.student.id) %>
+                      <%= link_to edit_learning_objective_path(:lo=>lo.id,staff: true), remote: true, method: :post,:class=>" show_loader m-r-5",:data=>{:toggle=>"tooltip", :title=>"Edit"} do %>(Edit)<% end %>     <% end %>
+                      <% end %>
+
+                    </td>
+
+										<td class="col-md-1 hidden-xs hidden-sm"><%= lo.show_p_level %></td>
+										<td class="col-md-1 hidden-xs hidden-sm"> 
+											<%= lo.show_subject %>
+										</td>
+
+<td class="axis_data col-md-4">
+<% @master_csd_axis.each do |axis| %>
+<div class="row">
+<div class = "col-md-3"><small><%= axis.display_name %> </small></div>
+<div class="col-md-9 pull-right axis_parent" id="axisparent<%= axis.id %>">
+<input type="hidden" name="student_objective_id" value="<%= lo.id %>" class="student_objective_id">
+<%# for x in (axis.min_value)..(axis.max_value) do %> 
+<%#= x.to_i == lo.target_lower_bound(axis.id) ? raw('<a><i class="btn btn-orange btn-xs">B</i></a>') : x.to_i == lo.target_upper_bound(axis.id) ? raw('<a><i class="btn btn-blue btn-xs">T</i></a>') : x.to_i < lo.achievement_value(axis.id) ? raw('<a><i class="btn btn-green btn-xs">&nbsp;</i></a>') : raw('<a><i class="btn btn-white btn-xs">&nbsp;</i></a>') %>
+
+<%# end %>
+<input type="hidden" value="<%= axis.id %>" name="master_axis_id" class="master_axis_id">
+
+<input type="hidden" value="<%= axis.min_value %>" name="minaxisvalue" class="minaxisvalue">  
+<input type="hidden" value="<%= axis.max_value %>" name="maxaxisvalue" class="maxaxisvalue">
+
+<% for x in (axis.min_value)..(axis.max_value) do %>
+
+<% target_btn = (x.to_i == lo.achievement_value(axis.id) ? 'btn-success' : 'btn-default') %>
+<%# btn_state = (lo.is_completed || lo.is_closed ? 'disabled' : '') %>
+<% btn_state = 'disabled' %>
+
+<%= x.to_i < lo.target_lower_bound(axis.id).to_i ? 
+raw("<a class='btn btn-grey disabled btn-xs pull-left axis-click'>" << x.to_s << "</a>") : x.to_i > lo.target_upper_bound(axis.id) ? 
+raw("<a class='btn btn-grey disabled btn-xs pull-left axis-click'>" << x.to_s << "</a>") : x.to_i == lo.target_lower_bound(axis.id) ? 
+raw("<a class='btn  btn-success #{btn_state} bg-beatrice border-beatrice  btn-xs pull-left axis-click min-value' axis-value=" << x.to_s << " id=minaxis" << x.to_s << ">B</a>") : x.to_i == lo.target_upper_bound(axis.id) ? 
+raw("<a class='btn #{target_btn}  btn-xs pull-left axis-click max-value max-value border-grey #{btn_state} no-box-shadow' axis-value="<< x.to_s << " id=axisvalue"<< lo.id.to_s << axis.id.to_s << x.to_s << ">T</a>") : x.to_i <= lo.achievement_value(axis.id) ? 
+raw("<a class='btn btn-success border-grey btn-xs text-white pull-left axis-click #{btn_state} no-box-shadow' axis-value="<< x.to_s << " id=axisvalue"<< lo.id.to_s << axis.id.to_s << x.to_s << ">" << x.to_s << "</a>") : 
+raw("<a class='btn btn-default btn-xs pull-left axis-click #{btn_state} no-box-shadow border-grey' axis-value="<< x.to_s << " id=axisvalue"<< lo.id.to_s << axis.id.to_s << x.to_s << ">" << x.to_s << "</a>") %>
+<% end %>
+</div>
+</div>
+<% end %>
+</td>
+										<td class="col-md-1">
+											<%= lo.target_date.strftime("%d %b %Y") %>
+										</td>
+										<td class="actions col-md-2">
+											<% if !(lo.is_completed || lo.is_closed) %>
+                    Observations:<br>
+									
+
+													<%= link_to view_observation_staff_path(:lo=>lo.id,:student_id=>lo.student.id), remote: true, method: :post,:data=>{:toggle=>"tooltip", :title=>"View Observations"} ,:class=>"show_loader" do %>
+												View
+
+      <%= link_to add_observation_path(:lo=>lo.id,student_id: lo.student.id,staff: true), remote: true, method: :post,:class=>"show_loader",:data=>{:toggle=>"tooltip", :title=>"Add Observation"}  do %>
+
+      Add<br/>
+      <%end%>
+				<%end%>
+
+      <%# if current_user.is_team_lead? || current_user.is_student_tutor?(session[:global_academic_session], @student.id) %>
+      <% if current_user.is_team_lead? || current_user.is_student_tutor?(session[:global_academic_session], lo.student.id) %>
+      Actions:<br>
+   
+     <%= link_to delete_lo_learning_objective_path(:lo=>lo.id,:student_id=>lo.student.id), method: :post,:class=>"click_loader m-r-5",:data=>{confirm:"Deleting this learning objective would unlink all associated observations but preserve them for later use. Are you sure you wish to continue deleting this objective? ",:toggle=>"tooltip", :title=>"Delete Objective"} do %> Delete <% end %><br>
+    
+      <% end %>		
+										
+										
+
+
+												
+
+								
+												
+
+											<% else %>
+												<% if lo.is_completed %>
+													Completed
+												<% elsif lo.is_closed %>	
+													Closed									
+												<% end %>											
+											<% end %>
+										</td>
+									</tr>
+								<% end %>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="tab-pane" id="schedule">
+
+<div class="row">
+      <div class="col-md-12">
+        <div class="panel">
+          <div class="panel-heading">
+            <div class="panel-title"><h4>Timetable for <%= Term.find(session[:global_current_term]).master_term.display_name %></h4></div>
+          </div><!--.panel-heading-->
+          <div class="panel-body">
+
+            <div class="table-responsive">
+              <table class="table table-bordered xtable">
+              <thead>
+                <tr>
+                  <th class="col-md-2"></th>
+                  <% @master_days.each do |day| %>
+                    <th ><%= day.name %></th>
+                  <% end %>
+                </tr>
+              </thead>
+
+              <tbody>
+
+              <% @slots.each_with_index do |slot, index_slot| %>
+                <tr>
+                  <th class="p-t-40 align-center col-md-2"> <%= slot.name %> </th>
+                   <% @master_days.each do |day| %>
+                   <% @this_schedule = slot.slot_schedules.find_by(term_id: @term, user_id: @selected_tutor, master_day_id: day.id) %>
+                   <!-- Tutorial -->
+                    <%# if !slot.is_scheduled_time && slot.is_taught_time %>
+                 <!--       <td class="col-md-2" style="position:relative; text-align: center; vertical-align: middle;">
+                       <strong><%#= @this_schedule.sub_subject.show_name %></strong>
+                       <div>
+                        <footer><%#= @user.show_tutor_group_name(session[:global_academic_session]) %> <%#=@this_schedule.associated_group.name   %> </footer>
+                       </div>
+                       </td> -->
+                   <!-- Lesson Periods -->
+                    <%# else %> 
+
+
+                        <% if !@this_schedule.blank? %>
+                        <td style="position:relative; text-align: center; vertical-align: middle;" class="col-md-2">   
+                         
+                          <strong><%= @this_schedule.sub_subject.show_name.length > 26 ? (@this_schedule.sub_subject.show_name[0..25] + "...") : @this_schedule.sub_subject.show_name %></strong>
+
+                          <% if @this_schedule.slot_schedule_students.present?%>
+                            
+                              <% if @this_schedule.slot_schedule_students.pluck(:associated_group_id).uniq.count > 1 %>
+                             <% if @this_schedule.slot_schedule_students.pluck(:associated_group_type).include?("LearningGroup") %>
+                                <!-- obviously multiple learning groups -->
+                                <!-- show group color & name -->
+                                <div style="border-bottom:2px solid <%= @this_schedule.learning_group.try(:color) %>" class="schedule_subject_div">
+                                  <footer>
+                                  <%= @this_schedule.learning_group.try(:name) %><label class="required"></label>
+                                  </footer>
+                                </div>
+                                <% elsif @this_schedule.slot_schedule_students.pluck(:associated_group_type).include?("TutorGroup") %>
+                                <!-- obviously multiple tutor groups due to phases -->
+                                <!-- show asterisk with name -->
+                                <div style="background-color:fff">
+                                  <footer>
+                                    <%= @this_schedule.tutor_group.name %><label class="required"></label>
+                                  </footer>
+                                </div>
+                                <% end %>
+                              <% else %>
+                                <% if @this_schedule.learning_group_id != 0 %>
+                                  <div style="border-bottom:2px solid <%= @this_schedule.learning_group.try(:color) %>" class="schedule_subject_div">
+                                    <footer>
+                              <% if @this_schedule.slot_schedule_students.count == @this_schedule.learning_group.students.count %>
+                                  <%= @this_schedule.learning_group.try(:name) %>
+                                  <% else %>
+                                  <%= @this_schedule.learning_group.try(:name) %><label class="required"></label>
+                                  <% end %>
+                                </footer>
+                                  </div>
+                                <% end %>
+                                
+                                <% if @this_schedule.tutor_group_id != 0 %>
+                                  <div style="background-color:fff">
+                                  <footer>
+                                    <%= @this_schedule.tutor_group.name %>
+                                  </footer>
+                                  </div>
+                                <% end %>
+                              
+                              <% end %>
+
+                          <% else %>
+
+                              <% if !@this_schedule.sub_subject.subject.is_ppa %>
+                                <div>
+                                 Free
+                                </div>                        
+                              <% end %>
+                        
+                          <% end %>
+                        </td>
+
+                        <% else %>
+                         <td style="position:relative; text-align: center; vertical-align: middle;" class="col-md-2"> 
+                         FREE
+                          
+                         </td>
+                    
+                        <% end %> 
+
+                  
+                    <%# end %>
+
+                  <% end %>   
+
+                </tr>
+              <% end %>
+               
+              </tbody>
+            </table>
+
+            </div><!--.table-responsive-->
+
+          </div><!--.panel-body-->
+        </div><!--.panel-->
+      </div><!--.col-md-12-->
+    </div>
+
+	</div>
+
+</div>
+							
+						
+
+
+ <div class="modal scale fade staff_profile" id="" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header bg-brown text-white">
+            <h4 class="modal-title">ADD STAFF MEMBER<a><span class="fonticon ion-close-circled pull-right cursor-pointer" data-dismiss="modal"></span></a></h4>
+          </div>
+          <div class="modal-body">
+              <%= render '/staff_profiles/form'%>
+         <!-- 
+            <div class="row">
+              <button class="btn btn-default pull-left">Cancel</button>
+              <button class="btn btn-default pull-right">Add</button>
+            </div> -->
+          </div>
+        </div><!--.modal-content-->
+      </div><!--.modal-dialog-->
+    </div><!--.modal-->
+
+ <!-- Modals -->
+    <div class="modal scale fade-in full-height" id="edit_staff" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-lg col-lg-12">
+        <div class="modal-content">
+          <div class="modal-header bg-beatrice text-white">
+            <h4 class="modal-title text-white">Edit profile<a><span class="fa fa-times text-white pull-right cursor-pointer" data-dismiss="modal"></span></a></h4>
+          </div>
+          <div class="modal-body" id="edit_staff_modal_body">
+        
+               <%= render '/staff_profiles/form'%>
+
+          
+          </div>
+        </div><!--.modal-content-->
+      </div><!--.modal-dialog-->
+    </div><!--.modal-->
+
+ <!-- Modals -->
+    <div class="modal scale fade-in full-height" id="view_observation_from_staff" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog custom-modal-dialog modal-lg col-lg-12">
+        <div class="modal-content custom-modal-content">
+          <div class="modal-header bg-beatrice text-white">
+            <h4 class="modal-title text-white">View Observation<a><span class="fa fa-times text-white pull-right cursor-pointer" data-dismiss="modal"></span></a></h4>
+          </div>
+          <div class="modal-body" id="view_observation_from_staff_body">
+        
+ 
+          
+          </div>
+        </div><!--.modal-content-->
+      </div><!--.modal-dialog-->
+    </div><!--.modal-->
+<!-- Modals -->
+    <div class="modal scale fade-in full-height" id="edit_observation_from_staff" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog  modal-lg col-lg-12">
+        <div class="modal-content ">
+          <div class="modal-header bg-beatrice text-white">
+            <h4 class="modal-title text-white">Edit Observation<a><span class="fa fa-times text-white pull-right cursor-pointer" data-dismiss="modal"></span></a></h4>
+          </div>
+          <div class="modal-body" id="edit_observation_body_from_staff">
+        
+ 
+          
+          </div>
+        </div><!--.modal-content-->
+      </div><!--.modal-dialog-->
+    </div><!--.modal-->
+  <div class="modal scale fade change_pwd" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header bg-beatrice text-white">
+            <h4 class="modal-title text-white">Update Password<span class="fa fa-times pull-right cursor-pointer" data-dismiss="modal"></span></h4>
+          </div>
+          <div class="modal-body change_pwd_body">
+              
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+        <!-- Modals -->
+    <div class="modal scale fade-in edit_lo_staff full-height" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog custom-modal-dialog modal-lg col-lg-12">
+        <div class="modal-content ">
+          <div class="modal-header bg-beatrice text-white">
+            <h4 class="modal-title text-white">Edit Learning Objective<a><span class="fa fa-times text-white pull-right cursor-pointer" data-dismiss="modal"></span></a></h4>
+          </div>
+          <div class="modal-body edit_lo_staff_body">
+          <%#=render '/students/form'%>
+   
+ 
+          
+          </div>
+        </div><!--.modal-content-->
+      </div><!--.modal-dialog-->
+    </div><!--.modal-->
+
+  <!-- Modals -->
+    <div class="modal scale fade-in full-height add_observation_staff" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-lg ">
+        <div class="modal-content">
+          <div class="modal-header bg-beatrice text-white">
+            <h4 class="modal-title text-white">Add Observation<a><span class="fa fa-times text-white pull-right cursor-pointer" data-dismiss="modal"></span></a></h4>
+          </div>
+          <div class="modal-body add_observation_staff_body">
+        
+ 
+          
+          </div>
+        </div><!--.modal-content-->
+      </div><!--.modal-dialog-->
+    </div><!--.modal-->
+
+						<script type="text/javascript">
+  function edit_show_staff(staff_id){
+
+    $.ajax({
+     beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+      type:'post', 
+        url: '/edit_staff_from_table',
+       data: { staff_id :staff_id}
+      
+      });
+        
+
+  }
+</script>
+<script type="text/javascript">
+  $(document).on('click',".update_pwd",function(){
+    var pwd =$("#user_password").val();
+    var pwd_cnfrm = $("#user_password_confirmation").val();
+if (pwd!=pwd_cnfrm) {
+  $(".pwd_match").show();
+  document.getElementById("user_password").style.color = "#E34234";
+  document.getElementById("user_password_confirmation").style.color = "#E34234";
+   return false
+}
+
+
+else 
+{
+
+  $(".pwd_match").hide();
+    document.getElementById("user_password").style.color = "#14853e";
+  document.getElementById("user_password_confirmation").style.color = "#14853e";
+}
+   
+  })
+    </script>
+
+
+
+<script>
+$(document).on('click','.axis-click',function(){
+  var objective_id = $(this).parent('.axis_parent').find('.student_objective_id').val();
+  var master_axis_id = $(this).parent('.axis_parent').find('.master_axis_id').val();
+  var axis_value = $(this).attr('axis-value');
+  var maxaxisvalue = $(this).parent('.axis_parent').find('.max-value').attr('axis-value');
+  // alert($(this).parent('.axis_parent').find('.min-value').hasClass('btn'));
+  var minaxisvalue = $(this).parent('.axis_parent').find('.min-value').attr('axis-value');
+  $.ajax({
+    method:'post',
+    url:'<%= set_objective_achievement_path %>',
+    data: {student_objective_id: objective_id, master_axis_id: master_axis_id, axis_value: axis_value, minaxisvalue: minaxisvalue, maxaxisvalue:maxaxisvalue}
+
+  });
+});
+</script>
+
+
+ <script>
+$(document).on('click','a.axis_setting',function(){
+  if(!$(this).attr('disabled')){
+  if($(this).parent('.axis_parent').find('.check_first').val()==0){
+    if($(this).attr('value-of-axis')!=10){
+    var i;
+    $(this).css('background-color','green');
+    $(this).html('B');
+    $(this).css('color','white');
+    $(this).parent('.axis_parent').find('.check_first').val('1');
+    $(this).parent('.axis_parent').find('.min_axis').val($(this).attr('value-of-axis'));
+    $(this).removeClass('axis_setting');
+
+    for(i=parseInt($(this).parent('.axis_parent').find('.min_axis').val());i>=1;i--){
+        $(this).siblings('#axis'+i).attr('disabled',true);
+        $(this).siblings('#axis'+i).css('background-color','#9d9d9d');
+        $(this).siblings('#axis'+i).css('border-color','#a2a2a2');
+        $(this).siblings('#axis'+i).css('color','#000');
+    }
+    }
+  }
+  else if($(this).parent('.axis_parent').find('.check_first').val()==1){
+    var i;
+    $(this).css('background-color','red');
+    $(this).css('color','white');
+    $(this).html('T');
+    $(this).parent('.axis_parent').find('.check_first').val('2');
+    $(this).parent('.axis_parent').find('.max_axis').val($(this).attr('value-of-axis'));
+
+    for(i=parseInt($(this).parent('.axis_parent').find('.min_axis').val())+1;i<parseInt($(this).parent('.axis_parent').find('.max_axis').val());i++){
+      //$(this).siblings('.axis_setting').attr('')
+      
+      $(this).siblings('#axis'+i).css('background-color','green');
+       $(this).siblings('#axis'+i).css('color','white');
+    }
+
+    for(i=parseInt($(this).parent('.axis_parent').find('.max_axis').val());i<=10;i++){
+      //$(this).siblings('.axis_setting').attr('')
+      
+     $(this).siblings('#axis'+i).attr('disabled',true);
+        $(this).siblings('#axis'+i).css('background-color','#9d9d9d');
+        $(this).siblings('#axis'+i).css('border-color','#a2a2a2');
+        $(this).siblings('#axis'+i).css('color','#000');
+    }
+
+  }
+}
+});
+
+ </script>

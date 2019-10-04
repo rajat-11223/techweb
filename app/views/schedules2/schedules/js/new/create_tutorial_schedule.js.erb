@@ -1,0 +1,4 @@
+$('#open_schedule_modal').modal('show');
+$('#schedule_modal_header').html('<h4 class="modal-title text-white">Schedule Class for  <%=@slot.name%> on <%=@master_day.name%><span class="fa fa-times text-white pull-right cursor-pointer" data-dismiss="modal"></span></h4>')
+$('.learning_modal').html("<%=escape_javascript(render 'schedules/form/tutorial_schedule_form')%>");
+$('.selectpicker').selectpicker();

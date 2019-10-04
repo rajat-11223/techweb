@@ -1,0 +1,12 @@
+<input type="hidden" value="<%= @schedule_display %>" name="schedule_display">
+<input type="hidden" name="slot_schedule[subject_id]" value="3">
+<input type="hidden" name="sub_subject_id[subject_id]" value="3">
+<div class="row form-group m-b-20">
+	<div class="col-md-4">
+		<label class="control-label">Subject:</label>
+	</div>
+	<div class="col-md-8">
+		<% tg = {'PPA' => 0} %>
+		<%= select_tag("tutor_group_id",options_for_select(tg.collect {|u| [u[0], u[1]]}, :selected=> 0),{:class=>"selectpicker",:required=>true}) %>
+	</div>    
+</div>

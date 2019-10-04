@@ -1,0 +1,54 @@
+  <%=render partial: '/schedules/partial/new/only_tg_students', locals: {tutor_group: @tutor_group, tutor_group_students: @tutor_group_students} %>
+
+<div class="row form-group m-b-20">
+  <div class="col-md-3">
+    <label class="control-label">Select a phase:</label>
+  </div>
+  <div class="col-md-9">
+    <select class="selectpicker school_dropdown">
+      <option>Select a Phase..</option>
+        <% if @student_phase.present?%>
+          <%@phases.each do |phase|%>
+            <option id="phase<%= phase.id %>" db_id='<%=phase.id%>' <% if phase.id == @student_phase %> selected <% end %>><%= phase.name %></option>
+          <% end %>
+        <% else %>
+          <%@phases.each do |phase|%>
+            <option id="phase<%= phase.id %>" db_id='<%=phase.id%>' <% if phase.id == current_user.lead_phase_id(session[:global_academic_session]) %> selected <% end %>><%= phase.name %></option>
+           <% end %>
+        <% end %>
+    </select>
+  </div>
+</div>
+Available Students:
+<% if @student_phase.present?%>
+<%@phases.each do |phase|%>
+<div class="panel-group toggle phase_div phase<%= phase.id %>" <% if phase.id == @student_phase %> style="display:block;" <% end %> >
+  <div class="panel bg-antiquewhite">
+    <div class="panel-heading ">
+    </div>
+    <%=render partial: '/schedules/partial/new/tg_phase_students_partial', locals: {phase: phase} %>
+  </div>
+</div>
+<% end %>
+<% else %>
+<%@phases.each do |phase|%>
+<div class="panel-group toggle phase_div phase<%= phase.id %>" <% if phase.id == current_user.lead_phase_id(session[:global_academic_session]) %> style="display:block;" <% end %> >
+  <div class="panel bg-antiquewhite">
+    <div class="panel-heading ">
+    </div>
+    <%=render partial: '/schedules/partial/new/tg_phase_students_partial', locals: {phase: phase} %>
+  </div>
+</div>
+<% end %>
+<% end %>
+
+
+
+<script>
+  $('.selectpicker').selectpicker();
+</script>
+<script type="text/javascript">
+ $(document).ready(function(){
+   $('.loader').fadeOut('slow')
+ })   
+</script>

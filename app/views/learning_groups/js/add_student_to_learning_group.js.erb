@@ -1,0 +1,29 @@
+<% if @stud.learning_groups.present?%>
+toastr["warning"]("<%=@stud.name%> is already associated with another learning group <%=@stud.show_learning_group_name(session[:global_academic_session]) %>. Once you save this learning group, <%=@stud.fname%> will be deleted from the other group.")
+
+toastr.options = {
+  "closeButton": true,
+  "progressBar": false,
+  "positionClass": "toast-top-right",
+  "timeOut": "10000",
+  "showMethod": "slideDown"
+  
+}
+  <%end%>
+<% if @custom.present?%>
+toastr["warning"]("Someone is already working on this student, please try after some time.")
+toastr.options = {
+  "closeButton": true,
+  "progressBar": false,
+  "positionClass": "toast-top-right",
+  "timeOut": "10000",
+  "showMethod": "slideDown"
+}
+<%else%>
+$('.show_add_lo_student').html("<%=escape_javascript(render 'learning_groups/partial/added_student_to_learning_group')%>");
+
+<%end%>
+    Pleasure.init();
+    Layout.init();
+$('.selectpicker').selectpicker();    
+

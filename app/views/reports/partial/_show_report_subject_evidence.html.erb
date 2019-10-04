@@ -1,0 +1,123 @@
+
+<% if policy(report_subject.report).editable_summary_check?(@student.id, report_subject.report, report_subject.sub_subject.id) %>
+<%=link_to "Select evidence" ,report_subject_add_evidence_path(student_id: student.id,report_subject_id:report_subject.id), :class=>"pull-left btn btn-beatrice text-white m-b-10",method: :post, :remote=> true%>
+<% end %>
+
+<div class="col-md-12 m-b-20 background-light p-10">
+  <div class=" ">
+    <% 3.times do |report_index| %>
+
+    <%if report_subject.report_subject_observations.with_deleted.joins(:report_subject_observation_evidences).where("report_subject_observation_evidences.on_observation = false").pluck("report_subject_observation_evidences.position").include?(report_index+1) %>
+
+
+    <% file = report_subject.report_subject_observations.with_deleted.map(&:report_subject_observation_evidences).flatten.collect{|s| s.on_observation == false ? s : nil}.compact.find{|a| a.position == report_index+1} %>    
+    <div class="col-md-4 filled-subject <% if policy(report_subject.report).editable_summary_check?(@student.id, report_subject.report, report_subject.sub_subject.id) %>sorting-subject-div <% end %> portlet-placeholder-outer-subject" position="<%= report_index+1  %>" report-id="<%=report_subject.id%>">
+      <% if file.student_learning_objective_observation_file.evidence_content_type.in? ["image/jpg" ,"image/png","image/jpeg"]%>
+      <div class="portlet-subject" file="<%=file.id%>">
+        <div class="evidence">
+          <div class="portlet-subject-header">
+            <% if policy(report_subject.report).editable_summary_check?(@student.id, report_subject.report, report_subject.sub_subject.id) %><i class="fa fa-close pull-right curriculum_evidence_close close-fa"  file-id="<%=file.id%>"></i> <% end %>
+            <%= image_tag(file.student_learning_objective_observation_file.show_evidence(:thumb)) %>
+          </div>
+        </div>
+      </div>
+      <%else%>
+      <div class="portlet-subject" file="<%=file.id%>">
+        <div class="evidence">
+          <div class="portlet-subject-header" >
+
+            <%= image_tag(file.student_learning_objective_observation_file.show_evidence(:thumb)) %>
+
+
+            <i class="fa fa-4x fa-play-circle-o text-white play-fa-center"></i>
+            <i class="fa fa-close pull-right curriculum_evidence_close close-fa-vid" observation-id="<%#=subject_observation.id%>" file-id="<%=file.id%>"></i>
+          </div>
+        </div>
+
+      </div>
+      <%end%>
+
+    </div>
+    <%else%>
+    <div class="col-md-4 empty-subject <% if policy(report_subject.report).editable_summary_check?(@student.id, report_subject.report, report_subject.sub_subject.id) %>sorting-subject-div <%else%>sorting-subject-div-policy  <%end%>portlet-placeholder-outer-subject" report-id="<%=report_subject.id%>" position="<%=report_index +1%>">
+    </div>              
+    <%end%>
+    <%end%>
+  </div>
+</div>
+
+<div class="col-md-12 no-p">
+  <% if report_subject.report_subject_observations.present? %>
+  <ul class="<% if policy(report_subject.report).editable_summary_check?(@student.id, report_subject.report, report_subject.sub_subject.id) %> curriculum-sort <% end %>">
+    <% report_subject.report_subject_observations.order(:position).each do |subject_observation| %>
+    <div class="col-md-12  m-b-40 observation-sortaa background-light" observe-position="<%=subject_observation.position%>" observation-id="<%=subject_observation.id%>" >
+      <li class="close_btn" observe-position="<%=subject_observation.position%>" observation-id="<%=subject_observation.id%>" report="<%=subject_observation.report.id%>">
+        <div class="">
+          <div class="">
+
+          </div>
+          <div class="col-md-1 m-t-10">
+            <span class="custom-bar fa fa-2x fa-bars" style="margin-left: 8px; color: #003A6A"></span>
+          </div>
+          <div class="col-md-10 m-t-10 font-size-15 m-b-10"><b><%="#{subject_observation.created_at.strftime("%d %b %Y") } #{subject_observation.sub_subject.show_name},#{subject_observation.user.name}"%></b></div>
+          <div class="col-md-1 m-t-10">
+            <% if policy(report_subject.report).editable_summary_check?(@student.id, report_subject.report, report_subject.sub_subject.id) %>
+            <i class=" ob-cross fa fa-close  curriculum_observation_close " observation-id="<%=subject_observation.id%>"></i>
+            <%end%>
+          </div>
+
+          <div class="col-md-11 m-b-20 align-justify col-md-offset-1">
+            <div class="observation_summary">
+              <%= render partial: "reports/partial/reportsubject_observation_summary" ,:locals=>{subject_observation: subject_observation}%>
+            </div>
+          </div>
+
+          <div class="row m-b-20 ">
+            <% 3.times do |slot_index| %>
+            <% if subject_observation.report_subject_observation_evidences.where("report_subject_observation_evidences.on_observation =true").pluck("report_subject_observation_evidences.position").include?(slot_index+1) %>
+            <% file = subject_observation.report_subject_observation_evidences.find_by(position: slot_index+1,on_observation: true) %>  
+
+            <div class="col-md-4 filled-subject <% if policy(report_subject.report).editable_summary_check?(@student.id, report_subject.report, report_subject.sub_subject.id) %> sorting-subject-div <% end %> portlet-placeholder-outer-subject" position="<%= slot_index+1  %>" observation="<%=subject_observation.id%>">
+
+              <% if file.student_learning_objective_observation_file.evidence_content_type.in? ["image/jpg" ,"image/png","image/jpeg"]%>
+
+              <div class="portlet-subject" file="<%=file.id%>">
+                <div class="evidence">
+
+                  <div class="portlet-subject-header">
+                    <% if policy(report_subject.report).editable_summary_check?(@student.id, report_subject.report, report_subject.sub_subject.id) %> <i class="fa fa-close pull-right curriculum_evidence_close close-fa"  style="cursor: pointer" observation-id="<%=subject_observation.id%>" file-id="<%=file.id%>"></i> <% end %>
+
+                    <%= image_tag(file.student_learning_objective_observation_file.show_evidence(:thumb)) %>
+                  </div>
+                </div>
+              </div>
+
+              <%else%>
+
+              <div class="portlet-subject" file="<%=file.id%>">
+                <div class="evidence">
+                  <div class="portlet-subject-header" >
+                    <%= image_tag(file.student_learning_objective_observation_file.show_evidence(:thumb)) %>
+
+
+                    <i class="fa fa-4x fa-play-circle-o text-white play-fa-center"></i>
+                    <% if policy(report_subject.report).editable_summary_check?(@student.id, report_subject.report, report_subject.sub_subject.id) %> <i class="fa fa-close pull-right curriculum_evidence_close close-fa"  style="cursor: pointer" observation-id="<%=subject_observation.id%>" file-id="<%=file.id%>"></i> <% end %>
+                  </div>
+                </div>
+              </div>
+              <%end%>
+
+            </div>
+            <%else%>
+            <div class="col-md-4 empty-subject  <% if policy(report_subject.report).editable_summary_check?(@student.id, report_subject.report, report_subject.sub_subject.id) %>sorting-subject-div <%else%>sorting-subject-div-policy  <%end%> portlet-placeholder-outer-subject"  position="<%= slot_index+1 %>" observation="<%=subject_observation.id%>">
+            </div>   
+            <% end %> 
+            <% end %> 
+          </div>   
+        </div>
+      </li> 
+    </div>
+    <% end%>
+  </ul>
+  <% end%>
+</div>

@@ -1,0 +1,117 @@
+<div class="col-md-10 col-md-offset-1 col-sm-10 col-sm-offset-1 col-xs-10 col-xs-offset-1">
+<%= nested_form_for(@subject) do |f| %>
+  <% if @subject.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@subject.errors.count, "error") %> prohibited this subject from being saved:</h2>
+
+      <ul>
+      <% @subject.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+<!-- <div class="col-md-10 col-md-offset-1 col-sm-10 col-sm-offset-1 col-xs-10 col-xs-offset-1"> -->
+
+   <div class="p-10 m-b-20">
+    <div class="form-group m-b-50">
+      <div class="col-md-3">
+        <label class="control-label required">Subject Name</label>
+      </div>
+      <div class="col-md-9" >
+        <%=f.text_field :name ,:class=>"form-control", :required=>true %>
+      </div>
+    
+    </div>
+      <div class="form-group">
+        <div class="col-md-3"></div>
+        <div class="col-md-9 m-b-20">
+         <div class="icheck icheck-square-blue" style="display:inline-block;">
+          <%=f.check_box :is_pfc %> 
+          <label class="control-label"> PFC Subject</label>
+          <%#=f.check_box :is_ppa,:class=>"icheck icheck-flat"%>
+          <!-- <label class="control-label"> PPA Time</label> -->
+          </div>
+        </div>
+      </div>
+
+  </div>
+
+
+  
+<div id="show_sub" >
+   <div class=""><h5>Sub-Subjects</h5></div>
+     
+      <%= f.fields_for :sub_subjects do |s| %>
+        <% if  s.object.is_none == false %>
+          <div class="row border_bottom p-10 m-b-20 no-p-right">
+              <div class="form-group m-b-50">
+                <div class="col-md-3 ">
+                  <label class="control-label"> Name</label>
+                </div>
+
+                <div class="col-md-7">
+                  <%=s.text_field :name ,:class=>"form-control"%>
+                </div>
+
+              <div class="col-md-2 no-p-right">
+                <%= s.link_to_remove  class: "btn btn-sm btn-danger " ,:style=>"float: right" do %>
+                  <i class="fa fa-times"></i>
+                <% end %>        
+              </div>
+            </div>
+        <!-- <div class="row"> -->
+    <div class="col-md-3"></div>
+
+          <div class="col-md-9">
+            <div class="form-group pull-left">
+               <div class="icheck icheck-square-blue" style="display:inline-block;">
+                   <%=s.check_box :is_tutorial,:class=>"margin-bottom: 20px;"%> 
+                      <label class="control-label">Tutorial</label>
+                </div>
+            </div>
+         </div>
+        <!-- </div> -->
+
+  </div>
+  <%end%>
+  <%end%>
+  <div class="row text-center m-b-20">
+    <%= f.link_to_add :sub_subjects, class: "btn btn-primary" do %>
+      <i class="fa fa-plus"></i> Add Sub Subject
+    <% end %>
+  </div>
+  </div>
+
+  <div class="modal-footer">
+  <div class="form-actions">
+                  <div class="row">
+                    <div class="pull-right">
+                      <%= f.submit "Save", :class=>"btn btn-success" %>
+                    </div>
+                    <div class="pull-left">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                  </div>
+                  </div>
+                  </div>
+             
+<% end %>
+</div>
+
+
+<script type="text/javascript">
+  
+     $(document).on('nested:fieldAdded:sub_subjects', function(event){
+     
+     // $('.icheck-flat').iCheck({
+     //  checkboxClass: 'icheckbox_flat',
+     //  radioClass: 'iradio_flat'
+
+     FormsIcheck.init();
+
+    });
+    });
+ 
+</script>

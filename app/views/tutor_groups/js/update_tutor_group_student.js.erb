@@ -1,0 +1,19 @@
+ <% if @stud.tutor_groups.present?%>
+  toastr["warning"]("<%=@stud.name%> is already associated with another tutor group <%=@stud.show_tutor_group_name(session[:global_academic_session]) %>. Once you save this tutor group, <%=@stud.fname%> will be deleted from the other group.")
+
+toastr.options = {
+  "closeButton": true,
+  "progressBar": false,
+  "positionClass": "toast-top-right",
+  "timeOut": "10000",
+  "showMethod": "slideDown"
+}
+  <%end%>
+// $('.show_update_student').html("<%=escape_javascript(render 'tutor_groups/partial/update_form')%>");
+$('.show_updated_students').html("<%=escape_javascript(render 'tutor_groups/partial/updated_students')%>");
+
+
+    Pleasure.init();
+    Layout.init();
+    $('.selectpicker').selectpicker();
+

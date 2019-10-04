@@ -1,0 +1,42 @@
+$('#assign_individual_observation').modal('show');
+$('.assign_individual_observation_body').html("<%=escape_javascript(render 'observations/partial/assign_individual_observation')%>");
+
+ 
+$('form').each(function(){
+	$(this).validate();
+});
+ $('.datepicker').datepicker({ 
+    format: 'dd-mm-yyyy',orientation: 'auto',autoclose: true });
+
+
+$('.selectpicker').selectpicker();
+
+
+$(document).on("click", ".indi_ob_submit",function(e){
+ 
+  	if($('.indi_ob_subject').find('option:selected').val() ==""){
+  		 	$(".err-ob").show();
+  		 	e.preventDefault();
+
+  	}
+  	else
+  	{
+  		 	$(".err-ob").hide();
+
+  	}
+
+
+
+    if($('.assign_hidden_lo').attr('value')==undefined){
+        $('.show_lo_err').show();
+       	e.preventDefault();
+   }
+   else{
+    $('.show_lo_err').hide();
+   }
+ 
+
+  })
+
+FormsIcheck.init();
+ 

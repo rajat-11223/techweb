@@ -1,0 +1,14 @@
+
+$(".change_term").html("<%= escape_javascript(render '/terms/partial/new_schedule_after_change') %>");
+
+
+
+$('.loader').fadeOut('slow');
+   $('.datepicker').datepicker({ 
+    format: 'dd-mm-yyyy'
+  
+  });
+   
+     Pleasure.init();
+    Layout.init();
+    $('.selectpicker').selectpicker(); 

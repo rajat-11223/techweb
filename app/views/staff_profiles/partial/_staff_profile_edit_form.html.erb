@@ -1,0 +1,122 @@
+<div class="col-md-10 col-md-offset-1 col-sm-10 col-sm-offset-1 col-xs-10 col-xs-offset-1">
+            <%= form_for @user, url: staff_path(@user.id), method: :patch,:multipart=> true, :html=>{:class=>"form-horizontal"} do |f| %>
+              <% if @user.errors.any? %>
+                <div id="error_explanation">
+                  <h2><%= pluralize(@user.errors.count, "error") %> prohibited this staff_profile from being saved:</h2>
+
+                  <ul>
+                  <% @user.errors.full_messages.each do |message| %>
+                    <li><%= message %></li>
+                  <% end %>
+                  </ul>
+                </div>
+              <% end %>
+    
+
+             <!-- form group start -->
+                <div class="form-group">
+                  <div class="col-md-3">
+                    <label class="control-label required">First Name</label>
+                  </div>
+                  <div class="col-md-9">
+                    <%=f.text_field :fname ,:class=>"form-control",:required=>true%>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <div class="col-md-3">
+                    <label class="control-label required">Last Name</label>
+                  </div>
+                  <div class="col-md-9">
+                    <%=f.text_field :lname ,:class=>"form-control",:required=>true%>
+                  </div>
+                </div>
+                <% if current_user.is_team_lead? %>
+                <div class="form-group">
+                  <div class="col-md-offset-3 col-md-6">
+                  <% if @user.master_user_types.find_by(:name=>"team-lead").present?%>
+                  	    <%=check_box_tag :is_team_lead ,'1',true,:class=>"icheck icheck-square-blue"%> 
+                  <%else%>
+
+                    <%=check_box_tag :is_team_lead ,"1",false,:class=>"icheck icheck-square-blue"%> 
+                  <%end%>
+                    <label class="control-label"> Is a Team Leader</label>
+                  </div>
+                </div>        
+                <div class="form-group">
+                  <div class="col-md-3">
+                    <label class="control-label required">Username</label>
+                  </div>
+                  <div class="col-md-9">
+                    <%=f.email_field :email ,:class=>"form-control update_email",:placeholder=>"Please enter an email address",:required=>true, :user_id=>@user.id%>
+                                        <span class="fa fa-times color-red display-none update_uniq_email"> Email address already exists.</span>
+
+                  </div>
+                </div> 
+                <% end -%>
+              
+
+                <div class="form-group">
+                  <div class="col-md-3">
+                    <label class="control-label "> Mobile Phone</label>
+                  </div>
+                  <div class="col-md-9">
+                    <%=f.text_field :mobile_phone ,:class=>"form-control"%>
+                  </div>
+                </div> 
+    
+                <div class="form-group">
+                  <div class="col-md-3">
+                    <label class="control-label "> Home Phone</label>
+                  </div>
+                  <div class="col-md-9">
+                          <%=f.text_field :home_phone ,:class=>"form-control"%>
+                  </div>
+                </div>    
+                <!-- <div class="form-group">
+                  <div class="col-md-3">
+                    <label class="control-label "> Description</label>
+                  </div>
+                  <div class="col-md-9">
+                          <%#=f.text_area :description,:rows=>"5" ,:class=>"form-control"%>
+                  </div>
+                </div>  -->
+
+                <div class="form-group">
+                  <div class="col-md-3">
+                    <label class="control-label "> Profile picture</label>
+                  </div>
+                  <div class="col-md-9">
+                         <div class="fileinput fileinput-new" data-provides="fileinput">
+                        <div class="fileinput-new thumbnail" style="width: 300px; height: 200px;">
+                        <%if f.object.avatar.present?%>
+                      
+                          <img src="<%=f.object.avatar.url(:thumb)%>" alt="...">
+                        <%end%>
+                        </div>
+                        <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 300px; max-height: 200px;"></div>
+                        <div>
+                          <span class="btn btn-default btn-file">
+                            <span class="fileinput-new">Select image</span>
+                            <span class="fileinput-exists">Change</span>
+                            <%=f.file_field :avatar %>
+                          </span>
+                          <a href="#" class="btn btn-default fileinput-exists" data-dismiss="fileinput">Remove</a>
+                        </div>
+                      </div>
+                  </div>
+                </div> 
+                <div class="modal-footer">
+                <div class="form-actions">
+                  <div class="row">
+                    <div class="pull-right">
+                      <%= f.submit "Save", :class=>"btn btn-beatrice text-white email_update" %>
+                    </div>
+                    <div class="pull-left">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                  </div>
+                </div>
+                </div>
+        <% end %>
+</div>

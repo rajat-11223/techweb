@@ -1,0 +1,38 @@
+    <div class="row form-group m-b-20">
+  <div class="col-md-4">
+    <label class="control-label">Subject:</label>
+  </div>
+  <div class="col-md-8">
+ <%= select_tag("tutor_group_id",options_for_select(@tutor_groups.collect {|u| [u.name, u.id]},selected: @slot_schedule.tutor_group.id),{:include_blank=>"Select Tutor Group",:class=>"selectpicker new_tg_value",:required=>true}) %>
+  </div>    
+</div>
+ <div class="show_tutor_group_students">    
+<div class="panel-group">
+  <div class="panel bg-antiquewhite">
+    <div class="panel-heading">
+    </div>
+    <div class="panel-body">
+      <% if @slot_schedule.tutor_group.present?%>
+      <% @slot_schedule.tutor_group.students.each do |student|%>
+      <div class="row form-group p-10">
+        <span class="col-md-1">
+          <div class="nav-user" style="  position: inherit;">
+            <div class="user" style="padding: 0">
+              <img src="<%= student.show_avatar(:thumb) %>" alt="<%=student.fname%>" title="<%=student.fname%>"  border="0" style="background-color: #ffffff;">
+            </div>
+          </div>
+        </span>
+        <span class="col-md-9 text-danger">
+          <%=student.fname + " " + student.lname.to_s%>
+        </span>
+      </div>
+      <%end%>
+      <%else%>
+      No student present.
+      <%end%>
+    </div>
+  </div>
+</div>
+
+  </div>
+

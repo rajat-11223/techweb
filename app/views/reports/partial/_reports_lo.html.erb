@@ -1,0 +1,218 @@
+
+<div class="report_lo">
+				
+<div class="panel-group accordion" id="accordion">
+			<% @report_learning_objectives.each do |report_lo| %>
+					<div class="panel">
+						<div class="panel-heading ">
+							<!-- <a class="panel-title" data-toggle="collapse" data-parent="#accordion" href="#<%=report_lo.id%>">						 -->
+								<b><%#=report_lo.student_learning_objective.title.present? ? report_lo.student_learning_objective.title : "-" %></b>
+<!-- </a> -->
+						</div>
+						<div id="<%=report_lo.id%>" class="panel-collapse collapse in">
+
+		<div class="panel-body">
+			<div class="col-md-10 col-md-offset-1 m-b-15">
+				
+				<div class="col-md-12 m-b-15 border-1px">
+
+					<div class=" col-md-7 p-10 ">
+						<div class="font-size-15">
+							<b><%=raw report_lo.student_learning_objective.title.present? ? report_lo.student_learning_objective.title : "-" %></b>
+						</div>
+						<div class="align-justify bullets numbers no-p-m">
+							
+								<%=raw report_lo.student_learning_objective.description.present? ? report_lo.student_learning_objective.description : "-"%>
+						
+						</div>
+					</div>
+
+					<div class=" col-md-5 col-md-offset- p-10">
+						<div class="row font-size-15 p-5">
+							<div class="col-md-12 no-p">
+								<div class="col-md-3 no-p">
+									<span><b>Progress</b>
+									</span>
+								</div>
+								<div class="col-md-3 no-p text-center">
+										<!-- <b>Status </b> -->
+										</div>
+
+								<div class="col-md-6 no-p text-right">
+
+								<% if policy(report_lo.report).editable_report_check?(report_lo.report.academic_session_id, @student.id,report_lo.report) %>
+									<%= select_tag("change_lo_status",options_for_select(Report::REPORT_STATUS,report_lo.lo_status),{:class=>"selectpicker change_lo_status", report_lo_id: report_lo.id}) %>
+								
+								<% elsif report_lo.translate_lo_status.present? %>
+									<span class="pull-right" style="color: <%= report_lo.translate_lo_status[1] %>"> <%= report_lo.translate_lo_status[0] %></span>
+		
+								<% end %>
+								</div>
+
+							</div>
+							<!-- <p class="pull right"><%# report_lo.student_learning_objective.is_completed && report_lo.student_learning_objective.achieved_date < report_lo.report.term.end_date ? "Achieved" : "" %> </p></span> -->
+						</div>
+					<% if report_lo.report.status=="AP" || report_lo.report.status=="AA" %>
+	
+						<div class="row p-10">
+
+							<% @master_csd_axis.each do |axis| %>
+
+							<div class="row">
+								<div class = "col-md-3"><small><%= axis.display_name %> </small></div>
+								<div class="col-md-9 pull-right report_axis_parent" id="axisparent<%= axis.id %>">
+									<% for x in (axis.min_value)..(axis.max_value) do %>
+
+									<%# target_btn = (x.to_i == report_lo.student_learning_objective.achievement_value(axis.id) ? 'btn-success' : 'btn-default') %>
+									<%# btn_state = (report_lo.student_learning_objective.is_completed || report_lo.student_learning_objective.is_closed ? 'disabled' : '') %>
+
+									<!-- 121926299 -->
+									<input type="hidden" name="report_objective_id" value="<%= report_lo.id %>" class="report_objective_id">
+									<input type="hidden" value="<%= axis.id %>" name="master_axis_id" class="master_axis_id">
+									<input type="hidden" value="<%= axis.min_value %>" name="minaxisvalue" class="minaxisvalue">  
+									<input type="hidden" value="<%= axis.max_value %>" name="maxaxisvalue" class="maxaxisvalue">
+								<% target_btn = (x.to_i == report_lo.report_achievement_value(axis.id) ? 'btn-success' : 'btn-default') %>
+									<% btn_state = (report_lo.student_learning_objective.is_closed || !policy(report_lo.report).editable_report_check?(report_lo.report.academic_session_id, @student.id,report_lo.report) ? 'disabled' : '') %>
+									
+									<!-- end -->
+									<%= x.to_i < report_lo.report_observation_achievements.find_by(master_csd_axis_id: axis.id).baseline_value.to_i ? 
+
+									raw("<a class='btn btn-grey disabled btn-xs pull-left report-axis-click'>" << x.to_s << "</a>") : x.to_i > report_lo.report_observation_achievements.find_by(master_csd_axis_id: axis.id).target_value ?
+									raw("<a class='btn btn-grey disabled btn-xs pull-left report-axis-click'>" << x.to_s << "</a>") : x.to_i == report_lo.report_observation_achievements.find_by(master_csd_axis_id: axis.id).baseline_value ? 
+
+									raw("<a class='btn btn-success #{btn_state} btn-xs pull-left report-axis-click min-value' axis-value=" << x.to_s << " id=minaxis" << x.to_s << ">B</a>") : x.to_i == report_lo.report_observation_achievements.find_by(master_csd_axis_id: axis.id).target_value  ? 
+
+									raw("<a class='btn #{target_btn} #{btn_state} btn-xs pull-left report-axis-click max-value max-value border-grey  no-box-shadow' axis-value="<< x.to_s << " id=axisvalue"<< report_lo.student_learning_objective.id.to_s << axis.id.to_s << x.to_s << ">T</a>") : x.to_i <= ( !report_lo.report_observation_achievements.find_by(master_csd_axis_id: axis.id).achievement_value.blank? ? report_lo.report_observation_achievements.find_by(master_csd_axis_id: axis.id).achievement_value : 0) ? 
+
+
+									raw("<a class='btn btn-success #{btn_state} border-grey btn-xs pull-left report-axis-click  no-box-shadow' axis-value="<< x.to_s << " id=axisvalue"<< report_lo.student_learning_objective.id.to_s << axis.id.to_s << x.to_s << ">" << x.to_s << "</a>") : 
+									raw("<a class='btn btn-default btn-xs #{btn_state} pull-left report-axis-click  no-box-shadow border-grey' axis-value="<< x.to_s << " id=axisvalue"<< report_lo.student_learning_objective.id.to_s << axis.id.to_s << x.to_s << ">" << x.to_s << "</a>") %>
+									<% end %>
+								</div>
+							</div>
+							<% end %>
+						</div>
+
+					<%else%>
+
+						<div class="row p-10">
+
+							<% @master_csd_axis.each do |axis| %>
+							<div class="row">
+								<div class = "col-md-3"><small><%= axis.display_name %> </small></div>
+								<div class="col-md-9 pull-right report_axis_parent" id="reportaxisparent<%= axis.id %>">
+
+									<!-- 121926299 -->
+									<input type="hidden" name="report_objective_id" value="<%= report_lo.id %>" class="report_objective_id">
+									<input type="hidden" value="<%= axis.id %>" name="master_axis_id" class="master_axis_id">
+									<input type="hidden" value="<%= axis.min_value %>" name="minaxisvalue" class="minaxisvalue">  
+									<input type="hidden" value="<%= axis.max_value %>" name="maxaxisvalue" class="maxaxisvalue">
+									<!-- end -->
+									<% for x in (axis.min_value)..(axis.max_value) do %>
+
+									<% target_btn = (x.to_i == report_lo.student_learning_objective.achievement_value(axis.id) ? 'btn-success' : 'btn-default') %>
+									<%# btn_state = (report_lo.student_learning_objective.is_completed || report_lo.student_learning_objective.is_closed ? 'disabled' : '') %>
+									<% btn_state = (report_lo.student_learning_objective.is_closed || !policy(report_lo.report).editable_report_check?(report_lo.report.academic_session_id, @student.id,report_lo.report) ? 'disabled' : '') %>
+
+									<%= x.to_i < report_lo.student_learning_objective.target_lower_bound(axis.id).to_i ? 
+									raw("<a class='btn btn-grey disabled btn-xs pull-left report-axis-click'>" << x.to_s << "</a>") : x.to_i > report_lo.student_learning_objective.target_upper_bound(axis.id) ? 
+									raw("<a class='btn btn-grey disabled btn-xs pull-left report-axis-click'>" << x.to_s << "</a>") : x.to_i == report_lo.student_learning_objective.target_lower_bound(axis.id) ? 
+									raw("<a class='btn btn-success #{btn_state} btn-xs pull-left report-axis-click min-value' axis-value=" << x.to_s << " id=minaxis" << x.to_s << ">B</a>") : x.to_i == report_lo.student_learning_objective.target_upper_bound(axis.id) ? 
+									raw("<a class='btn #{target_btn} #{btn_state} btn-xs pull-left report-axis-click max-value max-value border-grey  no-box-shadow' axis-value="<< x.to_s << " id=axisvalue"<< report_lo.student_learning_objective.id.to_s << axis.id.to_s << x.to_s << ">T</a>") : x.to_i <= report_lo.student_learning_objective.achievement_value(axis.id) ? 
+									raw("<a class='btn btn-success #{btn_state} border-grey btn-xs pull-left report-axis-click  no-box-shadow' axis-value="<< x.to_s << " id=axisvalue"<< report_lo.student_learning_objective.id.to_s << axis.id.to_s << x.to_s << ">" << x.to_s << "</a>") : 
+									raw("<a class='btn btn-default btn-xs #{btn_state} pull-left report-axis-click  no-box-shadow border-grey' axis-value="<< x.to_s << " id=axisvalue"<< report_lo.student_learning_objective.id.to_s << axis.id.to_s << x.to_s << ">" << x.to_s << "</a>") %>
+									<% end %>
+								</div>
+							</div>
+							<% end %>
+						</div>
+						<%end%>
+					</div> 
+				</div>
+
+				<div class=" col-md-12 p-10 m-b-15 border-1px">
+
+					<div class=" col-md-3 p-10">
+						<div class="">
+							<b>Area</b>
+						</div>
+						<div class="">
+							<%= report_lo.report_show_subject %>
+						</div>
+					</div>
+
+					<div class=" col-md-3 p-10 ">
+						<div class="">
+							<b>P-Scale Level</b>
+						</div>
+						<div class=""><%= report_lo.report_show_p_level %>
+						</div>
+					</div> 
+
+					<div class=" col-md-3 p-10 ">
+						<div class="">
+							<b>Assigned</b>
+						</div>
+						<div class=""><%= report_lo.assigned_date.strftime("%d %b %Y") %>
+						</div>
+					</div>
+
+					<div class=" col-md-3 p-10 ">
+						<div class="">
+							<b>Target completion</b> 
+						</div>
+						<div class="">
+							<%= report_lo.target_date.strftime("%d %b %Y") %>
+						</div>
+					</div> 
+
+				
+
+			
+					<div class="col-md-12 p-10">
+					<%= render  partial: "reports/partial/report_objective_summary", locals: {report_lo: report_lo}%>
+						<%#=raw text_area_tag :summary,report_lo.summary ,:rows=>"3",:style=>"width: 100%;" ,:class=>"lo_summary_summernote save_summary" ,:report_lo_id=>report_lo.id%>
+
+					
+				</div>
+			</div>
+			<% if policy(report_lo.report).editable_report_check?(report_lo.report.academic_session_id, @student.id,report_lo.report) %>
+				<%=link_to "Select Evidence" ,reports_add_evidence_path(lo_id: report_lo.id,student_id: @student.id), :class=>"btn btn-beatrice text-white m-b-10" ,method: :post, :remote=> true%>
+			<% end %>
+				<div class="report_evidence">
+				
+						<div class="panel-body no-p">
+							<%= render  partial: "reports/partial/save_report_evidence", locals: {report_lo: report_lo}%>
+						</div>
+					
+				
+			</div>
+	</div>
+	</div>
+	</div>
+	</div>
+		<%end%>
+</div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,69 @@
+    <div class="row">
+      <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="panel">
+          <div class="panel-heading">
+            <div class="panel-title">
+              
+              <div class="row">
+                <%= form_tag reports_path ,method: :get do%>
+                  <div class="col-md-6">
+
+                    <span class="col-md-1"><label>From </label> </span>
+                    <span class="col-md-2"> <%=select_tag "range_min" ,options_for_select(@year_range ,:selected=>@min_range),:class=>"select_range_min selectpicker"%></span> 
+                    <span class="col-md-1"><label>To </label> </span>
+                    <span class="col-md-2"><%=select_tag "range_max" ,options_for_select(@year_range ,:selected=>@max_range),:class=>"select_range_max selectpicker"%></span>
+                    <%= hidden_field_tag "view", @view %>
+                  <%= submit_tag "Go", :class=>"btn btn-primary btn-xs" %>
+                  </div>
+
+                <div class="col-md-6 ">
+                 
+                  <div class="col-md-4 pull-right">
+                       <% if @deactive.present?%>
+                        <%=select_tag "students" ,options_for_select(["Active Students","Deactive Students"] ,:selected=>"Deactive Students"),:class=>"show_students selectpicker"%>
+                       <% else %>
+                        <%=select_tag "students" ,options_for_select(["Active Students","Deactive Students"]) ,:class=>"show_students selectpicker"%>
+                      <% end %>
+                  </div>
+                   <div class="col-md-2 pull-right">
+                    <label>Show only </label>
+                  </div>
+                </div>
+                <% end %>
+              </div>
+          </div>
+
+          <%= render '/reports/partial/report_table' %>
+      
+        </div>
+      
+      </div>
+     
+    </div>
+
+<script type="text/javascript">
+    $(document).on("change",".show_students",function(){
+       var view =$(this).val();
+      $('form').submit();
+
+
+    });
+
+$(document).ready(function(){
+  $('.loader').fadeOut('slow')
+})
+// function reactivate(student_id){
+ 
+  // var deactivate =$('#deactivate').val();
+//    $.ajax({
+//      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+//       type:'post', 
+//       url: '/reactivate_student',
+//       data: {student_id :student_id}
+      
+//       });
+      
+// }
+
+
+</script>

@@ -1,0 +1,26 @@
+<div id="tutorgroupstudents" class="panel-collapse collapse in">
+  <% if phase.students.where("temp_schedule_user_id != ?", current_user.id).present?%>
+  <% phase.students.where("temp_schedule_user_id != ?", current_user.id).each do |student|%>
+  <div class="panel-body tg_phase_div">
+    <span class="col-md-1">
+      <div class="nav-user" style="  position: inherit;">
+        <div class="user" style="padding: 0">
+          <img src="<%= student.show_avatar(:thumb) %>" alt="<%=student.fname%>" title="<%=student.fname%>"  border="0" style="background-color: #ffffff;">
+        </div>
+      </div>
+    </span>
+    <span class="col-md-9 text-danger">
+      <%=student.fname + " " + student.lname.to_s%>
+      <footer class="font-size-15 text-black"> Learning Group: <%=student.show_learning_group_name(session[:global_academic_session])%> | Tutor Group: <%=student.show_tutor_group_name(session[:global_academic_session])%> </footer> 
+    </span>
+<!--     <span class="col-md-2 add_tg_phase_student" student_id='<%=student.id%>', tg_id='<%=@tutor_group.id%>' phase_id='<%=phase.id%>' style='cursor: pointer;'>
+      <%#=link_to "ADD",add_tg_student_schedule_path(:student_id=>student.id,:tg_id=>@tutor_group.id) ,remote: true,method: :post,:class=>"text-black"%>
+      ADD 
+    </span> -->
+       <%=link_to "ADD",add_tg_student_schedule_path(:student_id=>student.id,:tg_id=>@tutor_group.id) ,remote: true,method: :post,:class=>"text-black"%>
+  </div>
+  <% end %>
+  <%else%>
+  <span class="m-t-10"> No student available </span>
+  <%end%>  
+</div>

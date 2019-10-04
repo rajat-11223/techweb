@@ -1,0 +1,4 @@
+$('#create_schedule_from_student_index').modal('show');
+$('#create_schedule_from_student_index_header').html('<h4 class="modal-title text-white">Schedule Class for  <%=@slot.name%> on <%=@master_day.name%><span class="fa fa-times text-white pull-right cursor-pointer" data-dismiss="modal"></span></h4>')
+$('#create_schedule_from_student_index_body').html("<%=escape_javascript(render 'students/partial/create_schedule_from_student_index')%>");
+$('.selectpicker').selectpicker();

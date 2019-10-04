@@ -1,0 +1,4 @@
+<p>Hi <%= @nf_subject_teacher.fname %>,</p>
+<p>You aren’t focusing on any Learning Objectives for <%= @student.name %> in your <%= @subject.show_name %> class. This might be because one of their Learning Objectives was closed or achieved.
+Please <a href="<%=student_url(@student.id)%>">select a Learning Objective</a> to focus on.<br/>
+Thanks!</p>

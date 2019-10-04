@@ -1,0 +1,131 @@
+   <div class="col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2">
+  <%=nested_form_for(@observation,:html => {:multipart=> true},:url =>save_assign_observation_path(:id => @observation),method: :post) do |f| %>
+<%#=f.hidden_field "@observation",:value=>@observation.id%>
+<%#= hidden_field_tag :authenticity_token, form_authenticity_token %>
+ <div class="row form-group m-b-20">
+    <div class="col-md-3">
+      <label class="control-label">Student name:</label>
+    </div>
+    <div class="col-md-9">
+     <%=@student.name%>
+    </div>    
+  </div>
+
+   <div class="row form-group m-b-20">
+    <div class="col-md-3">
+      <label class="control-label">Class:</label>
+    </div>
+    <div class="col-md-9">
+<%= f.select(:sub_subject_id,@student_slot_schedule,{:selected=> @observation.sub_subject_id,:include_blank=>"Select Subject"},{:class=>"selectpicker indi_ob_subject",:required=>true},) %> 
+              <span class="text-red font-size-10 err-ob display-none" >This field is required</span>
+   </div>    
+  </div>
+
+   <div class="row form-group m-b-20">
+    <div class="col-md-3">
+      <label class="control-label">Date:</label>
+    </div>
+    <div class="col-md-9">
+      <%= f.text_field :date,:class=>"form-control datepicker",:placeholder=>"dd-mm-yyyy" ,:value=>f.object.date.strftime('%d-%m-%Y') %>
+    </div>    
+  </div>
+ <div class="row form-group m-b-20">
+    <div class="col-md-3">
+      <label class="control-label">Learning Objective:</label>
+            <span class="text-red font-size-10 show_lo_err display-none" >Please select learning objective</span>
+
+      </div>
+      <div class="col-md-9">
+
+  <div class="overflow-table" style="max-height: 400px;    overflow-y: auto;">
+  <table class="table table-bordered">
+    <tbody>
+      <% @student_lo.each_with_index do |lo,index|%>
+        <tr>
+						<td >
+                  <div class="icheck icheck-square-blue">
+
+               <input type="radio" name="lo" value="<%=lo.id%>" class="student_card_radio">
+                <%=f.hidden_field :student_learning_objective_id,:class=>"assign_hidden_lo"%>
+
+            &nbsp;&nbsp;<%=raw lo.title%>
+            </div>
+             </td>
+               
+                
+      
+        </tr>
+      <%end%>
+    </tbody>
+  </table>
+</div>
+    </div>
+   <!--  <div class="col-md-7">
+    </div>    --> 
+  </div> 
+
+  <div class="row form-group m-b-20">
+    <div class="col-md-3">
+      <label class="control-label required">Evidence:</label>
+    </div>
+    <div class="col-md-9">
+      <%= f.text_area :description,rows: "5" ,:class=>"form-control",:required=>true %>
+    </div>
+
+
+    </div>
+  <div class="row form-group m-b-20">
+    <div class="col-md-3">
+      <label class="control-label">Attachments:</label>
+    </div>
+    <div>
+    <div class="col-md-9">
+    <%if @observation.student_learning_objective_observation_files.present?%>
+
+          <div class="row">
+          <div class="col-md-12 clearfix" id="file_replace">
+        <% @observation.student_learning_objective_observation_files.collect do |file|%>
+            <div class="file pull-left" file-value="<%= file.id %>" observe-value="<%=@observation.id%>"  class="clearfix" style="position:relative;">
+              <%=image_tag(file.show_evidence(:thumb),:width=>"120px")%>
+              <i class="delete_image fa fa-times fa-2x" style="position:absolute;top:5px;right:5px;color:white;"></i>
+            </div>
+        <%end%>
+          </div>
+          </div>
+    <%end%><br>
+    </div>  
+    </div>
+
+
+       
+
+  </div>
+  <div class="modal-footer">
+    <div class="form-actions">
+      <div class="row">
+         <div class="pull-right">
+           <%= submit_tag "Save", :class=>"btn btn-primary indi_ob_submit" %>
+          </div>
+          <div class="pull-left">
+             <button type="button" class="btn btn-default " data-dismiss="modal">Cancel</button>
+          </div>
+       </div>
+     </div>
+ </div>
+
+  <%end%>
+
+</div>
+  <script type="text/javascript">
+$(document).on('click','.delete_image',function(){
+ var file_id =$(this).parent('.file').attr('file-value');
+  var observe_id =$(this).parent('.file').attr('observe-value');
+
+
+$.ajax({
+            type:'post', 
+            url: '/change_file_flag', 
+            data: { file_id :file_id,observe_id :observe_id}
+        });
+})
+  </script>

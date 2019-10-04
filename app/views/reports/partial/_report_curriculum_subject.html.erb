@@ -1,0 +1,132 @@
+<div class="report_subject">
+	<% report_subjects.each do |rs|%>
+	<div class="panel">
+		<div class="panel-body">
+			<div class="col-md-10 col-md-offset-1 m-b-15">
+
+				<div class="col-md-12 p-10 m-b-15 border-1px">
+
+					<div class="col-md-6 p-10">
+						<b><%= rs.sub_subject.show_name %></b><br>
+						<%= rs.user.name %><br>
+
+						<% if policy(rs.report).editable_report_check?(rs.report.academic_session_id, @student.id,rs.report) %>
+						<% if !rs.summary.blank? %>
+						<%= link_to "Request Amend",report_request_amend_path(rs_id: rs.id),method: :post,:remote=>true%>
+						<% else %>
+
+
+						<%= link_to "Send Reminder",report_send_reminder_path(rs_id: rs.id),method: :post,:remote=>true%>
+						<% end %>
+						<% end %>
+					</div>
+
+					<% if policy(rs.report).editable_summary_check?(@student.id, rs.report, rs.sub_subject.id ) %>
+
+					<div class="col-md-6 p-10">
+						<div class="row m-b-5">
+							<div class="col-md-4 pull-right m-b-10">
+								<%= select_tag("custom_psublevel",options_for_select(@p_sublevel.collect {|u| u},:selected=>rs.p_sublevel_one),{:include_blank=>"Select",:class=>"selectpicker reportsubject_psublevel_one",:reportsubject_id=>rs.id}) %>
+							</div>
+
+							<div class="col-md-4 pull-right m-b-10">
+								<%= select_tag("custom_plevel",options_for_select(@p_level.collect {|u| u },:selected=>rs.p_level_one),{:include_blank=>"Select",:class=>"selectpicker report_subject_plevel_one",:reportsubject_id=>rs.id}) %>
+							</div>
+
+							<label class="col-md-4 pull-right m-t-5 m-b-10"><b class="pull-right"><%=rs.sub_subject.l1_sub_name %> Level:</b></label>
+
+							<br />
+						</div>
+
+						<div class="row m-b-5">
+							<% if rs.sub_subject.level_count > 0 %>
+
+							<div class="col-md-4 pull-right m-b-10">
+								<%= select_tag("custom_psublevel",options_for_select(@p_sublevel.collect {|u| u},:selected=>rs.p_sublevel_two),{:include_blank=>"Select",:class=>"selectpicker reportsubject_psublevel_two",:reportsubject_id=>rs.id}) %>
+							</div>
+
+							<div class="col-md-4 pull-right m-b-10">
+								<%= select_tag("custom_plevel",options_for_select(@p_level.collect {|u| u },:selected=>rs.p_level_two),{:include_blank=>"Select",:class=>"selectpicker report_subject_plevel_two",:reportsubject_id=>rs.id}) %>
+							</div>
+
+							<label class="col-md-4 pull-right m-t-5 m-b-10"><b class="pull-right"> <%=rs.sub_subject.l2_sub_name %> Level:</b></label>
+
+
+							<% end %>
+						</div>
+					</div>
+
+					<% else %>
+
+					<% if !(rs.p_level_one.blank? && rs.p_sublevel_one.blank?) %>
+					<div class="col-md-6">
+						<div class="row m-b-5">
+							<div class="col-md-12 pull-right ">
+								<label class="pull-right m-t-5 "><b class="pull-right"><%= ((!rs.p_level_one.blank? ? rs.p_level_one.split(" ").join : '') + " "   + (!rs.p_sublevel_one.blank? ? rs.p_sublevel_one : '')) %></b></label>
+								<label class="pull-right m-t-5 "><b class="pull-right"><%=rs.sub_subject.l1_sub_name %> Level:</b></label>
+							</div>
+						</div>
+					</div>
+
+					<% else %>
+					<div class="col-md-6">
+						<div class="row m-b-5">
+							<div class="col-md-12 pull-right ">
+								<label class="pull-right m-t-5 "><b class="pull-right"><%=rs.sub_subject.l1_sub_name %> Level: -- </b></label>
+							</div>
+						</div>
+					</div>
+
+
+					<% end %>
+
+
+					<% if rs.sub_subject.level_count > 0 %>
+
+					<% if !(rs.p_level_two.blank? && rs.p_sublevel_two.blank?) %>
+					<div class="col-md-6">
+						<div class="row m-b-5">
+							<div class="col-md-12 pull-right m-b-10">
+								<label class="pull-right "><b ><%= ((!rs.p_level_two.blank? ? rs.p_level_two.split(" ").join : '') + " "   + (!rs.p_sublevel_two.blank? ? rs.p_sublevel_two : ''))%></b></label>
+								<label class="pull-right "><b ><%=rs.sub_subject.l2_sub_name %> Level:</b></label>
+							</div>
+						</div>
+					</div>
+
+					<% else %>
+					<div class="col-md-6">
+						<div class="row m-b-5">
+							<div class="col-md-12 pull-right ">
+								<label class="pull-right"><b class="pull-right"><%=rs.sub_subject.l2_sub_name %> Level: -- </b></label>
+							</div>
+						</div>
+					</div>
+
+					<% end %>
+
+					<% end %>
+
+					<% end %>
+
+
+
+
+
+
+					<div class="col-md-12 p-10 align-justify ">
+
+						<%= render partial: '/reports/partial/report_curriculum_summary',locals:{rs: rs,student: @student} %>
+
+
+					</div>
+				</div>
+				<div class="col-md-12 no-p">
+
+					<%= render partial: 'reports/partial/show_report_subject_evidence' ,locals:{report_subject: rs,student: @student}%>
+				</div>
+			</div>
+		</div>
+	</div>
+	<%end%>
+</div>
+

@@ -1,0 +1,41 @@
+<div class="col-md-10 col-md-offset-1 col-sm-10 col-sm-offset-1">
+  <%= form_for(@slot_schedule ,:url=>url_for(:controller=>'schedules',:action=>"create")) do |f| %>
+  <% if @slot_schedule.errors.any? %>
+  <div id="error_explanation">
+    <h2><%= pluralize(@slot_schedule.errors.count, "error") %> prohibited this schedule from being saved:</h2>
+    <ul>
+      <% @slot_schedule.errors.full_messages.each do |message| %>
+      <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+  <% end %>
+  <%=f.hidden_field :slot_id,:value=>@slot.id%>
+  <%=f.hidden_field :master_day_id,:value=>@master_day.id%>
+  <%=f.hidden_field :term_id,:value=>@term.id%>
+  <div class="row form-group m-b-20">
+    <div class="col-md-4">
+      <label class="control-label">Select Tutor Group | PPA:</label>
+    </div>
+    <div class="col-md-8">
+      <% tg_or_ppa = {'Tutor Group' => 'tg', 'PPA' => 'ppa'} %>
+      <%= select_tag("tutor_group",options_for_select(tg_or_ppa.collect {|u| [u[0], u[1]]}),{:include_blank=>"Select Tutor Group | PPA",:class=>"selectpicker select_tutor_group_or_ppa",:required=>true, slot_id: @slot.id, day_id: @master_day.id }) %>
+    </div>    
+  </div>
+  <div class="show_ppa_or_tutorial"></div>
+  <div class="modal-footer">
+    <div class="form-actions">
+      <div class="row">
+        <div class="pull-right">
+          <%=f.submit "Schedule", :class=>"btn btn-beatrice text-white pull-right"%>
+        </div>
+        <div class="pull-left">
+          <button class="btn btn-default" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% end %>
+</div>
+
+

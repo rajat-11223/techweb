@@ -1,0 +1,16 @@
+<% if @sub_subject_tutor.subject.is_ppa %>
+$('input.create[type="submit"]').prop('disabled', false);
+$('.learning_group_select').hide();
+$('.show_learning_group_students').hide();
+$('.show_learning_group_students').empty();
+$('.select_lg_tg_div').empty();
+<%else%>
+$('.learning_group_select').hide();
+
+$('.show_learning_group_students').empty();
+// $('.learning_group_select').html("<%=escape_javascript(render 'schedules/partial/show_learning_groups')%>");
+$('.select_lg_tg_div').html("<%=escape_javascript(render 'schedules/partial/new/select_lg_tg')%>");
+$('input.create[type="submit"]').prop('disabled', false);
+$('.selectpicker').selectpicker();
+
+<%end%>

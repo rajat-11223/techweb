@@ -1,0 +1,72 @@
+          <div class="panel-body">
+
+          <% if @reports.blank? %>
+
+            <h4 class="text-center m-t-10"> No reports available </h4>
+
+          <% else %>
+
+            <div class="overflow-table">
+            <table class="display datatables-basic">
+              <thead>
+                <tr>
+
+                  <th>Report</th>
+                  <th>Student</th>
+                  <th>Phase</th>
+                  <th>Learning Group</th>
+                  <th>Tutor</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+
+
+              <tbody>
+                <% @reports.each do |report| %>
+
+                  <tr>
+                    <td><%= report.title %></td>
+                    <td><%= report.student.name %></td>
+                    <td><%= report.phase_name %></td>
+                    <td ><%= report.lg_name %></td>
+                    <td><%= report.tutor.name %></td>
+                    <td><%= report.status == "AP" ? "Approved" : report.status == "AA" ? "Awaiting Approval" : report.status == "IP" ? "In Progress" : "Unavailable" %></td>
+                    <td>
+                                  <% if report.status == "AP" %> 
+                                    <%= link_to "View", report_path(report) %>
+                                    <% if current_user.is_team_lead? || current_user.is_admin? %>
+                                      &nbsp;<%= link_to "Edit", edit_report_path(report, student_id: report.student_id) %>
+                                    <% end %>
+                                    <%#=link_to "Download",report_download_path(report.id), method: :post,remote: true %>
+    
+                                  <% elsif report.status == "AA" %>
+
+                                    <%= link_to "View", report_path(report) %>
+                                    <% if current_user.is_team_lead? || current_user.is_admin? %>
+                                      &nbsp;<%= link_to "Edit", edit_report_path(report, student_id: report.student_id) %>
+                                    <% end %>
+                                  <% elsif report.status == "IP" %> 
+                                    <%= link_to "Edit", edit_report_path(report, student_id: report.student_id) %>
+                                  <% else %>
+                                         Unavailable
+                                  <% end %>
+
+                                  <% if policy(report).admin_check?  && report.status != "AP" %>
+
+                                    &nbsp;<%= link_to report_delete_path(report_id: report.id), method: :post,:class=>"click_loader m-r-5",:data=>{confirm:"Are you sure you wish to delete this report? This action is irreversible and may impact the system data.",:toggle=>"tooltip", :title=>"Delete Report"} do %> Delete <% end %>
+
+                                  <% end %>
+                    </td>
+                    
+                  </tr>
+                  
+                <% end %>
+              </tbody>  
+            </table>
+            </div>
+
+            <% end %>
+      
+
+          </div>

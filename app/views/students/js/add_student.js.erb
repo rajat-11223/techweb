@@ -1,0 +1,16 @@
+$('.new_student').modal('show');
+$('.modal-body').html("<%=escape_javascript(render 'students/form')%>");
+
+$(function(){
+// $('.datepicker').datepicker({ 
+//     format: 'dd-mm-yyyy' });
+// $(".datepicker").mouseleave(function() {
+ 
+//     $(this).toggle();    })
+ $('.datepicker').datepicker({ 
+    format: 'dd-mm-yyyy',orientation: 'auto',autoclose: true });
+});
+$('form').each(function(){
+	$(this).validate();
+});
+$('.selectpicker').selectpicker();

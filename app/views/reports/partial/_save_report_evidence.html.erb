@@ -1,0 +1,160 @@
+<style type="text/css">
+  .custom-bars {
+    position: absolute;
+    top: -7px;
+    left: -38px;
+color: #003A6A;
+   }
+
+</style>
+<div class="change-position">
+
+    <div class="col-md-12 m-b-20 background-light p-10">
+
+    <div class="">
+<% 3.times do |report_index| %>
+ 
+  <%if report_lo.report_objective_observations.with_deleted.joins(:report_observation_evidences).where("report_observation_evidences.on_observation=0").pluck("report_observation_evidences.position").include?(report_index+1) %>
+       <%# file = report_lo.report_objective_observations.joins(:report_observation_evidences).where("report_observation_evidences.on_observation=0").map{|a| a.report_observation_evidences}.flatten.find{|a| a.position == report_index+1} %>  
+       <% file = report_lo.report_objective_observations.with_deleted.map(&:report_observation_evidences).flatten.collect{|s| s.on_observation == false ? s : nil}.compact.find{|a| a.position == report_index+1} %>  
+      
+              <div class="col-md-4 filled <% if policy(report_lo.report).editable_report_check?(report_lo.report.academic_session_id, report_lo.report.student.id, report_lo.report) %> sorting-div <% end %> portlet-placeholder-outer" position="<%= report_index+1  %>" report-id="<%=report_lo.id%>">
+                          <% if file.student_learning_objective_observation_file.evidence_content_type.in? ["image/jpg" ,"image/png","image/jpeg"]%>
+                            
+                            <div class="portlet" file="<%=file.id%>">
+                              <div class="evidence">
+                                <div class="portlet-header">
+                                <!-- <i class="fa fa-arrows"></i> -->
+                                <% if policy(report_lo.report).editable_report_check?(report_lo.report.academic_session_id, report_lo.report.student.id, report_lo.report) %> <i class="fa fa-close pull-right evidence_close close-fa" file-id="<%=file.id%>"></i> <% end %>
+                                <%= image_tag(file.student_learning_objective_observation_file.show_evidence(:thumb)) %>
+                              </div>
+                            </div>
+                            </div>
+                          <%else%>
+                            <div class="portlet" file="<%=file.id%>">
+                              <div class="evidence">
+                                <div class="portlet-header">
+                         
+                                <%= image_tag(file.student_learning_objective_observation_file.show_evidence(:thumb)) %>
+                              
+                              <%#= videojs_rails sources: { mp4: file.student_learning_objective_observation_file.evidence},muted: true,controls: false, autoplay: false,:poster=>file.student_learning_objective_observation_file.evidence(:thumb), width:"200px;", height:"200px" %>
+
+                                     <i class="fa fa-4x fa-play-circle-o text-white play-fa-center"></i>
+                                         <% if policy(report_lo.report).editable_report_check?(report_lo.report.academic_session_id, report_lo.report.student.id, report_lo.report) %>  <i class="fa fa-close pull-right evidence_close close-fa" file-id="<%=file.id%>"></i> <% end %>
+                            <!-- </div> -->
+                            </div>
+                            </div>
+                            </div>
+                          <%end%>
+
+                        </div>
+  <%else%>
+      <div class="col-md-4 empty <% if policy(report_lo.report).editable_report_check?(report_lo.report.academic_session_id, report_lo.report.student.id, report_lo.report) %> sorting-div <%else%> sorting-div-policy<% end %> portlet-placeholder-outer" report-id="<%=report_lo.id%>" position="<%=report_index +1%>">
+     
+        <!-- Drag Evidence Here.. -->
+   
+
+      </div>              
+    <%end%>
+
+<%end%>
+     
+</div>
+</div>
+  <div class="col-md-12 no-p">
+    <% if report_lo.report_objective_observations.present? %>
+      <ul class="<% if policy(report_lo.report).editable_report_check?(report_lo.report.academic_session_id, report_lo.report.student.id, report_lo.report) %> observation-sort <% end %> ">
+        <% report_lo.report_objective_observations.order(:position).each do |observation| %>
+          <div class="col-md-12  m-b-40 observation-sortaa background-light" observe-position="<%=observation.position%>" observation-id="<%=observation.id%>">
+            <li class="border_botto close_btn" observation-id="<%=observation.id%>" observe-position="<%=observation.position%>" report="<%=report_lo.id%>">
+                <div class="">
+                  <div class="observation-sort-header">
+                  <div class="">
+
+                    <% if policy(report_lo.report).editable_report_check?(report_lo.report.academic_session_id, report_lo.report.student.id, report_lo.report) %> 
+                      <div class="col-md-1 m-t-10">
+                        <span class="custom-bar fa fa-2x fa-bars" style="margin-left: 8px; color:#003A6A;"></span>
+                      </div>
+                    <% end %> 
+                  <div class="col-md-10 m-t-10 font-size-15" style="color: black"><b><%= observation.create_date.strftime("%d %b %Y") %> <%= observation.sub_subject.present? ? observation.sub_subject.show_name : ( !observation.summary_subject_name.blank? ?  observation.summary_subject_name : "Unavailable") %>, <%= observation.user.name %></b></div>
+                  <% if policy(report_lo.report).editable_report_check?(report_lo.report.academic_session_id, report_lo.report.student.id, report_lo.report) %> <div class="col-md-1 m-t-10"> <i class=" ob-cross fa fa-close  observation_close" observation-id="<%=observation.id%>"></i> </div><% end %>
+
+                  <div class="col-md-11 m-b-20">
+                  <div class="observation_summary align-justify">
+                  <%= render partial: "reports/partial/observation_summary" ,:locals=>{observation: observation}%>
+                  </div>
+                  </div>
+                   </div>
+                   </div>
+                  <div class="row m-b-20 ">
+                    <% 3.times do |slot_index| %>
+                       <%# if observation.report_observation_evidences.pluck(:position).include?(slot_index+1) %>
+
+                       <% if observation.report_observation_evidences.where("report_observation_evidences.on_observation =true").pluck("report_observation_evidences.position").include?(slot_index+1) %>
+                        <% file = observation.report_observation_evidences.find_by(position: slot_index+1, on_observation: true) %>  
+                          <div class="col-xs-4 col-sm-4 col-md-4 filled <% if policy(report_lo.report).editable_report_check?(report_lo.report.academic_session_id, report_lo.report.student.id, report_lo.report) %> sorting-div <% end %> portlet-placeholder-outer" position="<%= slot_index+1  %>" observation="<%=observation.id%>">
+                         
+                          <% if file.student_learning_objective_observation_file.evidence_content_type.in? ["image/jpg" ,"image/png","image/jpeg"]%>
+                            
+                            <div class="portlet" file="<%=file.id%>">
+                              <div class="evidence">
+                                <div class="portlet-header">
+                              <!--   <i class="fa fa-arrows">
+                                  
+                                </i> -->
+                                <% if policy(report_lo.report).editable_report_check?(report_lo.report.academic_session_id, report_lo.report.student.id, report_lo.report) %> <i class="fa fa-close pull-right evidence_close close-fa" observation-id="<%=observation.id%>" file-id="<%=file.id%>"></i> <% end %>
+
+                                <%= image_tag(file.student_learning_objective_observation_file.show_evidence(:thumb)) %>
+                              </div>
+                            </div>
+                             </div>
+                          <%else%>
+
+                            <!-- <div style="position:relative;"> -->
+                              <div class="portlet" file="<%=file.id%>">
+                              <div class="evidence">
+                                <div class="portlet-header">
+                         
+                              
+                              <%#= videojs_rails sources: { mp4: file.student_learning_objective_observation_file.evidence},muted: true,controls: false, autoplay: false,:poster=>file.student_learning_objective_observation_file.evidence(:thumb), width:"200px;", height:"200px" %>
+                                <%= image_tag(file.student_learning_objective_observation_file.show_evidence(:thumb)) %>
+                              
+                                     <i class="fa fa-4x fa-play-circle-o text-white play-fa-center"></i>
+                                        <% if policy(report_lo.report).editable_report_check?(report_lo.report.academic_session_id, report_lo.report.student.id, report_lo.report) %> <i class="fa fa-close pull-right evidence_close close-fa-vid" observation-id="<%=observation.id%>" file-id="<%=file.id%>"></i><% end %>
+                            <!-- </div> -->
+                            </div>
+                            </div>
+                            </div>
+                          <%end%>
+
+                        </div>
+                      <%else%>
+                        <div class=" col-xs-12 col-sm-12 col-md-4 empty <% if policy(report_lo.report).editable_report_check?(report_lo.report.academic_session_id, report_lo.report.student.id, report_lo.report) %> sorting-div <%else%> sorting-div-policy<% end %>  portlet-placeholder-outer"  position="<%= slot_index+1 %>" observation="<%=observation.id%>">
+                        </div>   
+                      <% end %> 
+                      <% end %> 
+                  </div>   
+                </div>
+              </li> 
+            </div>
+          <% end%>
+        </ul>
+      <% end%>
+    </div>
+</div>
+
+
+
+
+
+
+ 
+
+<script type="text/javascript">
+     $(document).ready(function(){
+   
+      $('.loader').fadeOut('slow')
+     })     
+    
+
+</script>

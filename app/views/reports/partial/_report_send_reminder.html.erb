@@ -1,0 +1,55 @@
+<div class="col-md-12">
+	<%= form_tag('/save_reminder') do %>
+
+	<div class="panel">
+		<div class="panel">
+			<div class="form-group col-md-12 ">
+				<div class="col-md-1">
+					<label class="control-label ">From:</label>
+				</div>
+				<div class="col-md-9">
+					<%=text_field_tag "from",current_user.name,class: "width-100"%>
+				</div>
+			</div>
+			<div class="form-group col-md-12">
+				<div class="col-md-1">
+					<label class="control-label ">To:</label>
+				</div>
+				<div class="col-md-9">
+					<%=text_field_tag "to",@rs.user.email,class: "width-100"%>
+				</div>
+			</div>
+			<div class="form-group col-md-12">
+				<div class="col-md-1">
+					<label class="control-label ">Subject:</label>
+				</div>
+				<div class="col-md-9">
+					<%=text_field_tag "Subject",@rs.report.title + " for " + @rs.report.student.name,class: "width-100"%>
+				</div>
+			</div>
+			<div class="form-group col-md-12">
+<%@auto_text = "Hi #{@rs.user.fname} <br> <br>You have not completed your '#{@rs.sub_subject.show_name}' Subject summary for #{@rs.report.student.fname}’s  <a href= '#{edit_report_url(id: @rs.report.id, student_id: @rs.report.student.id)}#tab_create_reports_subjects'>#{@rs.report.title}</a>  <br /> <br /> <br /> Regards <br /> #{current_user.fname}"%>
+
+				<%=text_area_tag "desc", @auto_text,class: "reminder_summernote"%>
+
+			</div>
+<%=hidden_field_tag "rs_id",@rs.id%>
+
+
+
+			<div class="modal-footer m-t-20">
+				<div class="form-actions">
+					<div class="row">
+						<div class="pull-right">
+							<%= submit_tag "Send ", :class=>"btn btn-success btn-beatrice" %>
+						</div>
+						<div class="pull-left">
+							<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<% end %>
+</div>

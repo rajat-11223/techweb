@@ -1,0 +1,13 @@
+$('#edit_observation').modal('hide');
+$('#view_observation').modal('show');
+$('#view_observation_body').html("<%=escape_javascript(render 'observations/partial/view_observation')%>");
+$('form').each(function(){
+	$(this).validate();
+});
+ 
+
+$('.datepicker').datepicker({ 
+    format: 'dd-mm-yyyy' }).on('changeDate', function(ev){ $(this).datepicker('hide'); });
+
+
+$('.selectpicker').selectpicker();

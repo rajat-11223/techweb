@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ARR - Beatrice Tate School</title>
+  <link rel="shortcut icon" href="/assets/brt-logo.jpg" />
+
+  <%= stylesheet_link_tag 'application', media: 'all' %>
+  <%= javascript_include_tag 'application' %>
+  <%= csrf_meta_tags %>
+  
+
+
+  <!-- // <script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0-rc.1/js/select2.min.js"></script>  -->
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<!-- <p id="notice" class="toast toast-success"><%= notice %></p> -->
+
+<body>
+
+
+
+
+
+<%= yield %>
+
+
+ <%= javascript_include_tag 'application_postyield' %>
+
+
+
+      <script>
+         <%- flash.each do |name, msg| -%>
+
+         <% if msg.is_a?(String) %>
+           $(document).ready(function() {
+                toastr.options = {
+                    closeButton: true,
+                    progressBar: false,
+                    showMethod: 'slideDown',
+                    timeOut: 4000
+                };
+                <% if name=="notice" %>
+                toastr.success('<%= msg %>');
+                <% elsif name=="alert" %>
+                toastr.error('<%= msg %>');
+                <% end %>
+       }); 
+      <%- end -%>
+      <% end %> 
+
+      $(document).ready(function(){
+      	$('.loader').fadeOut('slow')
+      })     
+      </script>
+
+      <script type="text/javascript">
+
+      	$("#my-search-input").keydown(function(event){
+		    if(event.keyCode == 13){
+		        $(".submit_search").click();
+		    }
+		});
+
+		$(document).on("click",".submit_search",function(){
+			var query = $("#my-search-input").val();
+
+			// console.log($("#my-search-input").val());
+			window.location = "<%= search_index_path %>?q="+ query +"&type=term";
+
+		})
+
+      </script>
+
+
+<script>
+// alert($('.content-frame-top').parent().width());
+$(document).on("keydown.autocomplete","#my-search-input",function(e){
+
+$('.loader_typing').show();
+// Below is the name of the textfield that will be autocomplete    
+$(this).autocomplete({
+// This shows the min length of charcters that must be typed before the autocomplete looks for a match.
+minLength: 2,
+// This is the source of the auocomplete suggestions. In this case a list of names from the people controller, in JSON format.
+source: '/application/autocomplete.json',
+// This updates the textfield when you move the updown the suggestions list, with your keyboard. In our case it will reflect the same value that you see in the suggestions which is the person.given_name.
+focus: function(event, ui) {
+	$(this).val(ui.item.fname + " " + ui.item.lname);
+	return false;
+},
+
+// Once a value in the drop down list is selected, do the following:
+select: function(event, ui) {
+// place the person.given_name value into the textfield called 'select_origin'...
+// and place the person.id into the hidden textfield called 'link_origin_id'.
+	// console.log(ui.item); 
+	$(this).val(ui.item.fname + " " +ui.item.lname);
+	$("#hidden_search_id").val(ui.item.id)
+	$("#hidden_search_email").val(ui.item.email)
+
+	var query = ui.item.fname  + " " + ui.item.lname
+
+	if (ui.item.email == undefined) {
+		var searchobj = "student"
+	}
+	else {
+		var searchobj = "staff"
+	}
+	$(".loader").show();
+
+
+	window.location = "<%= search_index_path %>?q="+ query +"&type="+ searchobj +"&id="+ ui.item.id;
+	// $.ajax({
+ //     beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+ //      	type: 'get', 
+ //        url: '/search',
+ //        data: {search_id: ui.item.id, search_email: ui.item.email}
+ //    });
+
+    // return false;
+}
+
+})
+
+
+.data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+
+var val = item.fname  + " " + item.lname;
+
+return $( "<li></li>" )
+
+.data( "item.autocomplete", item )
+// For now which just want to show the person.given_name in the list.
+
+.append( "<div class='  inline fs-14'>"  + val  + "</div>" )
+.appendTo( ul );
+
+
+};
+
+});
+
+
+</script>
+
+   
+</body>
+</html>

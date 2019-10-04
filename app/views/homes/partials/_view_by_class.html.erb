@@ -1,0 +1,72 @@
+<style>
+.panel-title{
+  font-weight: bold;
+}
+
+</style>
+<div class="row">
+      <div class="col-md-12">
+
+<button type="button" class="btn btn-default btn-white  pull-right btn_close_acc m-b-5">Collapse All</button>
+</div>
+      <div class="col-md-12">
+        <div class="panel-group toggle" id="accordion">
+
+          <% if @uniq_subjects.blank? %>
+
+            <h4 class="text-center m-t-50"> No classes scheduled </h4>
+
+          <% else %>
+
+          <% @uniq_subjects.each_with_index do |user_subject,index| %>
+
+          <% subject_slots = (user_subject[2]!=0 ? SlotSchedule.find_by(user_id: current_user, academic_session_id: session[:global_academic_session], sub_subject_id: user_subject[0], term_id: user_subject[1], learning_group_id: user_subject[2]) : SlotSchedule.find_by(user_id: current_user, academic_session_id: session[:global_academic_session], sub_subject_id: user_subject[0], term_id: user_subject[1])) %>
+
+          <% @students = subject_slots.slot_schedule_students.map(&:student).sort_by{|s| s[:fname]} %>   
+          <% subject = SubSubject.with_deleted.find(user_subject[0]) %>   
+
+          <div class="panel">
+            <div class="panel-heading active change_font">
+              <a class=" panel-title <%= index == 0 ? 'active' : '' %>" data-toggle="collapse" href="#t<%= user_subject[1]%>s<%=user_subject[0]%><%=index%>"><%= subject.show_name %> (<%= Term.find(subject_slots.term_id).master_term.display_name %>, <%= AcademicSession.find(session[:global_academic_session]).name %><%= user_subject[2] !=0 ? " #{LearningGroup.with_deleted.find(user_subject[2]).name}" : "" %>)</a>
+            </div>
+
+            <div id="t<%= user_subject[1]%>s<%=user_subject[0]%><%=index%>" class="close_acc panel-collapse collapse in <%#= index == 0 ? 'in' : '' %>">
+              <div class="panel-body">
+                
+                  <%= render 'homes/partials/student_card' %>
+              </div>
+            </div>
+          </div>
+
+          
+        <% end %>
+        
+        <% end %>
+        
+        </div><!--.panel-group-->
+      </div><!--.col-md-6-->
+
+    </div>
+
+
+
+<script>
+
+$(document).on('click','.btn_close_acc',function(){
+  if ($(this).hasClass('acc_expand')){
+    $('.close_acc').collapse('show')
+    $(this).removeClass('acc_expand');
+    $(this).text('Collapse all')
+    $('.change_font').addClass('active');
+  }
+    else
+  {
+    $('.close_acc').collapse('hide')
+    $(this).addClass('acc_expand');
+    $('.change_font').removeClass('active');
+    $(this).text( 'Expand all')
+  }
+})
+
+</script>
+<%#= render 'homes/partials/timeline' %>

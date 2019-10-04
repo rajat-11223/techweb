@@ -1,0 +1,5 @@
+$('#new_staff').modal('show');
+$("#new_staff_modal_body").html('<%=escape_javascript(render "staff_profiles/form")%>');
+$('form').each(function(){
+	$(this).validate();
+});

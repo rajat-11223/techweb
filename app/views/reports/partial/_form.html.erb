@@ -1,0 +1,141 @@
+<style type="text/css">
+  .dropdown-menu .inner{
+    max-height: 200px!important;
+  }
+</style>
+<%= form_for(@report) do |f| %>
+  <% if @report.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@report.errors.count, "error") %> prohibited this report from being saved:</h2>
+
+      <ul>
+      <% @report.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+
+<!-- <div class="row m-b-20 m-r-5"> -->
+    <!-- <button class="pull-right btn-primary ">Download</button>  -->
+    <!-- <button class="pull-right btn-primary m-r-5">Print</button>  -->
+    <%#=link_to "Download",report_download_path(@report.id),class: "btn btn-beatrice pull-right text-white ",method: :post,remote: true%>
+    <%#=link_to "Print",report_path(@report.id),class: "pull-right btn btn-beatrice text-white m-r-5"%>
+    <%#=link_to "Send For Approval",send_for_approval_path(report_id: @report.id),class: "pull-right btn btn-beatrice text-white m-r-5" ,method: :post%>
+    <!-- <button class="pull-right btn-primary m-r-5">Send for approval</button>    -->
+<!-- </div> -->
+
+<div class="row ">
+<div class="col-md-12">
+    <div class="col-md-3">
+      <div class="nav-user" style="  position: inherit;">
+         <div class="" style="padding: 0">
+           <img src="<%=@student.show_avatar(:square)%>" style="height: 200px; width: 200px; ">
+         </div>
+       </div>
+      </div>
+
+    <div class="col-md-3 ">     
+      <div class="card-heading" >
+        <h4><%= link_to @report.student.name, student_path(@report.student.id), target: "_blank" %></h4>
+      </div>
+      <div class="card-body">
+      <div style="display: -webkit-box;">
+        <%= @report.phase_name %><br>
+          Learning group: <%= @report.lg_name %><br>
+          Tutor group: <%= @report.tutor.show_tutor_group_name(@report.academic_session_id) %><br>
+          Tutor: <%= @report.tutor.name %>
+        </div>
+      
+      </div>
+    </div>
+    <div class="row">
+    <div class="col-md-6">
+    <%#=link_to "Download",report_download_path(@report.id),class: "btn btn-beatrice pull-right text-white ",method: :post,remote: true%>
+    <%=link_to "Preview",report_path(@report.id),class: "pull-right btn btn-beatrice text-white m-r-5"%>
+    
+    <% if current_user.is_admin? || current_user.is_team_lead?  %>
+      
+      <% if @report.status.in? ["AP"] %>
+        <%=link_to "Unapprove Report",unapprove_report_path(report_id: @report.id), class: "pull-right btn btn-beatrice text-white m-r-5",method: :post%>
+        
+        <script>
+        alert("You are trying to edit an already Approved report. To enable editing, please click 'Unapprove Report' button, make the changes and Approve the report again.");
+        </script>
+      <% end %>
+
+      <% if !@report.status.in? ["IP","AP"]%>
+        <%=link_to "Approve Report",approve_report_path(report_id: @report.id), class: "pull-right btn btn-beatrice text-white m-r-5",method: :post%>
+      <% end %>
+
+      <% if !@report.status.in? ["AP"]%>
+        <%=link_to "Send Reminder",admin_report_send_reminder_path(report_id: @report.id), class: "pull-right btn btn-beatrice text-white m-r-5",method: :post, :remote=>true %>
+        <%=link_to "Request Amend",admin_report_request_amend_path(report_id: @report.id), class: "pull-right btn btn-beatrice text-white m-r-5",method: :post, :remote=>true %>
+      <% end %>
+
+       <%#=link_to "Send For Approval",send_for_approval_path(report_id: @report.id), class: "pull-right btn btn-beatrice text-white m-r-5 #{@report.status !='IP' ? 'disabled' : ''}" ,method: :post,:data=>{confirm: "Are you sure to finalise this report"}%>
+    <% end %>
+      <% if policy(@report).editable_report_check?(@report.academic_session_id, @report.student.id,@report)  %>
+     <%=link_to "Send For Approval",send_for_approval_path(report_id: @report.id), class: "pull-right btn btn-beatrice text-white m-r-5 #{@report.status !='IP' ? 'disabled' : ''}" ,method: :post,:data=>{confirm: "Are you sure you wish to finalise & submit this report? You will not be able to make any further changes to the report."}%>
+    <% end %>
+    <%# end %>
+    </div>
+    </div>
+</div>
+</div>
+<div class="row m-b-5 m-r-5">
+    <h4 class="pull-right"><%= @report.title %></h4>
+</div>
+
+<div class="header-tabs scrollable-tabs sticky position-inherit">
+      <ul class="nav nav-tabs tabs-active-text-white tabs-active-border-yellow" role="tablist">
+                  <li class="active"><a href="#create_reports_objectives" data-toggle="tab">Learning Objectives</a></li>
+           
+                  <% if @report.report_type == "EOY" %> 
+                    <li><a href="#create_reports_subjects" data-toggle="tab">Curriculum Subjects</a></li>
+                    <% if current_user.is_team_lead? %>
+                      <li><a href="#core_reports_subjects" data-toggle="tab">Core Attainment</a></li>
+                    <% end %>
+                  <% end %>
+                </ul>
+
+
+</div>
+<div class="tab-content without-border">
+  <div class="tab-pane active" id="create_reports_objectives">
+    <%=  render 'reports/partial/reports_lo' %>
+  </div>
+
+  <% if @report.report_type == "EOY" %>
+      <div class="tab-pane" id="create_reports_subjects">
+        <%= render partial: 'reports/partial/report_curriculum_subject' ,locals:{report_subjects: @report_subjects, student: @student}%>
+      </div> 
+      <% if current_user.is_team_lead? %>
+         <div class="tab-pane" id="core_reports_subjects">
+          <%= render partial: 'reports/partial/report_core_subject' ,locals:{report_core_subjects: @report_core_subjects}%>
+        </div>
+      <% end %>
+  <% end %>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <div class="actions">
+  
+  </div>
+<% end %>
+

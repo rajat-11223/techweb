@@ -1,0 +1,63 @@
+<style>
+.radio{
+  margin-top:0px;
+  margin-bottom: 0px;
+}
+</style>
+<div class="col-md-10 col-md-offset-1 col-sm-10 col-sm-offset-1 col-xs-10 col-xs-offset-1">              
+<div class="form-group">
+<div class="row  m-b-50">
+   <div class="col-md-3">
+      <label class="control-label required font-size-15">Source:</label>
+    </div>
+    
+    <div class="col-md-9">
+      <div class="icheck icheck-square-blue">
+        <div class="col-md-3">
+          <div class="radio form-inline">
+            <label><input type="radio" name="optionsRadios_1" value="1">
+              RFL
+            </label>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="radio form-inline">
+            <label>
+              <input type="radio" name="optionsRadios_1" value="2" >PIVATS           
+            </label>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="radio form-inline">
+            <label>
+              <input type="radio" name="optionsRadios_1" value="3" >Custom
+            </label>
+          </div>  
+        </div>
+      </div>  
+    </div>
+     
+   
+  </div>
+</div>
+<div id="pivats" class="display-none">                  
+<%=render '/students/partial/open_pivats_learning_objective_modal'%>
+</div>
+
+<div id="rfl" class="display-none">
+  <%=render '/students/partial/open_rfl_learning_objective_modal'%>
+
+</div>
+
+
+<div id="custom" class="display-none"><%=render '/students/partial/open_custom_learning_objective_modal'%>
+</div>
+</div>
+
+<script>
+FormsIcheck.init();
+</script>
+
+
+
+

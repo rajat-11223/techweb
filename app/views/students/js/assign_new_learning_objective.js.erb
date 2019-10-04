@@ -1,0 +1,21 @@
+$('.assign_learning_objective').modal('show');
+$('.assign_learning_objective_body').html("<%=escape_javascript(render 'students/partial/open_learning_objective_modal')%>");
+
+
+$('form').each(function(){
+	$(this).validate();
+});
+ FormsIcheck.init();
+
+// $('.datepicker').datepicker({ 
+//     format: 'dd-mm-yyyy' }).on('changeDate', function(ev){ $(this).datepicker('hide'); });
+
+ $('.datepicker').datepicker({ 
+    format: 'dd-mm-yyyy',orientation: 'bottom auto',autoclose: true,startDate: new Date() });
+
+ $('.summernote_rfl').summernote();
+ $('.summernote_custom').summernote();
+$('.selectpicker').selectpicker();
+
+
+  // document.title="<%=@student.name%> - Add LO "

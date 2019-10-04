@@ -1,0 +1,35 @@
+
+<%=form_for(@subject) do |f| %>
+  <% if @subject.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@subject.errors.count, "error") %> prohibited this subject from being saved:</h2>
+
+      <ul>
+      <% @subject.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+
+  <div class="col-md-12 border_bottom p-10 m-b-20">
+    <div class="form-group m-b-50">
+      <div class="col-md-2">
+        <label class="control-label required">Subject Name</label>
+      </div>
+      <div class="col-md-6">
+        <%=f.text_field :name ,:class=>"form-control",:required=>true %>
+      </div>
+       
+    </div>
+ 
+</div>
+ <div class="actions">
+ 
+	<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cancel</button>
+    <%= f.submit "Save", :class=>"btn btn-primary pull-right" %>
+	</div>
+<%end%>
+
+

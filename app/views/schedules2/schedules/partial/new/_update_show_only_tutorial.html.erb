@@ -1,0 +1,88 @@
+
+<div class="col-md-10 col-md-offset-1 col-sm-10 col-sm-offset-1">
+<%= form_for(@slot_schedule ,:url=>url_for(:controller=>'schedules',:action=>"save_updated_main_tutorial")) do |f| %>
+  <% if @slot_schedule.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@slot_schedule.errors.count, "error") %> prohibited this schedule from being saved:</h2>
+
+      <ul>
+      <% @slot_schedule.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+<%=f.hidden_field :slot_id,:value=>@slot.id%>
+<%=f.hidden_field :master_day_id,:value=>@master_day.id%>
+<%=f.hidden_field :term_id,:value=>@term.id%>
+<%=f.hidden_field :tutor_id,:value=>@tutor_id%>
+<input type="hidden" value="<%= @schedule_display %>" name="schedule_display">
+
+  <input type="hidden" name="slot_schedule[subject_id]" value="2">
+  <input type="hidden" name="sub_subject_id[subject_id]" value="2">
+   <div class="row form-group m-b-20">
+    <div class="col-md-3">
+      <label class="control-label">Tutor Group:</label>
+    </div>
+    <div class="col-md-9">
+      <%#= select_tag("tutor_group",options_for_select(@tutor_groups.collect {|u| [u.name, u.id]},@slot_schedule.tutor_group.id),{:include_blank=>"Select Tutor Group",:class=>"selectpicker tg_value",:onchange=>"update_select_tg()"}) %>
+      <%= select_tag("tutor_group",options_for_select(@tutor_groups.collect {|u| [u.name, u.id]},@slot_schedule.tutor_group.id),{:include_blank=>"Select Tutor Group",:class=>"selectpicker tg_value",:required=>true}) %>
+    </div>    
+  </div>
+  <div class="show_tutor_group_students">
+     <%@slot_schedule.tutor_group.students.map(&:id).each do |id|%>
+      <%= hidden_field_tag "students[]", id %>
+    <%end%>
+
+    <div class="panel-group">
+      <div class="panel bg-antiquewhite">
+        <div class="panel-heading">
+
+        </div>
+
+        <div class="panel-body">
+
+          <% if @slot_schedule.tutor_group.present?%>
+          <% @slot_schedule.tutor_group.students.each do |student|%>
+          <div class="row form-group p-10">
+            <span class="col-md-1">
+              <div class="nav-user" style="  position: inherit;">
+                <div class="user" style="padding: 0">
+                  <img src="<%= student.show_avatar(:thumb) %>" alt="<%=student.fname%>" title="<%=student.fname%>"  border="0" style="background-color: #ffffff;">
+                </div>
+              </div>
+            </span>
+            <span class="col-md-9 text-danger">
+              <%=student.fname + " " + student.lname.to_s%>
+
+            </span>
+          </div>
+          <%end%>
+          <%else%>
+          No student present.
+          <%end%>
+
+        </div>
+
+      </div>
+    </div>
+
+
+  </div>
+  <div class="modal-footer">
+    <div class="form-actions">
+      <div class="row">
+                    <div class="col-md-6 align-left no-p-left">
+                      <%= link_to "Delete",delete_schedule_path(slot_id: @slot.id, day_id: @master_day.id,term_id: @term.id,tutor_id: @tutor_id), method: :post,:class=>"btn btn-danger" , data: {confirm: "Are you sure you want to delete this schedule?", toggle: "tooltip", title: "Delete schedule"}%>
+                    </div>
+                    <div class="col-md-6 align-right no-p-right">
+                      <%= f.submit "Schedule", :class=>"btn btn-success update btn-beatrice" %>
+                    </div>
+                  </div>
+    </div>
+    </div>
+<% end %>
+</div>
+
+

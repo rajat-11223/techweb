@@ -1,0 +1,24 @@
+              <%=fields_for :terms do |t| %>
+                <% @master_term.each do |term|%>
+                  <%=t.fields_for term.id.to_s do |b| %>
+                    <div class="form-group m-b-20">
+                      <div class="row m-b-10">
+                        <div class="col-md-4">
+                          <label class="control-label"><b><%=term.display_name %></b></label>
+                            <%=b.hidden_field "term-"+term.id.to_s,:value=>term.id %>
+                        </div>
+                          <div class="col-md-4"><div class="input-group"><span class="input-group-addon"><small>From</small></span>
+                          <div ><%= b.text_field "start"+term.id.to_s ,:class=>"datepicker btn btn-default",:value=>term.populate_start(@selected_academic_session).strftime('%d-%m-%Y') %></div>  
+                          </div>
+                          </div>
+                          <div class="col-md-4"><div class="input-group"><span class="input-group-addon"><small>To</small></span>
+                             <div><%=b.text_field "end"+term.id.to_s ,:class=>"datepicker btn btn-default",:value=>term.populate_end(@selected_academic_session).strftime('%d-%m-%Y') %></div>
+                          </div>
+
+                        </div>
+                      </div>
+                      </div> 
+                  <% end %>
+                <% end %>
+              <% end %>
+          

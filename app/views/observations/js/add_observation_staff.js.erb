@@ -1,0 +1,24 @@
+$('.add_observation_staff').modal('show');
+$('.add_observation_staff_body').html("<%=escape_javascript(render 'observations/partial/add_observation')%>");
+
+ 
+$('form').each(function(){
+	$(this).validate();
+});
+ $('.datepicker').datepicker({ 
+    format: 'dd-mm-yyyy',orientation: 'auto',autoclose: true });
+
+  $(document).on("click", ".add_ob_submit",function(e){
+ 
+  	if($('.add_ob_subject').find('option:selected').val() ==""){
+  		 	$(".err-ob").show();
+  		 	e.preventDefault();
+
+  	}
+  	else
+  	{
+  		 	$(".err-ob").hide();
+
+  	}
+  })
+$('.selectpicker').selectpicker();

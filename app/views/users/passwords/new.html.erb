@@ -1,0 +1,52 @@
+<div class="clearfix login-div text-white col-md-8 col-md-offset-2">
+<h2 class="text-center m-b-50 text-white m-t-50">Assessment Recording and Reporting</h2>
+<h4 class="text-center text-white m-t-50">Forgot your password?</h4>
+<p class="text-center m-b-50 text-white">Enter your email below to receive the password reset link</p>
+
+<%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
+  <%= devise_error_messages! %>
+
+ <div class="row m-b-20">
+  <div class="form-group col-md-8 col-md-offset-2">
+
+    <%= f.label :email, :class=>"control-label col-md-2" %>
+    <div class="col-md-10">
+    <%= f.email_field :email, autofocus: true, :class=>"form-control text-white", :required=>true %>
+    </div>
+  </div>
+</div>
+
+  <div class="row m-b-50">
+    <div class="form-group col-md-8 col-md-offset-2">
+  	<div class="col-md-2"></div>
+  	<div class="col-md-4">
+  		<%- if controller_name != 'sessions' %>
+			  <%= link_to "Back to Log in", new_session_path(resource_name),:class=>"text-white" %>
+			<% end -%>
+  	</div>
+  	<div class="col-md-6 pull-right align-right">
+    <%= f.submit "Send Instructions", :class=>"btn btn-primary" %>
+    </div>
+  </div>
+</div>
+<% end %>
+</div>
+<%#= render "users/shared/links" %>
+<script>
+<% if devise_error_messages! != "" %>
+
+$(document).ready(function() {
+                toastr.options = {
+                    closeButton: true,
+                    progressBar: true,
+                    showMethod: 'slideDown',
+                    timeOut: 0
+                };
+                toastr.error('<%= raw escape_javascript(devise_error_messages!) %>');
+
+       }); 
+
+
+<% end %>
+
+</script>

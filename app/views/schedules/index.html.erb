@@ -1,0 +1,413 @@
+<style>
+  .table > tbody >  tr > td{height: 100px!important; max-height: 100px!important; width: 200px!important; max-width: 200px!important;}
+
+  .table > tbody >  tr > th{height: 100px!important; max-height: 100px!important; width: 150px!important; max-width: 1500px!important;}
+
+  a:hover, a:focus{
+  	text-decoration: none;
+  }
+
+</style>
+
+<div class="row">
+	<%= form_tag schedules_path , :method => :get do %> 
+	<%= fields_for :schedule_display do |sd| %>
+	<div class="row form-group m-b-20">
+		<div class="col-md-3">
+			<%= sd.select(:academic_session_id, options_from_collection_for_select(@academic_sessions, "id", "name", @selected_academic_session),{:include_blank=>"Please select academic sessions"},{:class=>"selectpicker"}) %>
+		</div>  <div class="col-md-3">
+			<%= sd.select(:master_term_id, options_for_select(@master_terms.collect{|u| [u.display_name, u.id]}, @selected_master_term),{:include_blank=>"Please Select Term"},{:class=>"selectpicker", :required=>true}) %>  
+		</div>  
+		<div class="col-md-3">
+			<%= sd.select(:tutor_id, options_from_collection_for_select(@tutors, "id", "name", @selected_tutor),{:include_blank=>"Please Select Teacher"},{:class=>"selectpicker",:required=>true}) %>
+		</div> 
+		<div class="col-md-3">
+			<%= submit_tag "Display", :class=>"btn text-white bg-beatrice btn-block"%>
+		</div>
+	</div>
+	<% end %>
+	<% end %>
+</div>
+
+<% if @has_schedule %>
+<div class= <% if !@has_schedule %> "row display-none" <% else %> 'row' <% end %> >
+	<div class="col-md-12">
+		<div class="panel">
+			<div class="panel-heading">
+			</div>
+			<div class="panel-body">
+				<div class="table-responsive">
+					<table class="table table-bordered">
+						<!-- enteries of days -->
+						<thead>
+							<tr>
+								<th class="col-md-2"></th>
+								<% @master_days.each do |day| %>
+								<th class="col-md-2"><%= day.name %></th>
+								<% end %>
+							</tr>
+						</thead>
+						<tbody>
+							<% @slots.each_with_index do |slot, index_slot| %>
+							<tr>
+								<td class="p-t-40 align-center col-md-2">
+									<b> <!-- Tutorial, Lesson 1, Lesson 2, Lunch, Lesson 3, Lesson 4 -->
+										<%= slot.name %>
+									</b>
+								</td>
+								<% @master_days.each do |day| %>
+								<% @this_schedule = slot.slot_schedules.find_by(term_id: @term, user_id: @selected_tutor, master_day_id: day.id) %>
+								<td class="col-md-2" style="position:relative; text-align: center; vertical-align: middle;">
+									<a class="cursor-pointer text-black" onclick="update_schedule('<%=slot.id%>','<%=day.id%>',<%=@term.id%>,'<%=params[:schedule_display][:tutor_id]%>')" data-toggle="tooltip" data-title="Update Schedule" ">
+										<% if !@this_schedule.blank? %>
+										<strong>
+											<%= @this_schedule.sub_subject.show_name.length > 26 ? (@this_schedule.sub_subject.show_name[0..25] + "...") : @this_schedule.sub_subject.show_name %>									
+										</strong>
+										<% if @this_schedule.slot_schedule_students.present? %>
+										<% if @this_schedule.slot_schedule_students.pluck(:associated_group_id).uniq.count > 1 %>
+											<% if @this_schedule.slot_schedule_students.pluck(:associated_group_type).include?("LearningGroup") %>
+											<!-- obviously multiple learning groups -->
+											<!-- show group color & name -->
+											<div style="border-bottom:2px solid <%= @this_schedule.learning_group.try(:color) %>" class="schedule_subject_div">
+												<footer>
+													<%= @this_schedule.learning_group.try(:name) %><label class="required"></label>
+												</footer>
+											</div>
+											<% elsif @this_schedule.slot_schedule_students.pluck(:associated_group_type).include?("TutorGroup") %>
+											<!-- obviously multiple tutor groups due to phases -->
+											<!-- show asterisk with name -->
+											<div style="background-color:fff">
+												<footer>
+													<%= @this_schedule.tutor_group.name %><label class="required"></label>
+												</footer>
+											</div>
+											<% end %>
+										<% else %>
+										<% if @this_schedule.learning_group_id != 0 %>
+										<div style="border-bottom:2px solid <%= @this_schedule.learning_group.color %>;" class="schedule_subject_div">
+											<footer>
+												<% if @this_schedule.slot_schedule_students.count == @this_schedule.learning_group.students.count %>
+												<%= @this_schedule.learning_group.try(:name) %>
+												<% else %>
+												<%= @this_schedule.learning_group.try(:name) %><label class="required"></label>
+												<% end %>
+											</footer>
+										</div>
+										<% end %>
+										<% if @this_schedule.tutor_group_id != 0 %>
+										<div style="background-color:fff">
+											<footer>
+												<%= @this_schedule.tutor_group.name %>
+											</footer>
+										</div>
+										<% end %>
+										<% end %>
+										<% else %>
+										<!-- if ppa just show grey bg -->
+										<!-- if non ppa do this -->
+										<% if !@this_schedule.sub_subject.subject.is_ppa %>                          
+										<div style="background-color: #ffffff">
+											<footer>  <i class="fa fa-flag text-red"></i> No Students</footer>
+										</div>                        
+										<% end %>
+										<% end %>
+										<% else %>
+											<a class="cursor-pointer text-black" onclick="create_schedule('<%=slot.id%>','<%=day.id%>')" ><i class="fa fa-2x fa-plus text-grey "></i></a>
+										<% end %> 
+									</a> 
+								</td>
+								<% end %>   
+							</tr>
+							<% end %>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<% else %>
+
+<h4 class="text-center m-t-50">Please select Academic Year, Term and Teacher to continue</h4>
+<% end %>
+
+
+<div class="modal scale in fade full-height" id="open_schedule_modal" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header bg-beatrice text-white" id="schedule_modal_header">
+				<h4 class="modal-title text-white">Schedule Class<span class="fa fa-times text-white pull-right cursor-pointer" data-dismiss="modal"></span></h4>
+			</div>
+			<div class="modal-body learning_modal">
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div class="modal scale in fade full-height" id="update_schedule_modal" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header bg-beatrice text-white" id="update_schedule_modal_header">
+				<h4 class="modal-title text-white">Schedule Class<span class="fa fa-times text-white pull-right cursor-pointer" data-dismiss="modal"></span></h4>
+			</div>
+			<div class="modal-body update_schedule_modal_body">
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<script type="text/javascript">
+
+	// open create schedule modal
+	function create_schedule(slot_id,day_id){
+		var term =$("#schedule_display_master_term_id").val();
+		$.ajax({
+			beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+			type:'post', 
+			contenttype:'json',
+			url: '/open_create_schedule_modal',
+			data: {slot_id: slot_id, day_id: day_id, schedule_display: '<%= raw params[:schedule_display].to_json %>'}
+		});
+	}
+
+// on change subject
+	$(document).on('change','.new_subject',function(){
+    var subject_id= $(this).find('option:selected').val();
+    var subject_name =   $(this).find('option:selected').text().toLowerCase();
+    $('.check_student').hide();
+    if(subject_name=="ppa"){
+    	$('.learning_group_select').hide();
+    }
+    else{
+    	$('.learning_group_select').show();
+    }
+    $.ajax({
+    	beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+    	type: 'post',
+    	url: '/on_subject_change_show_its_sub_subjects_while_creating_schedule',
+    	data: {subject_id :subject_id}
+    });
+      })
+
+// on change sub subject
+	$(document).on('change','.create_subsubject_change',function(){
+		var term =$("#schedule_display_master_term_id").val();
+		var slot_id = '<%= @slot.present? ? @slot : "" %>';
+		var day_id = '<%= @day.present? ? @day : "" %>';
+		var selected_sub_subject = $(this).find('option:selected').val();
+		var current_tutor = '<%= params[:schedule_display].present? ? params[:schedule_display][:tutor_id] : "" %>';
+  // alert(current_tutor);
+  $.ajax({
+  	url:'<%= verify_sub_subject_path %>',
+  	contenttype:'json',
+  	data: {sub_subject: selected_sub_subject, current_tutor: current_tutor,slot_id: slot_id, day_id: day_id, schedule_display: '<%= raw params[:schedule_display].to_json %>'},
+  	method: "post"
+  });
+  return false;
+});
+
+
+// on select tg or lg radio 
+
+$(document).on('ifChecked','input:radio',function(){
+		var a=($(this).attr('value'))
+		var this_val = $(this).find('option:selected').val();
+		var term =$("#schedule_display_master_term_id").val();
+		var slot_id = '<%= @slot.present? ? @slot : "" %>';
+		var day_id = '<%= @day.present? ? @day : "" %>';
+		var current_tutor = '<%= params[:schedule_display].present? ? params[:schedule_display][:tutor_id] : "" %>';
+
+		if($(this).is(":checked") && a=='lg')
+		{
+			is_tutor_group = false
+		} 
+		else if($(this).is(":checked") && a=='tg')
+		{
+			is_tutor_group = true
+		} 
+		$.ajax({
+			beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+			type:'post', 
+			contenttype:'json',
+			url: '/select_lg_tg',
+			data: {schedule_display: '<%= raw params[:schedule_display].to_json %>',
+			is_tutor_group: is_tutor_group,
+			current_tutor: current_tutor,
+			term: term,
+			slot_id: slot_id,
+			day_id: day_id }
+				});
+
+	})
+
+// when select tutor group on radio button
+    	$(document).on('change','.new_tg_value',function(){
+  	var tutor_group_id = $(this).find('option:selected').val();
+        if(tutor_group_id!=""){
+        	$(".loader").show();
+        }
+        $.ajax({
+        	beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+        	type: 'post',
+        	url: '/on_tg_select_show_students_while_creating_main_tutorial_schedule',
+        	data: {tutor_group_id :tutor_group_id}
+        });
+      }); 
+
+// when select learningn group on radio button
+	$(document).on('change','.new_lg_value',function(){
+        var learning_group_id = $(this).find('option:selected').val();
+        if(learning_group_id!=""){
+        	$(".loader").show();
+        }
+        $.ajax({
+        	beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+        	type: 'post',
+        	url: '/on_learning_group_change_show_students_while_creating_schedule',
+        	data: {learning_group_id :learning_group_id}
+        });
+      });
+
+
+// on form submit
+
+	$(document).on('click','.create_schedule',function(){
+		var a=$('#students_').val();
+		if(("PPA") == $('.schedule_sub_subject').attr("ppa"))
+			{ $('.check_student').hide();}
+		else
+		{
+			if(a===undefined){
+    $('.check_student').show();
+
+    return false;}
+    else
+    {
+    	(a===defined)
+    	$('.check_student').hide();
+    }
+
+  }
+
+})
+
+	// open update modal
+		function update_schedule(slot_id,day_id,term_id,tutor_id){
+
+			var term =$("#schedule_display_master_term_id").val();
+			$.ajax({
+				beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+				type:'post', 
+				contenttype:'json',
+				url: '/update_schedule_modal',
+				data: {slot_id: slot_id, day_id: day_id, term_id: term_id, tutor_id: tutor_id,schedule_display: '<%= raw params[:schedule_display].to_json %>'}
+
+
+			});
+		}
+
+
+	</script>
+
+    <script type="text/javascript">
+    	$("#open_schedule_modal").on('hidden.bs.modal', function () {
+
+    		$(this).data('bs.modal', null);
+    		$.ajax({
+    			beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+    			type:'post', 
+    			url: '/reset_schedule_student'
+
+
+    		});
+    		return false
+    	});
+    </script>
+
+    <script>
+    	$(document).on('change','select.school_dropdown_update',function(){
+    		var selected_phase = $(this).find('option:selected').attr('id');
+  // alert(selected_phase);
+  $('.phase_div').hide();
+  $('.'+selected_phase).show();
+});
+
+</script>
+
+<script>
+	$(document).on('change','select.school_dropdown',function(){
+
+		var selected_phase = $(this).find('option:selected').attr('id');
+		var db_id = $(this).find('option:selected').attr('db_id');
+		$('.phase_div').hide();
+		$('.'+selected_phase).show();
+		// $('.remove_tg_student').attr('phase_val', db_id)
+	});
+
+</script>
+
+
+<script type="text/javascript">
+	$("#update_schedule_modal").on('hidden.bs.modal', function () {
+
+		$(this).data('bs.modal', null);
+		$.ajax({
+			beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+			type:'post', 
+			url: '/reset_schedule_student'
+
+
+		});
+
+	});
+</script>
+
+<script type="text/javascript">
+// 	$(document).on('click','.remove_tg_student', function(){
+// 		student_id = $(this).attr('student_id')
+// 		$(this).parent('.tg_stud_div').hide();
+// 		$("input:hidden[name='students[]']").each(function(){
+// 			hide_val = $(this).val();
+// 			if(student_id == hide_val){
+// 				$(this).remove();
+// 			}
+// 		})
+// if($("input:hidden[name='students[]']").length == 0){
+// $('.select_stud_div').html('<span style="color: red;"><b>Please add at least one student</ b></span>')
+// }
+
+// 	})
+
+	$(document).on('click', '.add_tg_phase_student', function(){
+		student_id = $(this).attr('student_id')
+		tg_id = $(this).attr('tg_id')
+		phase_id = $(this).attr('phase_id')
+				$(this).parent('.tg_phase_div').hide();
+				$.ajax({
+			beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+			type:'post', 
+			url: '<%=add_tg_student_schedule_path%>',
+			data: {student_id: student_id, tg_id: tg_id, phase_id: phase_id}
+
+
+		});
+	})
+	// 	$(document).on('click', '.remove_tg_student', function(){
+	// 	student_id = $(this).attr('student_id')
+	// 	tg_id = $(this).attr('tg_id')
+	// 	phase_val = $(this).attr('phase_val')
+	// 			$(this).parent('.tg_stud_div').hide();
+	// 			$.ajax({
+	// 		beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+	// 		type:'post', 
+	// 		url: '<%=remove_tg_student_schedule_path%>',
+	// 		data: {student_id: student_id, tg_id: tg_id, phase_val: phase_val}
+
+
+	// 	});
+	// })
+</script>
+
+

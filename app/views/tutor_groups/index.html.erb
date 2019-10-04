@@ -1,0 +1,215 @@
+<div class="row">
+      <div class="col-md-12">
+        <div class="panel">
+          <div class="panel-heading">
+            <div class="panel-title">
+              <!-- <a><span data-toggle="modal" data-target="#new_tutor" class="btn btn-primary">ADD </span></a> -->
+              <%= link_to "ADD" ,new_tg_modal_path, method: :post, remote: :true,:class=>"btn btn-primary text-white" %>
+
+              <!-- <a><span data-toggle="modal" data-target="#new_student">REMOVE</span></a> -->
+            </div>
+          </div>
+          <div class="panel-body">
+
+            <div class="overflow-table">
+            <table class="display datatables-alphabet-sorting">
+              <thead>
+                <tr>
+    <!--               <th>
+                    <div class="icheck icheck-flat">
+                        <div class="checkbox">
+                          <label>
+                            <input type="checkbox" value="">
+                          </label>
+                        </div>
+                      </div>
+                  </th> -->
+                  <th>Group Name</th>
+                  <th>Tutor</th>
+                  <th>Number Of Students</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @tutor_groups.each do |tutor_group| %>
+
+                    <tr>
+               <!--        <td>
+                        <div class="icheck icheck-flat">
+                          <div class="checkbox">
+                            <label>
+                              <input type="checkbox" value="">
+                            </label>
+                          </div>
+                        </div>
+                      </td> -->
+                      <td><%=tutor_group.name%></td>
+                      <td><%= !tutor_group.user.deleted? ? tutor_group.user.name : "" %></td>
+           
+                      <td><%=tutor_group.students.count%></td>
+                     <td><button class="btn btn-default btn-sm" onclick="edit_group(<%=tutor_group.id%>)" data-toggle=tooltip data-title="Edit group"><span class="fa fa-pencil"></span></button>
+                     
+                  <%= link_to tutor_group_path(tutor_group), data: {confirm: "Are you sure you wish to delete this tutor group?"}, method: :delete, :class=>"btn btn-danger btn-sm" do %>
+                        <i class="fa fa-trash" data-toggle=tooltip data-title="Delete Subject"></i><%end%>
+                     </td>
+                    
+                  </tr>
+                <%end%>
+              </tbody>
+            </table>
+            </div>
+            <!--.overflow-table-->
+
+          </div>
+          <!--.panel-body-->
+        </div>
+        <!--.panel-->
+      </div>
+      <!--.col-md-12-->
+    </div>
+    <!--.row-->
+
+
+
+
+        <div class="modal scale fade-in tutor full-height" id="new_tutor" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header bg-beatrice text-white">
+            <h4 class="modal-title text-white">Create Tutor Group<span class="fa fa-times text-white pull-right cursor-pointer" data-dismiss="modal"></span></h4>
+          </div>
+          <div class="modal-body new_tutor_body">
+          <%#=render 'tutor_groups/partial/form'%>
+          </div></div>
+          </div>
+          </div>
+
+     <div class="modal scale fade-in tutor_update full-height"  tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header bg-beatrice text-white">
+            <h4 class="modal-title text-white">Update Tutor Group<span class="fa fa-times pull-right cursor-pointer text-white" data-dismiss="modal"></span></h4>
+          </div>
+          <div class="modal-body update">
+          <%#=render 'tutor_groups/partial/form'%>
+          </div></div>
+          </div>
+          </div>
+
+
+ 
+
+<script type="text/javascript">
+  function edit_group(group_id){
+
+    $.ajax({
+     beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+      type:'post', 
+        url: '/edit_group_from_table',
+       data: { group_id :group_id}
+      
+      });
+      
+
+  }
+</script>
+
+<script type="text/javascript">
+  $("#new_tutor").on('hidden.bs.modal', function () {
+  
+    $(this).data('bs.modal', null);
+    $.ajax({
+     beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+      type:'post', 
+        url: '/reset_student'
+     
+      
+      });
+      
+});
+</script>
+<script type="text/javascript">
+  $(".tutor_update").on('hidden.bs.modal', function () {
+
+    $(this).data('bs.modal', null);
+    $.ajax({
+     beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+      type:'post', 
+        url: '/reset_student'
+     
+      
+      });
+      
+});
+</script>
+<script type="text/javascript">
+  // $(document).ready(function(){
+   
+  //    $.ajax({
+  //    beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+  //     type:'post', 
+  //       url: '/reset_student'
+     
+      
+  //     });
+  // })
+</script>
+<script type="text/javascript">
+  $(document).on('blur','.create_tutor_group_name',function(){
+// var name = $('#tutor_group_name').val();
+var name = $(this).val();
+
+
+      
+      $.ajax({
+     beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+      type:'post', 
+        url: '/unique_tutor_name',
+          data: {name :name}
+
+      
+      });
+      return false
+    });
+  
+</script>
+<script type="text/javascript">
+  $(document).on('blur','.update_tutor_group_name',function(){
+var name = $(this).val();
+var tg_id = $(this).attr("tg")
+
+   
+      $.ajax({
+     beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+      type:'post', 
+        url: '/update_unique_tutor_name',
+          data: {name :name,tg_id :tg_id}
+
+      
+      });
+      return false
+    });
+  
+</script>
+
+
+<script>
+$(document).on('change','select#school_dropdown_update',function(){
+
+  var selected_phase = $(this).find('option:selected').attr('id');
+  // alert(selected_phase);
+  $('.phase_div').hide();
+  $('.'+selected_phase).show();
+});
+
+</script>
+
+<script>
+$(document).on('change','#school_dropdown',function(){
+
+  var selected_phase = $(this).find('option:selected').attr('id');
+  $('.phase_div').hide();
+  $('.'+selected_phase).show();
+});
+
+</script>

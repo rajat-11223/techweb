@@ -1,0 +1,9 @@
+$('.print_lo').html("<%=escape_javascript(render 'students/print/print_student_lo')%>");
+ FormsIcheck.init();
+  setTimeout( function(){ 
+  $('.loader').fadeOut('slow');
+  }  , 500 );
+  setTimeout( function(){ 
+		window.print();
+  $('.loader').fadeOut('slow');
+  }  , 1000 );

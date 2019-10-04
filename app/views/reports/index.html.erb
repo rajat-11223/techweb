@@ -1,0 +1,29 @@
+<div class="row">
+
+<% if params[:view] %>
+
+  <% if params[:view] == "all" %> 
+    
+    <%= render 'reports/partial/view_all' %>
+
+  <% elsif params[:view].in? ["by_tutor_group", "by_phase"] %>
+    
+    <%= render 'reports/partial/view_simple' %>  
+
+  <% elsif params[:view].in? ["by_class"] %>
+    
+    <%= render 'reports/partial/view_by_class' %>
+
+  <% else %>
+
+    <%= render 'errors/partial/not_found' %>
+
+  <% end %>
+
+<% else %>
+
+    <%= render 'reports/partial/view_all' %>
+
+<% end %>
+    
+</div>

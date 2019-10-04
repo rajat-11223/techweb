@@ -1,0 +1,241 @@
+
+    <div class="row">
+      <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="panel">
+          <div class="panel-heading">
+            <div class="panel-title">
+              
+              <div class="row">
+                  <div class="col-md-6">
+                    <%= link_to "ADD",add_student_from_modal_path, remote: true, method: :post, :class => 'btn btn-primary btn-condensed'  %>
+                    <%= link_to "EXPORT",export_caspa_modal_path, remote: true, method: :post, :class => 'btn btn-primary btn-condensed'  %>
+                  </div>
+            
+                <div class="col-md-6 ">
+                 
+                  <div class="col-md-4 pull-right">
+                    <%= form_tag students_path ,method: :get do%>
+                       <% if @deactive.present?%>
+                        <%=select_tag "view" ,options_for_select(["Active","Deactive"] ,:selected=>"Deactive"),:class=>"show_students selectpicker"%>
+                       <%else%>
+                        <%=select_tag "view" ,options_for_select(["Active","Deactive"]) ,:class=>"show_students selectpicker"%>
+                      <%end%>
+                    <%end%>
+                  </div>
+                   <div class="col-md-1 pull-right">
+                    <label>Show:</label>
+                  </div>
+                </div>
+              </div>
+          </div>
+
+          <div class="panel-body">
+
+            <div class="overflow-table">
+            <table class="display datatables-alphabet-sorting">
+              <thead>
+                <tr>
+
+                  <th>Name</th>
+                  <th>Phase</th>
+                  <th>Learning Group</th>
+                  <th>Tutor & Group</th>
+                  <th>PFC</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+
+
+              <tbody>
+              <% @students.each do |student| %>
+
+                <tr>
+                <!--   <td>
+                    <div class="icheck icheck-flat">
+                        <div class="checkbox">
+                          <label>
+                            <input type="checkbox" value="">
+                          </label>
+                        </div>
+                      </div>
+                  </td> -->
+                  <td><%=link_to student.fname + " "+ student.lname.to_s,student_path(student)%></td>
+                  <!-- <td><%#= student.show_phase %></td> -->
+                  <td><%= !student.phase(session[:global_academic_session]).blank? ? student.phase(session[:global_academic_session]).name : "" %></td>
+
+                  
+                  <td style="color: <%= student.show_learning_group_color(session[:global_academic_session]) %>"><strong><%=student.show_learning_group_name(session[:global_academic_session])%></strong> </td> 
+                  <td> <%=student.show_tutor_group_tutor_name(session[:global_academic_session]) %>&nbsp;-&nbsp;<%= student.show_tutor_group_name(session[:global_academic_session]) %></td>
+                  <!-- <td><%#= student.annual_grade_students.last.is_pfc? ? "Yes" : "No"%></td> -->
+                  <td> 
+                      <%= student.annual_grade_students.joins(:annual_grade).where("annual_grades.academic_session_id = ?", session[:global_academic_session]).blank? ? "Unavailable" : student.annual_grade_students.joins(:annual_grade).where("annual_grades.academic_session_id = ?", session[:global_academic_session]).first.is_pfc? ? "Yes" : "No" %>
+                  </td>
+
+                  <td>
+                  <% if student.deleted_at.present?%>
+                  <%= link_to reactivate_student_path(:student_id=>student.id),data: {confirm: "Are you sure you want to reactivate this student?",toggle: "tooltip", title: "Reactivate student"}, method: :post, :class=>"show_loader btn btn-default btn-sm" do%>
+                  <i class="fa fa-recycle"></i>
+                  <%end%>
+                  <%else%>
+                   <a class=" btn btn-default btn-sm" onclick="student_modal(<%=student.id%>)" data-toggle=tooltip data-title="Edit Student"><i class="fa fa-pencil"></i></a>
+
+                   <%= link_to student_path(student.id), data: {confirm: "Are you sure you want to deactivate this student?", toggle: "tooltip", title: "Delete student"}, method: :delete, :class=>"show_loader btn btn-danger btn-sm "  do %>
+                        <i class="fa fa-trash" ></i>
+                    <%end%>
+<%end%>
+                  </td>
+                  
+                </tr>
+                
+              <%end%>
+              </tbody>
+            </table>
+            </div>
+            <!--.overflow-table-->
+
+          </div>
+          <!--.panel-body-->
+        </div>
+        <!--.panel-->
+      </div>
+      <!--.col-md-12-->
+    </div>
+    <!--.row-->
+  
+
+<%#= link_to 'New Yearly term', new_yearly_term_path %>
+<%#= link_to 'New Student', new_student_path %>
+
+  <!-- Modals -->
+    <div class="modal scale fade-in new_student" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header bg-beatrice text-white">
+            <h4 class="modal-title text-white">ADD STUDENT<a><span class="fa fa-times text-white pull-right cursor-pointer" data-dismiss="modal"></span></a></h4>
+          </div>
+          <div class="modal-body">
+          <%#=render '/students/form'%>
+   
+ 
+          
+          </div>
+        </div><!--.modal-content-->
+      </div><!--.modal-dialog-->
+    </div><!--.modal-->
+
+
+    <div class="modal scale fade-in edit_student" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header bg-beatrice text-white">
+            <h4 class="modal-title text-white">EDIT STUDENT<a><span class="fa fa-times text-white pull-right cursor-pointer" data-dismiss="modal"></span></a></h4>
+          </div>
+          <div class="modal-body">
+          <%#=render '/students/form'%>
+   
+ 
+          
+          </div>
+        </div><!--.modal-content-->
+      </div><!--.modal-dialog-->
+    </div><!--.modal-->
+
+    <div class="modal scale fade-in export_caspa full-height" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header bg-beatrice text-white">
+            <h4 class="modal-title text-white">EXPORT ACHIEVEMENT DATA<a><span class="fa fa-times text-white pull-right cursor-pointer" data-dismiss="modal"></span></a></h4>
+          </div>
+          <div class="modal-body">
+
+          
+          </div>
+        </div><!--.modal-content-->
+      </div><!--.modal-dialog-->
+    </div><!--.modal-->
+
+
+<script type="text/javascript">
+  function student_modal(student_id){
+    $.ajax({
+     beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+      type:'post', 
+      url: '/edit_student_modal',
+       data: { student_id :student_id}
+      
+      });
+      
+
+  }
+</script>
+
+<script type="text/javascript">
+  $(document).on("change",".show_student",function(){
+    var deactivate =$(this).val();
+    // $.ajax({
+    //  beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+    //  remote: "false",
+    //   type:'get', 
+    //   url: '/students',
+    //    data: { deactivate :deactivate}
+      
+    //   });
+   window.location = "<%=  url_for(:controller => 'students', :action => 'index' ,:deactivate=>'deactivate') %>";
+
+  // } 
+      
+  })
+
+</script>
+<script type="text/javascript">
+    $(document).on("change",".show_students",function(){
+       var view =$(this).val();
+      $('form').submit();
+
+
+    });
+
+$(document).ready(function(){
+  $('.loader').fadeOut('slow')
+})
+// function reactivate(student_id){
+ 
+  // var deactivate =$('#deactivate').val();
+//    $.ajax({
+//      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+//       type:'post', 
+//       url: '/reactivate_student',
+//       data: {student_id :student_id}
+      
+//       });
+      
+// }
+
+
+</script>
+<!-- export -->
+
+
+<script type="text/javascript">
+  $(document).on('click',".check_all",function(source){
+
+  $('.icheck').each(function(){
+     $(this).iCheck('check');
+  });
+});
+$(document).on('click',".uncheck_all",function(source){
+
+  $('.icheck').each(function(){
+     $(this).iCheck('uncheck');
+  });
+})
+
+
+</script>
+
+
+
+
+
+
+

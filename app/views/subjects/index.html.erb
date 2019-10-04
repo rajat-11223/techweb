@@ -1,0 +1,165 @@
+    <ul class="nav nav-tabs nav-justified" role="tablist">
+                  <li class="active"><a href="#course" data-toggle="tab">COURSE SUBJECTS</a></li>
+                  <li><a href="#core" data-toggle="tab">CORE SUBJECTS</a></li>
+                </ul>
+                <div class="tab-content no-p">
+                  <div class="tab-pane active" id="course">
+                   
+                    <div class="row">
+      <div class="col-md-12">
+        <div class="panel no-m-b">
+          <div class="panel-heading">
+            <div class="panel-title">
+              <a><span data-toggle="modal" data-target="#new_subject" class="btn bg-beatrice text-white">ADD</span></a>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Subject Name</th>
+                    <th></th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @curriculum_subjects.each do |subject| %>
+                    <tr>
+                      <td><%= subject.name%></td>
+                      <td></td>
+                      <td>
+                        <a class="btn btn-default btn-sm" onclick="subject_modal(<%=subject.id%>)" data-toggle=tooltip data-title="Edit Subject" id="subject_modal"><i class="fa fa-pencil" ></i></a>
+                        <%= link_to subject, data: {confirm: "Are you sure you wish to delete this subject?"}, method: :delete,:class=>"btn btn-danger btn-sm" do %>
+                        <i class="fa fa-trash" data-toggle=tooltip data-title="Delete Subject"></i><%end%>
+                      </td>
+                    </tr>
+                  <% if subject.sub_subjects.present?%>
+                    <% subject.sub_subjects.where(:is_none => 0).each do |sub|%>
+
+                      <tr>
+                        <td></td>
+                        <td><%=sub.name%></td>
+
+                        <td>
+                        <a class="btn btn-default btn-sm" style="visibility:hidden;"><i class="fa fa-pencil"></i></a>
+                          <%=link_to sub_delete_path(sub.id), data: {confirm: "Are you sure you wish to delete this sub-subject?", title: "Delete Subject", toggle: "tooltip"}, :class=>"btn btn-danger btn-sm" do%>
+                          <i class="fa fa-trash" data-toggle=tooltip data-title="Delete Sub-Subject"></i>
+                          <%end%>
+                        </td>
+                      </tr>
+                   <%end%>           
+                  <%end%>
+                  <%end%>
+                </tbody>
+              </table>
+            </div>
+          </div>
+       
+        </div>
+        <!--.panel-->
+      </div>
+      <!--.col-md-12-->
+                    </div>
+ 
+                  </div>
+                   <div class="tab-pane" id="core">
+                   <%=render "/subjects/partial/show_core_subjects"%>
+                  </div>
+                </div>
+
+
+        <div class="modal scale fade" id="new_subject" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header bg-beatrice text-white">
+            <h4 class="modal-title text-white">NEW SUBJECT<!-- <span class="fonticon ion-close-circled pull-right" data-dismiss="modal"></span> --><span class="fa fa-times pull-right cursor-pointer" data-dismiss="modal"></span></h4>
+          </div>
+          <div class="modal-body">
+          <%=render 'subjects/form'%>
+          </div>
+          </div>
+          </div>
+          </div>
+
+
+             <div class="modal scale fade" id="new_core_subject" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header bg-beatrice text-white">
+            <h4 class="modal-title text-white">NEW CORE SUBJECT<!-- <span class="fonticon ion-close-circled pull-right" data-dismiss="modal"></span> --><span class="fa fa-times pull-right cursor-pointer" data-dismiss="modal"></span></h4>
+          </div>
+          <div class="modal-body">
+          <%=render 'subjects/partial/add_core_subject_form'%>
+          </div>
+          </div>
+          </div>
+          </div>
+
+     <div class="modal scale fade" id="edit_subject" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header bg-beatrice text-white">
+            <h4 class="modal-title text-white">EDIT SUBJECT<span class="fa fa-times pull-right cursor-pointer" data-dismiss="modal"></span></h4>
+          </div>
+             <div class="modal-body" id="modal1">
+          </div>   
+
+         
+        </div>
+      </div>
+    </div>
+
+
+  <div class="modal scale fade" id="edit_core_subject" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header bg-beatrice text-white">
+            <h4 class="modal-title text-white">EDIT CORE SUBJECT<span class="fa fa-times pull-right cursor-pointer" data-dismiss="modal"></span></h4>
+          </div>
+             <div class="modal-body" id="modal_core_subject">
+          </div>   
+
+         
+        </div>
+      </div>
+    </div>
+
+
+
+
+
+<script type="text/javascript">
+  function subject_modal(subject_id){
+
+    $.ajax({
+     beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+      type:'post', 
+      url: '/subject/edit_subject',
+       data: { subject_id :subject_id}
+      
+      });
+      
+
+  }
+</script>
+
+
+<script type="text/javascript">
+  function edit_core_subject_modal(subject_id){
+
+
+    $.ajax({
+     beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+      type:'post', 
+      url: '/edit_core_subject',
+       data: { subject_id :subject_id}
+      
+      });
+      
+
+      
+
+  }
+</script>
+

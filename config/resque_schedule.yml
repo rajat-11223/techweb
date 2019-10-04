@@ -1,0 +1,24 @@
+do_student_alerts:
+  # every: 20s
+  cron: 0 0 * * *
+  class: StudentAlert
+  args:
+  description: Runs the perform method in Student Alert
+do_unset_flag:
+  # every: 2s
+  cron: 0 4 * * * 
+  class: UnsetFlag
+  args:
+  description: Runs the perform method to unset student flag
+do_alert_emails:
+  # every: 31s
+  cron: 0 8 */3 * *
+  class: SendAlert
+  args:
+  description: Runs the perform method in Send Alert
+do_email_alerts:
+# every: 31s
+  cron: 0 4 * * * 
+  class: ReportAlert
+  args:
+  description: Runs the perform method in Report Alert

@@ -1,0 +1,116 @@
+
+
+	 <div class="row">
+      <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="panel">
+          <div class="panel-heading">
+            <div class="panel-title">
+          <h4>Summaries</h4>
+            </div>
+          </div>
+     
+          <div class="panel-body">
+<% if @student_lo_observation.where(is_summary: true).count == 0 %>
+    <p>  No summaries available </p> 
+    <% else %>
+            <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+
+                 					<th>Date</th>
+									<th>Teacher</th>
+									<th>Subject</th>
+									<th>Class</th>
+									<th>Observation</th>
+									<th></th>
+									
+                </tr>
+              </thead>
+
+
+              <tbody>
+                
+		<% @student_lo_observation.where(is_summary: true).collect do |observation|%>
+                  <tr>
+
+                    <td class="col-md-1"><%=observation.date.present? ? observation.date.strftime("%d %b %Y") : "no date present"%></td>
+			        
+			             <td class="col-md-1"><%= observation.user.name %></td>
+
+                   <td class="col-md-1"><%= !observation.summary_subject_name.blank? ? observation.summary_subject_name : "Unavailable" %></td>
+
+                   <td class="col-md-1"><%= @term_year %></td>
+
+			             <td class="observation_column col-md-6">
+
+			               <div class="row">
+			                 <div class="col-md-12"><p class="align-justify p-10"><%= raw observation.description%></p></div>
+
+                        <div class="col-md-12" style="display: -webkit-box;" > 
+                      <%if observation.student_learning_objective_observation_files.present?%>
+			<% observation.student_learning_objective_observation_files.each do |file|%>
+					<% if file.evidence_content_type.in? ["image/jpg" ,"image/png","image/jpeg"]%>
+					<div style="position:relative;">
+						<%=link_to image_tag(file.show_evidence(:thumb)),show_evidence_from_modal_path(:file_id=>file) ,:remote=>true,method: :post %>
+					</div>   
+					<%else%>
+					<div class="play_vid" style="position:relative;">
+						<%=link_to image_tag(file.show_evidence(:thumb)),show_evidence_from_modal_path(:file_id=>file) ,:remote=>true,method: :post %>
+						<i class="fa fa-4x fa-play-circle-o text-white play-fa-center play_vid_hover"></i>
+					</div>
+					<%end%>
+					<%end%>
+					<%end%>
+		                    </div>
+                      </div>
+                    </td>
+                     
+	<td>
+<% if current_user.is_team_lead? %>
+  <%=link_to add_summary_path(:lo=>observation.student_learning_objective.id,student_id: @student.id,summary_user: observation.user.id), remote: true, method: :post,:class=>"show_loader btn btn-primary btn-sm",:data=>{:toggle=>"tooltip", :title=>"Edit Summary"} do %>
+     <i class="a fa fa-pencil" data-toggle=tooltip data-title="edit"></i>
+                        <%end%>
+                        <%end%>
+                        </td>
+                  
+                </tr>
+                
+<% end %>
+                 
+            </tbody>
+            </table>
+            </div>
+    <% end %> 
+
+          </div>
+   
+        </div>
+
+      </div>
+    
+    </div>
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

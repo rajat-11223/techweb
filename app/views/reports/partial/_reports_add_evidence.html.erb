@@ -1,0 +1,50 @@
+
+    <div style="background: #F9F9F9;">
+<!-- <div class="col-md-10 col-md-offset-1 col-sm-10 col-sm-offset-1 col-xs-10 col-xs-offset-1"> -->
+<ul class="nav nav-tabs nav-justified" role="tablist">
+                  <li class="active"><a href="#report_myobservations" data-toggle="tab">My Observations</a></li>
+                  <li><a href="#report_summaries" data-toggle="tab">Teacher Summaries</a></li>
+                  <li><a href="#report_other_observations" data-toggle="tab">Other Observations</a></li>
+                </ul>
+ <div class="tab-content no-p">
+                  <div class="tab-pane active" id="report_myobservations">
+<%= render partial: "/reports/partial/tab_report_myobservations"%>
+
+
+</div>
+
+
+  <div class="tab-pane" id="report_summaries">
+<%= render partial: "/reports/partial/tab_report_summaries"%>
+
+
+  </div>
+
+    <div class="tab-pane" id="report_other_observations">
+<%= render partial: "/reports/partial/tab_report_other_observations"%>
+
+  </div>
+
+
+
+</div>
+   <div class="modal-footer">              
+        
+                  <div class="form-actions">
+                  <div class="row">
+                    <div class="pull-right">
+                     
+                      <%#= submit_tag "SAVE", :class=>"btn btn-success btn-beatrice add_evidence" %>
+                      <span class="btn btn-success btn-beatrice add_evidence <%= @student_lo_observation.count == 0 ? 'disabled' : nil %>" report="<%=@report_objective.id%>" >Add Selected</span>
+                    </div>
+                    <div class="pull-left">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                  </div>
+                  </div>
+                  </div>
+</div>
+
+
+
+  

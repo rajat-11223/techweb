@@ -1,0 +1,258 @@
+<style>
+
+/*td{
+  width: 12.6%;
+}
+
+.observation_column{
+  width:40%;
+}
+
+.action_column{
+  width:50%;
+}*/
+
+</style>
+
+<div class="col-md-10 col-md-offset-1 col-sm-10 col-sm-offset-1 col-xs-10 col-xs-offset-1">              
+ <div class="row">
+      <div class="col-md-12">
+        <div class="panel">
+          <div class="panel-heading">
+            <div class="panel-title"><h4>Learning Objective</h4></div>
+          </div>
+  
+          <div class="panel-body">
+
+            <div class="unseen">
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+
+                    <th>Objective</th>
+                    <th>Focus In</th>
+                    <th>Level</th>
+                    <th>Subject</th>
+                    <th>Progress</th>
+                    <th>Date Set</th>
+                  </tr>
+                </thead>
+                <tbody>
+           
+                  <tr>
+                    <td class="col-md-1"><%=raw  @student_learning_objectives.title %></td>
+                            <td class="col-md-1"> 
+                    <% if @student_learning_objectives.show_focus_classes2(session[:global_academic_session], session[:global_current_term]).present? %>
+                
+                        <%= @student_learning_objectives.show_focus_classes2(session[:global_academic_session], session[:global_current_term]) %>
+                    <% else %> 
+                      -
+                    <% end %>
+                    
+                    </td>
+                    <td class="col-md-1"><%= @student_learning_objectives.show_p_level %></td>
+                    <td class="col-md-1"> 
+                      <%= @student_learning_objectives.show_subject %>
+                    </td>
+
+<td class="axis_data col-md-5">
+<% @master_csd_axis.each do |axis| %>
+<div class="row">
+<div class = "col-md-3"><small><%= axis.display_name %> </small></div>
+<div class="col-md-9 pull-right axis_parent" id="axisparent<%= axis.id %>">
+<input type="hidden" name="student_objective_id" value="<%= @student_learning_objectives.id %>" class="student_objective_id">
+<%# for x in (axis.min_value)..(axis.max_value) do %> 
+<%#= x.to_i == lo.target_lower_bound(axis.id) ? raw('<a><i class="btn btn-orange btn-xs">B</i></a>') : x.to_i == lo.target_upper_bound(axis.id) ? raw('<a><i class="btn btn-blue btn-xs">T</i></a>') : x.to_i < lo.achievement_value(axis.id) ? raw('<a><i class="btn btn-green btn-xs">&nbsp;</i></a>') : raw('<a><i class="btn btn-white btn-xs">&nbsp;</i></a>') %>
+
+<%# end %>
+<input type="hidden" value="<%= axis.id %>" name="master_axis_id" class="master_axis_id">
+
+<input type="hidden" value="<%= axis.min_value %>" name="minaxisvalue" class="minaxisvalue">  
+<input type="hidden" value="<%= axis.max_value %>" name="maxaxisvalue" class="maxaxisvalue">
+
+<% for x in (axis.min_value)..(axis.max_value) do %>
+
+<% target_btn = (x.to_i == @student_learning_objectives.achievement_value(axis.id) ? 'btn-success' : 'btn-default') %>
+<%# btn_state = (@student_learning_objectives.is_completed || @student_learning_objectives.is_closed ? 'disabled' : '') %>
+<% btn_state = 'disabled' %>
+
+<%= x.to_i < @student_learning_objectives.target_lower_bound(axis.id).to_i ? 
+raw("<a class='btn btn-grey disabled btn-xs pull-left axis-click'>" << x.to_s << "</a>") : x.to_i > @student_learning_objectives.target_upper_bound(axis.id) ? 
+raw("<a class='btn btn-grey disabled btn-xs pull-left axis-click'>" << x.to_s << "</a>") : x.to_i == @student_learning_objectives.target_lower_bound(axis.id) ? 
+raw("<a class='btn btn-beatrice #{btn_state} text-white btn-xs pull-left axis-click  min-value' axis-value=" << x.to_s << " id=minaxis" << x.to_s << ">B</a>") : x.to_i == @student_learning_objectives.target_upper_bound(axis.id) ? 
+raw("<a class='btn #{target_btn} btn-xs pull-left axis-click max-value max-value border-grey #{btn_state} no-box-shadow' axis-value="<< x.to_s << " id=axisvalue_obs"<< @student_learning_objectives.id.to_s << axis.id.to_s << x.to_s << ">T</a>") : x.to_i <= @student_learning_objectives.achievement_value(axis.id) ? 
+raw("<a class='btn btn-success border-grey btn-xs pull-left axis-click #{btn_state} no-box-shadow' axis-value="<< x.to_s << " id=axisvalue_obs"<< @student_learning_objectives.id.to_s << axis.id.to_s << x.to_s << ">" << x.to_s << "</a>") : 
+raw("<a class='btn btn-default btn-xs pull-left axis-click #{btn_state} no-box-shadow border-grey' axis-value="<< x.to_s << " id=axisvalue_obs"<< @student_learning_objectives.id.to_s << axis.id.to_s << x.to_s << ">" << x.to_s << "</a>") %>
+<% end %>
+</div>
+</div>
+<% end %>
+</td>
+                    <td class="col-md-1">
+                      <%= @student_learning_objectives.assigned_date.strftime("%d/%m/%Y") %><br /><small>Target Achieved<br /><%= @student_learning_objectives.target_date.strftime("%d %b %Y") %></small>
+                    </td>
+                 
+                  </tr>
+              <tr>
+                <td colspan="7" class="bullets">
+
+                  <%= raw @student_learning_objectives.description %>
+                </td>
+              </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>  
+      <div class="panel">
+      <div class="header-tabs scrollable-tabs sticky position-inherit">
+      <ul class="nav nav-tabs tabs-active-text-white tabs-active-border-yellow" role="tablist">
+                  <li class="active"><a href="#Observations" data-toggle="tab">Observations</a></li>
+                  <li><a href="#summary" data-toggle="tab">Summaries</a></li>
+                  
+                
+                </ul>
+
+
+</div>
+  
+                <div class="tab-content no-p">
+                  <div class="tab-pane active" id="Observations">
+ <div class="row">
+      <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="panel">
+          <div class="panel-heading">
+            <div class="panel-title">
+          <h4>Observations</h4>
+            </div>
+          </div>
+     
+          <div class="panel-body">
+
+            <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+
+                 	<th>Date</th>
+									<th>Teacher</th>
+									<th>Subject</th>
+									<th>Class</th>
+									<th>Observation</th>
+									<th></th>
+                </tr>
+              </thead>
+
+
+              <tbody>
+                <%@student_lo_observation.where(is_summary: false).collect do |observation|%>
+                  <tr>
+
+                    <td class="col-md-1"><%=observation.date.present? ? observation.date.strftime("%d %b %Y") : "no date present"%></td>
+			        
+			             <td class="col-md-1"><%=observation.user.name%></td>
+                   <td class="col-md-1"><%=observation.sub_subject.present? ? observation.sub_subject.subject.name : "N/A" %></td>
+                   <td class="col-md-1"><%=observation.sub_subject.present? ? observation.sub_subject.name : "N/A" %></td>
+			             <td class="observation_column col-md-6">
+
+			               <div class="row">
+			                 <div class="col-md-12"><p class="align-justify p-10"><%=observation.description%></p></div>
+                        <div class="col-md-12" style="display: -webkit-box;" > 
+                          <%if observation.student_learning_objective_observation_files.present?%>
+                            <!-- <div class="row"> -->
+                              <% observation.student_learning_objective_observation_files.each do |file|%>
+
+                                <% if file.evidence_content_type.in? ["image/jpg" ,"image/png","image/jpeg"]%>
+                                  <div style="position:relative;">
+                                    <%=link_to image_tag(file.show_evidence(:thumb)),show_evidence_from_modal_path(:file_id=>file) ,:remote=>true,method: :post %>
+                                      <%=link_to download_path(:id=>file), :class=>"btn btn-primary btn-sm", :style=>"position:absolute;top:0px;right:0px;" do %>
+                                        <i class="fa fa-download">&nbsp;</i>
+                                      <%end%>
+                                   
+                                   </div>   
+                                <%else%>
+                                  <div class="play_vid" style="position:relative;">
+
+                                    <%=link_to show_evidence_from_modal_path(:file_id=>file) ,:remote=>true,method: :post do %>
+                            
+
+                                      <i class="play_vid_hover fa fa-4x fa-play-circle-o text-white" style="position: absolute;top: 72px;right: 76px;"></i>
+                                    <%=image_tag(file.show_evidence(:thumb ))%>
+                                    <%end%>
+                                    <%=link_to download_path(:id=>file), :class=>"btn btn-primary btn-sm", :style=>"position:absolute;top:0px;right:0px;" do%>
+                                      <i class="fa fa-download">&nbsp;</i>
+                                    <%end%>
+                                    </div>
+                                     
+                              <%end%>
+                            <!-- </div> -->
+				                  <%end%>
+                          <%end%>
+		                    </div>
+                      </div>
+                    </td>
+   
+			 <td class="action_column col-md-3">
+       <%# if observation.user_id == current_user.id || current_user.is_team_lead? || current_user.is_student_tutor?(session[:global_academic_session], @student.id) %>
+       <% if observation.user_id == current_user.id || current_user.is_team_lead? %>
+       <%= link_to edit_observation_path(observation.id,:student_id=>@student.id), remote: true, method: :post,:class=>"btn btn-primary btn-sm"  do %>
+                        <i class="a fa fa-pencil" data-toggle=tooltip data-title="edit"></i>
+                        <%end%>
+                  <%= link_to delete_observation_path(observation.id,:student_lo_id=>@student_learning_objectives.id), data: {confirm: "Are you sure you wish to delete this observation?"},remote: true, method: :post, :class=>"btn btn-danger btn-sm" do %>
+                        <i class="fa fa-trash" data-toggle=tooltip data-title="Delete"></i><%end%>
+      <% end %>
+      </td>
+                  
+                </tr>
+                
+<% end %>
+              </tbody>
+            </table>
+            </div>
+            <!--.overflow-table-->
+
+          </div>
+          <!--.panel-body-->
+        </div>
+        <!--.panel-->
+      </div>
+      <!--.col-md-12-->
+    </div>
+    </div>
+    
+     <div class="tab-pane" id="summary">
+     <div class="panel">
+    <%= render partial: "students/partial/view_summary"%>
+     </div>
+    </div>
+</div>
+
+  
+
+    <script type="text/javascript">
+  $(".observation_image_modal").on('click', function () {
+  $(this).modal('hide');
+    $(this).find('.observation_image_modal_body').html("");
+
+    $.ajax({
+     beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+      type:'post', 
+        url: '/hide_image_observation'
+     
+      
+      });
+      
+});
+</script>
+
+
+    <script type="text/javascript"> 
+     $(document).ready(function(){
+
+        $('.loader').fadeOut('slow')
+      })   
+     TablesDataTables.init();
+     </script>

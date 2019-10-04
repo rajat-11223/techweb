@@ -1,0 +1,7 @@
+$('#update_schedule_modal').modal('show');
+$('#update_schedule_modal_header').html('<h4 class="modal-title text-white">Update Schedule for <%=@slot.name%> on <%=@master_day.name%><span class="fa fa-times text-white pull-right cursor-pointer" data-dismiss="modal"></span></h4>')
+$('.update_schedule_modal_body').html("<%=escape_javascript(render 'schedules/partial/update_schedule_modal')%>");
+<%# if @slot.name=="Lunch"%>
+// $('.lunch_subject').hide();
+<%#end%>
+$('.selectpicker').selectpicker();	

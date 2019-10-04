@@ -1,0 +1,981 @@
+
+<style type="text/css">
+@media (min-width: 768px) and (max-width: 1024px) {
+	.hidden-sm{
+		display:none!important;
+	}
+}	
+</style>
+
+<div class="print_lo">		
+	<div class="row ">
+		<div class="col-md-12">
+			<div class="col-md-3">
+				<div class="nav-user" style="  position: inherit;">
+					<div class="" style="padding: 0">
+						<img src="<%=@student.show_avatar(:square)%>" style="height: 200px; width: 200px; ">
+					</div>
+				</div>
+			</div>
+			<div class="col-md-9 ">
+				<div class="clickable-button">
+				</div>
+				<div class="layered-content bg-indigo" style="height: auto;">
+					<div class="overflow-content">
+						<h4 class="text-white">Description</h4>
+						<p style="text-align: justify;font-size: 15px;"><%=@student.description.present? ? @student.description : "No description"%></p>
+					</div>
+					<div class="clickable-close-button">
+						<a class="btn btn-floating initial-position floating-close"><i class="ion-android-close"></i></a>
+					</div>
+				</div>
+				<div class="card-heading" >
+					<h4><%=@student.name%></h4>
+				</div>
+				<div class="card-body">
+					<div style="display: -webkit-box;">
+						<h5>Important Information:</h5>
+						&nbsp;<span><%= link_to add_medical_info_path(:student_id=> @student.id), remote: true, method: :post ,:data=>{:toggle=>"tooltip", :title=>"Important Information"} do %>
+							<i class="fa-1x fa fa-pencil"></i>
+							<%end%></span>
+						</div>
+						<ol style="height: 105px;    overflow: scroll;    overflow-x: hidden;" >
+
+							<% @student.student_important_infos.each do |alert| %>
+							<li style="list-style-type: disc"> <%= alert.description %></li>
+							<% end %>
+						</ol>
+					</div>
+				</div>
+
+			</div>
+		</div>
+		<div class="header-tabs scrollable-tabs sticky position-inherit">
+			<ul class="nav nav-tabs tabs-active-text-white tabs-active-border-yellow" role="tablist">
+				<li class="active">
+					<a href="#objectives" data-toggle="tab">Learning Objectives</a>
+				</li>
+				<li>
+					<a href="#individual_observation" data-toggle="tab">Unassigned Observations</a>
+				</li>
+				<li>
+					<a href="#schedule" data-toggle="tab">Schedule</a>
+				</li>
+				<li>
+					<a href="#reports" data-toggle="tab">Reports</a>
+				</li>
+				<li>
+					<a href="#info" data-toggle="tab">Information</a>
+				</li>
+				<li>
+					<a href="#student_profile" data-toggle="tab">Profile</a>
+				</li>
+
+			</ul>
+		</div>
+		<div class="tab-content without-border">
+			<div class="tab-pane active" id="objectives">
+				<div id="show_closed">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="panel">
+								<div class="panel-heading">
+									<div class="panel-title"><h4>Learning Objectives</h4></div>
+								</div>
+								<div class="panel-heading">
+									<div class="panel-title">
+										<div class="icheck icheck-square-blue">
+											<div class="checkbox">
+												<h4>Show : </h4>
+												<label>
+													<input type="checkbox"  class="filter_checkbox current_lo"   student-id='<%=@student.id%>' checked-value="1" unchecked-value="0" checked> Current
+												</label>
+												<label>
+													<input type="checkbox" class="filter_checkbox completed_lo"  student-id='<%=@student.id%>' checked-value="1" unchecked-value="0"> Completed
+												</label>
+												<label>
+													<input type="checkbox" class="filter_checkbox closed_lo"  student-id='<%=@student.id%>' checked-value="1" unchecked-value="0"> Closed
+												</label>
+
+												<%= link_to "Add Learning Objective", assign_new_learning_objective_path(:id=>@student.id), remote: true, method: :post, :class => 'btn btn-primary btn-condensed pull-right'  %>
+												<a target="_blank" href= "<%= print_student_lo_path(id: @student.id, current_lo: @current_lo, completed_lo: @completed_lo, closed_lo: @closed_lo)%>" class="print_student_lo btn btn-beatrice text-white pull-right m-r-10">Print</a>	
+											</div>
+										</div>
+									</div>
+								</div>
+								<%= render "students/partial/student_show"%>  
+							</div>
+						</div>
+					</div>	
+				</div>
+			</div>
+			<div class="tab-pane" id="individual_observation">
+				<%= render 'students/partial/individual_observation' %>
+			</div>
+			<div class="tab-pane" id="schedule">
+				<% if @has_schedule %>
+				<div class= <% if !@has_schedule %> "row display-none" <% else %> "row "<% end %>>
+					<div class="col-md-12">
+						<div class="panel">
+							<div class="panel-heading">
+								<div class="panel-title"><h4>Schedule</h4></div>
+							</div>
+							<div class="panel-body">
+								<div class="table-responsive">
+									<table class="table table-bordered">
+										<thead>
+											<tr>
+												<th class="col-md-2"></th>
+												<% @master_days.each do |day| %>
+												<th class="col-md-2"><%= day.name %></th>
+												<% end %>
+											</tr>
+										</thead>
+										<tbody>
+											<% @slots.each_with_index do |slot, index_slot| %>
+											<tr>
+												<th class="p-t-40 align-center col-md-2"> <%= slot.name %> </th>
+												<% @master_days.each do |day| %>
+												<% @this_schedule = @student.slot_schedules.where(slot_id: slot.id, term_id: @term, master_day_id: day.id) %>
+												<td style="position:relative;text-align: center;vertical-align: middle;" class="col-md-2"> 
+													<% if !@this_schedule.blank? %>
+
+													<%= link_to (current_user.is_team_lead? ? edit_schedule_student_show_path(slot_id: slot.id,master_day_id: day.id,student_id: @student.id,term_id: @term.id) : nil),remote: true, method: :post,:class=>"#{current_user.is_team_lead? ? 'show_loader' : 'cursor-default'}", toggle: "tooltip", title: "Update schedule",:style=>"color:#000;text-decoration:none;" do %>
+													<% if @this_schedule.count > 1 %> 
+													<!-- conflict in schedule -->
+													<strong><%= @this_schedule.count %> conflicts</strong>	<br />
+													<i class="fa fa-2x fa-warning text-redpink"></i>
+													<% else %>
+													<!-- no conflict of schedule -->
+													<strong><%= @student.slot_schedules.find_by(slot_id: slot.id, term_id: @term, master_day_id: day.id).sub_subject.show_name %></strong>
+													<br />
+													<%= @student.slot_schedules.find_by(slot_id: slot.id, term_id: @term, master_day_id: day.id).user.name %>
+<!-- DO NOT DELETE FROM HERE -->
+ <!--  <ul>
+  <%# @focus_los = @student.slot_schedules.find_by(slot_id: slot.id, term_id: @term, master_day_id: day.id).sub_subject.show_focus_learning_objectives(session[:global_academic_session]).pluck(:id) & @student.student_learning_objectives.joins(:focus_classes).pluck(:id) %>
+  <%# @focus_los.each do |focus_lo| %>
+ 	<li> <%#= StudentLearningObjective.find(focus_lo).description.first(50) %> </li>
+  <%# end %> 
+</ul> -->
+<!-- DO NOT DELETE TILL HERE -->
+													<%end%>
+													<%end%>
+													<% else %>
+													<% if current_user.is_team_lead? %>
+													<a onclick="create_schedule_from_student_index('<%=slot.id%>','<%=day.id%>',<%=@student.id%>)"> 
+														<i class="fa fa-2x fa-plus text-grey cursor-pointer"></i>
+													</a>
+													<% else %>
+													Unassigned
+													<% end %>
+													<% end %>
+												</td>
+												<% end %>   
+											</tr>
+											<% end %>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<% else %>
+				<h4 class="text-center m-t-50">No schedule for current term</h4>
+				<% end %>
+			</div>	
+			<div class="tab-pane" id="reports">
+				<%= render "students/partial/reports"%>
+			</div>
+			<div class="tab-pane" id="info">
+				<div class="panel">
+					<div class="panel-heading">
+						<div class="panel-title"><h4>Student information</h4>
+							<span><%= link_to update_medicalinfo_path(:student_id=> @student.id), remote: true, method: :post ,:data=>{:toggle=>"tooltip", :title=>"Information"} do %>
+								<i class=" fa fa-pencil" style="color: black"></i>
+								<%end%>
+							</span>
+						</div>
+					</div>
+					<div class="panel-body">
+						<p style="text-align: justify;font-size: 15px;"><%= @student.medical_information.blank? ? "No information that needs attention" : @student.medical_information %></p>
+					</div>
+				</div>
+			</div>
+
+			<div class="tab-pane" id="student_profile">
+				<div class="panel">
+					<div class="panel-heading">
+						<div class="panel-title"><h4>Student profile</h4>
+							<span><%= link_to add_student_profile_path(:student_id=> @student.id), remote: true, method: :post ,:data=>{:toggle=>"tooltip", :title=>"Information"} do %>
+								<i class=" fa fa-pencil" style="color: black"></i>
+								<%end%>
+							</span>							
+						</div>
+					</div>
+					<div class="panel-body">
+						<% if @student.student_profiles.present? %>
+
+					<% @student.student_profiles.each do |vv|%>
+
+					<table class="table">
+                   <thead>
+                      <tr>
+                       <th>Heading1</th>        
+                      </tr>
+                      <td><%= vv.heading1 %></td>
+                      <tr>
+                       <th>Heading2</th>        
+                     </tr>
+                      <td><%= vv.heading2 %></td>
+                      <tr>
+                       <th>Heading3</th>        
+                     </tr>
+                      <td><%= vv.heading3 %></td>
+                      <tr>
+                       <th>Heading4</th>        
+                     </tr>
+                      <td><%= vv.heading4 %></td>
+                    </thead>
+                </table>
+
+					<% end %>
+					<% else %>
+
+					 <p style="text-align: justify;font-size: 15px;"> No information that needs attention </p>
+
+					<% end %>
+
+                    
+						
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>			
+	<div class="modal scale fade-in assign_learning_objective full-height" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog custom-modal-dialog modal-lg col-lg-12">
+			<div class="modal-content custom-modal-content">
+				<div class="modal-header bg-beatrice text-white">
+					<div class="modal-title text-white"> 
+						<img src="<%=@student.show_avatar(:thumb)%>" class="m-r-10" style="height: 40px; width: 40px;border: px solid white; ">
+						<span style="font-size: 23px">
+							Add Learning Objective for <%= @student.name %>
+						</span>
+						<a><span class="fa fa-times text-white pull-right cursor-pointer" data-dismiss="modal"></span></a>
+					</div>
+				</div>
+				<div class="modal-body assign_learning_objective_body">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal scale fade-in edit_learning_objective full-height" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog custom-modal-dialog modal-lg col-lg-12">
+			<div class="modal-content ">
+				<div class="modal-header bg-beatrice text-white">
+					<h4 class="modal-title text-white">Edit Learning Objective<a><span class="fa fa-times text-white pull-right cursor-pointer" data-dismiss="modal"></span></a></h4>
+				</div>
+				<div class="modal-body edit_learning_objective_body">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal scale fade-in full-height" id="add_observation" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog modal-lg ">
+			<div class="modal-content">
+				<div class="modal-header bg-beatrice text-white">
+					<h4 class="modal-title text-white">Add Observation<a><span class="fa fa-times text-white pull-right cursor-pointer" data-dismiss="modal"></span></a></h4>
+				</div>
+				<div class="modal-body" id="add_observation_body">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal scale fade-in full-height" id="view_observation" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog custom-modal-dialog modal-lg col-lg-12">
+			<div class="modal-content custom-modal-content">
+				<div class="modal-header bg-beatrice text-white">
+					<h4 class="modal-title text-white">View Observation<a><span class="fa fa-times text-white pull-right cursor-pointer" data-dismiss="modal"></span></a></h4>
+				</div>
+				<div class="modal-body" id="view_observation_body">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal scale fade-in full-height" id="edit_observation" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog  modal-lg col-lg-12">
+			<div class="modal-content ">
+				<div class="modal-header bg-beatrice text-white">
+					<h4 class="modal-title text-white">Edit Observation<a><span class="fa fa-times text-white pull-right cursor-pointer" data-dismiss="modal"></span></a></h4>
+				</div>
+				<div class="modal-body" id="edit_observation_body">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal scale fade" id="focus_modal" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header  bg-beatrice text-white">
+					<h4 class="modal-title text-white">Select class for this Learning Objective<a class="fa fa-times text-white pull-right cursor-pointer" data-dismiss="modal"></a></h4>
+				</div>
+				<div class="modal-body" id="focus_modal_body">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal scale fade" id="show_focus_subject_modal" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header  bg-beatrice text-white">
+					<h4 class="modal-title text-white"> Learning Objective focus<a class="fa fa-times text-white pull-right cursor-pointer" data-dismiss="modal"></a></h4>
+				</div>
+				<div class="modal-body" id="show_focus_subject_modal_body">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal scale fade" id="create_schedule_from_student_index" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header  bg-beatrice text-white">
+					<div id="create_schedule_from_student_index_header">
+						<h4 class="modal-title text-white"><a class="fa fa-times text-white pull-right cursor-pointer" data-dismiss="modal"></a></h4>
+					</div>
+				</div>
+				<div class="modal-body" id="create_schedule_from_student_index_body">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal scale fade" id="edit_schedule_student_show" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header  bg-beatrice text-white">
+					<div id="edit_schedule_student_show_header">
+						<h4 class="modal-title text-white"><a class="fa fa-times text-white pull-right cursor-pointer" data-dismiss="modal"></a></h4>
+					</div>
+				</div>
+				<div class="modal-body edit_schedule_student_show_body">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal scale fade-in full-height" id="assign_individual_observation" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog  modal-lg">
+			<div class="modal-content">
+				<div class="modal-header bg-beatrice text-white">
+					<h4 class="modal-title text-white">Assign Observation<a><span class="fa fa-times text-white pull-right cursor-pointer" data-dismiss="modal"></span></a></h4>
+				</div>
+				<div class="modal-body assign_individual_observation_body">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal scale fade-in " id="add_medical" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog ">
+			<div class="modal-content">
+				<div class="modal-header bg-beatrice text-white">
+					<h4 class="modal-title text-white">Important Information<a><span class="fa fa-times text-white pull-right cursor-pointer" data-dismiss="modal"></span></a></h4>
+				</div>
+				<div class="modal-body add_medical_body">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal scale fade-in " id="update_medicalinfo" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog ">
+			<div class="modal-content">
+				<div class="modal-header bg-beatrice text-white">
+					<h4 class="modal-title text-white">Update Medical Information<a><span class="fa fa-times text-white pull-right cursor-pointer" data-dismiss="modal"></span></a></h4>
+				</div>
+				<div class="modal-body update_medicalinfo_body">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal scale fade-in " id="add_profile_data" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog ">
+			<div class="modal-content">
+				<div class="modal-header bg-beatrice text-white">
+					<h4 class="modal-title text-white">Update Student Profile<a><span class="fa fa-times text-white pull-right cursor-pointer" data-dismiss="modal"></span></a></h4>
+				</div>
+				<div class="modal-body add_studentprofile_data">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal scale fade-in add_summary_modal full-height " tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog modal-lg custom-modal-dialog">
+			<div class="modal-content custom-modal-content">
+				<div class="modal-header bg-beatrice text-white">
+					<h4 class="modal-title text-white">Summary<a><span class="fa fa-times text-white pull-right cursor-pointer" data-dismiss="modal"></span></a></h4>
+				</div>
+				<div class="modal-body add_summary_body">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal scale fade observation_image_modal" tabindex="-1" role="dialog" aria-hidden="true" style="background: rgba(0, 0, 0, 0.86);">
+		<div class="modal-dialog  modal-lg ">
+			<div class="modal-content  ">
+				<div class="modal-body observation_image_modal_body" style="overflow: hidden;background: rgba(0, 0, 0, 0.86);text-align: center">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal scale fade individual_evidence_modal" tabindex="-1" role="dialog" aria-hidden="true" style="background: rgba(0, 0, 0, 0.62);">
+		<div class="modal-dialog  modal-lg ">
+			<div class="modal-content  ">
+				<div class="modal-body individual_evidence_modal_body" style="overflow: hidden;background: #313131;text-align: center">
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<script type="text/javascript">
+		$(".individual_evidence_modal").on('click',function(){
+			$(this).find('.individual_evidence_modal_body').html("");
+		});
+
+
+	</script>
+
+
+	<script type="text/javascript">
+		$(document).on('click','.description',function(){
+			$('.description').removeClass('bg-beatrice');
+			$('.description').removeClass('text-white');
+			$(this).addClass('bg-beatrice');
+			$(this).addClass('text-white');
+			$('.rfl_title').val($(this).attr('desc-value'));
+
+// $('.description_field').val($(this).attr('desc-value'));
+$('.summernote_rfl').code($(this).attr('rfl-add-desc'));
+$('.description_id').val($(this).attr('desc-id'));
+
+});
+</script>
+
+<script type="text/javascript">
+	$(document).on('ifToggled','input:radio',function(){
+		var a=($(this).attr('value'))
+		
+		if($(this).is(":checked") && a==1)
+		{
+			$('#rfl').show();
+			$('#pivats').hide();
+			$('#custom').hide();
+
+		} 
+		else if($(this).is(":checked") && a==2)
+		{
+			$('#pivats').show();
+			$('#rfl').hide();
+			$('#custom').hide();
+
+		} 
+		else
+		{
+			$('#rfl').hide();
+			$('#pivats').hide();
+
+			$('#custom').show();
+		} 
+	})
+	
+</script>
+
+<script type="text/javascript">
+	function edit_student_important_info(student_id){
+
+		$.ajax({
+			beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+			type:'post', 
+			url: '/edit_student_important_info',
+			data: { student_id :student_id}
+
+		});
+
+
+	}
+</script>
+
+<script type="text/javascript">
+	function show_pivats_sub_subjects(){
+
+		var sub_subject=$('#student_learning_objective_subject_id').val();
+		$.ajax({
+			beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+			type:'post', 
+			url: '/show_pivats_sub_subjects',
+			data: {sub_subject :sub_subject}
+
+		});
+	}
+</script>
+<script type="text/javascript">
+	function show_custom_sub_subjects(){
+
+		// var sub_subject=$('#student_learning_objective_subject_id').val();
+		var sub_subject=$('.subject_id').val();
+		
+		$.ajax({
+			beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+			type:'post', 
+			url: '/show_custom_sub_subjects',
+			data: {sub_subject :sub_subject}
+
+		});
+	}
+</script>
+
+<script type="text/javascript">
+	function show_plevel(){
+		var sub_subject=$('#sub_subject_id').val();
+		$.ajax({
+			beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+			type:'post', 
+			url: '/show_plevel_pivats',
+			data: {sub_subject :sub_subject}
+
+		});
+	}
+</script>
+
+<script type="text/javascript">
+	$(document).on('click','.pivats_description',function(){
+		$('.pivats_description').removeClass('bg-beatrice');
+		$('.pivats_description').removeClass('text-white');
+		$(this).addClass('bg-beatrice');
+		$(this).addClass('text-white');
+
+		$('.pivats_plevel').val($(this).attr('pivats-plevel'));
+
+// $('.pivats_title').val($(this).attr('pivats-title-value'));
+
+// $('.pivats_description_field').val($(this).attr('pivats-desc-value'));
+$('.summernote_pivats').code($(this).attr('pivats-desc-value'));
+$('.pivats_description_id').val($(this).attr('pivats-desc-id'));
+
+});
+</script>
+
+<script>
+// $(document).on('click','.axis-click',function(){
+// 	var objective_id = $(this).parent('.axis_parent').find('.student_objective_id').val();
+// 	var master_axis_id = $(this).parent('.axis_parent').find('.master_axis_id').val();
+// 	var axis_value = $(this).attr('axis-value');
+// 	var maxaxisvalue = $(this).parent('.axis_parent').find('.max-value').attr('axis-value');
+// 	// alert($(this).parent('.axis_parent').find('.min-value').hasClass('btn'));
+// 	var minaxisvalue = $(this).parent('.axis_parent').find('.min-value').attr('axis-value');
+// 	$.ajax({
+// 		method:'post',
+// 		url:'<%= set_objective_achievement_path %>',
+// 		data: {student_objective_id: objective_id, master_axis_id: master_axis_id, axis_value: axis_value, minaxisvalue: minaxisvalue, maxaxisvalue:maxaxisvalue}
+
+// 	});
+// });
+</script>
+<script>
+	$(document).on('click','.plevel_button',function(){
+		$('.plevel_button').removeClass('bg-beatrice');
+		$(this).addClass('bg-beatrice');
+	});
+
+</script>
+
+<script>
+	$(document).on('click','a.axis_setting',function(){
+		if(!$(this).attr('disabled')){
+			if($(this).parent('.axis_parent').find('.check_first').val()==0){
+				if($(this).attr('value-of-axis')!=10){
+					var i;
+					$(this).css('background-color','#003A6A');
+					$(this).css('border-color','#003A6A');
+					$(this).html('B');
+					$(this).css('color','white');
+					$(this).parent('.axis_parent').find('.check_first').val('1');
+					$(this).parent('.axis_parent').find('.min_axis').val($(this).attr('value-of-axis'));
+					$(this).removeClass('axis_setting');
+
+					for(i=parseInt($(this).parent('.axis_parent').find('.min_axis').val());i>=1;i--){
+						$(this).siblings('#axis'+i).attr('disabled',true);
+						$(this).siblings('#axis'+i).css('background-color','#9d9d9d');
+						$(this).siblings('#axis'+i).css('border-color','#a2a2a2');
+						$(this).siblings('#axis'+i).css('color','#000');
+					}
+				}
+			}
+			else if($(this).parent('.axis_parent').find('.check_first').val()==1){
+				var i;
+				$(this).css('background-color','#003A6A');
+				$(this).css('color','white');
+				$(this).html('T');
+				$(this).parent('.axis_parent').find('.check_first').val('2');
+				$(this).parent('.axis_parent').find('.max_axis').val($(this).attr('value-of-axis'));
+
+				for(i=parseInt($(this).parent('.axis_parent').find('.min_axis').val())+1;i<parseInt($(this).parent('.axis_parent').find('.max_axis').val());i++){
+      //$(this).siblings('.axis_setting').attr('')
+      
+      $(this).siblings('#axis'+i).css('background-color','#5cb85c');
+      $(this).siblings('#axis'+i).css('color','white');
+    }
+
+    for(i=parseInt($(this).parent('.axis_parent').find('.max_axis').val());i<=10;i++){
+      //$(this).siblings('.axis_setting').attr('')
+      
+      $(this).siblings('#axis'+i).attr('disabled',true);
+      $(this).siblings('#axis'+i).css('background-color','#9d9d9d');
+      $(this).siblings('#axis'+i).css('border-color','#a2a2a2');
+      $(this).siblings('#axis'+i).css('color','#000');
+    }
+
+  }
+}
+});
+
+</script>
+<script>
+	$(document).on('click','a.clear_axis',function(){
+		$(this).parent('.axis_parent').html('<input type="hidden" class="min_axis base_axis_class" name="base_axis_value[]"><input type="hidden" class="max_axis target_axis_class" name="target_axis_value[]"><input type="hidden" class="check_first" value="0"><% (1..10).each do |x| %><a class="axis_setting axis_setting_width btn btn-success button-striped button-full-striped btn-ripple btn-xs" value-of-axis="<%= x.to_i %>" id="axis<%= x.to_i %>"><%= x.to_i %></a><% end %><a class="clear_axis m-l-10">clear</a>')
+	});
+</script>
+
+<script type="text/javascript">
+	$(document).on("click",'.custom_plevel_button',function(){
+		var a=$(this).attr("plevel-id")
+		
+		$('.custom_plevel_button').removeClass('bg-beatrice');
+		$('.custom_plevel_button').removeClass('text-white');
+		$(this).addClass('bg-beatrice');
+		$(this).addClass('text-white');
+		$('#plevel').val(a);
+	})
+</script>
+
+<script type="text/javascript">
+
+	$(document).on("ifToggled",'.filter_checkbox',function(){
+		var current_lo=0;
+		var closed_lo =0;
+		var completed_lo=0;
+		var student= $(this).attr('student-id')
+		$('.filter_checkbox').each(function(){
+
+			if($(this).is(":checked")){
+				if($(this).hasClass('current_lo')){
+					current_lo =$(this).attr("checked-value")
+
+				}
+			}
+
+			if($(this).is(":checked")){
+				if($(this).hasClass('closed_lo')){
+					closed_lo =$(this).attr("checked-value")
+				}
+			}
+			if($(this).is(":checked")){
+				if($(this).hasClass('completed_lo')){
+					completed_lo =$(this).attr("checked-value")
+				}
+			}
+
+
+
+
+		});
+ // toastr.success('Please Wait');
+
+ $('.loader').show();
+ $.ajax({
+ 	beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+ 	type:'post', 
+ 	url: '/show_selected_lo_student_index',
+ 	data: {student_id :student,current_lo :current_lo,closed_lo :closed_lo,completed_lo :completed_lo}
+
+ });
+
+});
+</script>
+
+
+<script type="text/javascript">
+	function create_schedule_from_student_index(slot_id,day_id,student_id){
+		var term =$("#schedule_display_master_term_id").val();
+		$.ajax({
+			beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+			type:'post', 
+			contenttype:'json',
+			url: '/create_schedule_from_student_index',
+			data: {slot_id: slot_id, day_id: day_id,student_id :student_id}
+
+
+		});
+
+	}
+</script>
+<script type="text/javascript">
+	$(document).on('click',".click_loader",function(){
+		 // toastr.success('Please Wait');
+
+		 $('.loader').show();
+		})
+	$(document).on('click',".update_medical",function(){
+		 // toastr.success('Please Wait');
+
+		 $('.loader').show();
+		})
+	</script>
+
+
+	<script>
+		var a,b,c;
+		$(document).on('click','.learning_objective_submit',function(e){
+	//if($('.new_student_learning_objective').valid()){
+		a = 1;
+		b=1;
+		c=1;
+		$('.pivats_description').each(function(){
+			if($(this).parents('.display-none').is(":visible")){
+				if(!$(this).hasClass('bg-beatrice')){
+					$('.description_missing').show();
+					a = 2;
+				}
+				else{
+					$('.description_missing').hide();
+					a = 1;
+					return false;
+				// $('.new_student_learning_objective').submit()
+			}
+		}
+	});
+
+		$('.base_axis_class').each(function(){
+
+
+
+			if($(this).parents('.display-none').is(":visible")){
+
+				b=1;
+			// alert($(this).val());
+			if(!$(this).val()){
+				$('.baseline_target_missing').show();
+				b=2;
+				return false;
+			}
+		}
+	});
+
+		$('.target_axis_class').each(function(){
+			if($(this).parents('.display-none').is(":visible")){
+				c=1;
+				if(!$(this).val()){
+					$('.baseline_target_missing').show();
+					c=2;
+					return false;
+				}
+			}
+		});
+
+		if(a==2 || b==2 || c==2){
+			return false;
+		}		
+
+		// if(b==1 && c==1){
+		// 	$('.baseline_target_missing').hide();
+		// 	return false;
+		// }
+		$('.baseline_target_missing').hide();
+	// }
+});
+
+</script>
+
+<script type="text/javascript">
+	// TO DO.....
+	$(document).on('click','.update_loooo',function(e){
+		b=1;
+		c=1;
+
+
+		$('.base_axis_class').each(function(){
+
+			
+
+			// if($(this).parents('.display-none').is(":visible")){
+
+				b=1;
+			// alert($(this).val());
+			if(!$(this).val()){
+				$('.baseline_target_missing').show();
+				b=2;
+
+				return false;
+			}
+		// }
+	});
+
+		$('.target_axis_class').each(function(){
+					// if($(this).parents('.display-none').is(":visible")){
+						c=1;
+						if(!$(this).val()){
+							$('.baseline_target_missing').show();
+							c=2;
+							return false;
+						}
+		// }
+	});
+
+		if(b==2 && c==2){
+
+			return false;
+		}		
+
+		// if(b==1 && c==1){
+		// 	$('.baseline_target_missing').hide();
+		// 	return false;
+		// }
+		$('.baseline_target_missing').hide();
+		// return true
+	// }
+});
+
+
+</script>
+
+
+<script type="text/javascript">
+
+	$(document).on('ifToggled','input:radio',function(){
+		var a=($(this).attr('value'));
+
+		$('.assign_hidden_lo').val($(this).attr('value')); 
+	})
+
+</script>
+
+
+<script type="text/javascript">
+	(function() {
+		document.title="<%= @student.name %>"
+
+		var link = document.createElement('link');
+    // link.type = 'image/x-icon';
+    link.rel = 'shortcut icon';
+    link.href = "<%= @student.avatar %>";
+    document.getElementsByTagName('head')[0].appendChild(link);
+  }());
+	
+</script>
+
+<script type="text/javascript">
+	$(document).on("click", ".add_lo2_submit",function(e){
+
+		if($('.add_lo2_level').find('option:selected').val() ==""){
+			$(".err-level ").show();
+			e.preventDefault();
+
+		}
+		else
+		{
+			$(".err-level ").hide();
+
+		}
+		if($('.add_lo2_sublevel').find('option:selected').val() ==""){
+			$(".err-sublevel ").show();
+			e.preventDefault();
+
+		}
+		else
+		{
+			$(".err-sublevel ").hide();
+
+		}
+	})
+</script>
+
+<script type="text/javascript">
+	$(document).on('click','.delete_image',function(){
+		var file_id = $(this).parents('.file').attr('file-value');
+  // var observe_id =$(this).parent('.file').attr('observe-value');
+
+  $.ajax({
+  	type:'post', 
+  	url: '/change_file_flag', 
+            // data: { file_id :file_id,observe_id :observe_id}
+            data: { file_id :file_id}
+          });
+})
+
+
+</script>
+
+<script type="text/javascript">
+	$(document).on('click','.print_student_lo',function(){
+
+		var student_id = '<%=@student.id%>'
+		var current_lo=0;
+		var closed_lo =0;
+		var completed_lo=0;
+		$('.filter_checkbox').each(function(){
+			if($(this).is(":checked")){
+				if($(this).hasClass('current_lo')){
+					current_lo =$(this).attr("checked-value")
+				}
+			}
+			if($(this).is(":checked")){
+				if($(this).hasClass('closed_lo')){
+					closed_lo =$(this).attr("checked-value")
+				}
+			}
+			if($(this).is(":checked")){
+				if($(this).hasClass('completed_lo')){
+					completed_lo =$(this).attr("checked-value")
+				}
+			}
+		});
+		student_id = '<%=@student.id%>'
+		$.ajax({
+			type:'post', 
+			url: '<%=print_student_lo_path%>', 
+			data: {student_id :student_id,
+				current_lo :current_lo,
+				completed_lo :completed_lo,
+				closed_lo :closed_lo,
+				student_id :student_id}
+			});
+	})
+</script>
+<script type="text/javascript">
+	$(document).on('click','.summary_axis_click',function(){
+		lower_value = $(this).parent().find('.lower_bound').val();
+		upper_value = $(this).parent().find('.upper_bound').val();
+		$(this).css('background-color','#fe5621');
+		$(this).css('color','#fff');
+
+
+		var i = $(this).attr('axis-value');
+		var j = $(this).attr('axis-value');
+		target_value = $(this).parent().find('.targetaxisvalue').val(i);
+		for(i;parseInt(lower_value) <= i;i--){
+ // console.log(i)
+
+ $(this).siblings('.axis-value'+i).css('background-color','#fe5621');
+ $(this).siblings('.axis-value'+i).css('border-color','#a2a2a2');
+ $(this).siblings('.axis-value'+i).css('color','#fff');
+}
+// console.log(j,upper_value)
+for(j;j<=parseInt(upper_value);j++){
+// console.log(j)
+$(this).siblings('.axis-value'+j).css('background-color','#fff');
+$(this).siblings('.axis-value'+j).css('border-color','#a2a2a2');
+$(this).siblings('.axis-value'+j).css('color','#000');
+}
+
+})
+</script>
+
+

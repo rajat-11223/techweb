@@ -1,0 +1,159 @@
+<style type="text/css">
+	.modal-backdrop.in {
+    visibility: hidden!important;
+
+}
+.nav-tabs > li {
+    z-index: 0;
+}
+</style>	
+
+	<div class="row">
+			<div class="col-md-12">
+				
+							<h4> Results for <%= params[:q] %></h4>
+
+							
+				                <%= form_tag search_index_path ,method: :get do%>
+				                  <div class="col-md-6">
+
+				                    <span class="col-md-1"><label>From </label> </span>
+				                    <span class="col-md-2"> <%=select_tag "range_min" ,options_for_select(@year_range ,:selected=>@min_range),:class=>"select_range_min selectpicker"%></span> 
+				                    <span class="col-md-1"><label>To </label> </span>
+				                    <span class="col-md-2"><%=select_tag "range_max" ,options_for_select(@year_range ,:selected=>@max_range),:class=>"select_range_max selectpicker"%></span>
+				                    <%= hidden_field_tag "q", params[:q]%>
+				                    <%= hidden_field_tag "type", params[:type] %>
+				                    <% if params[:id].present? %>
+				                    	<%= hidden_field_tag "id", params[:id] %>
+				                    <% end %>
+				                  <%= submit_tag "Go", :class=>"btn btn-primary btn-xs" %>
+				                  </div>
+
+				                <div class="col-md-6 ">
+				                 
+				                  
+				                </div>
+				                <% end %>
+				             
+
+						<ul class="nav nav-tabs tabs-right-aligned with-panel portlet-handle-cancel">
+
+							<li class=""><a href="#reports" data-toggle="tab" aria-expanded="false">Reports</a></li>
+
+						<% if @show_view == "user" %>
+							<li class="active"><a href="#staff" data-toggle="tab" aria-expanded="true">Staff</a></li>
+						<% elsif @show_view == "student" %>
+							<li class="active"><a href="#students" data-toggle="tab" aria-expanded="true">Students</a></li>
+						<% elsif @show_view == "univ" %>
+							<li class=""><a href="#staff" data-toggle="tab" aria-expanded="true">Staff</a></li>
+							<li class="active"><a href="#students" data-toggle="tab" aria-expanded="true">Students</a></li>
+						<% end %>		
+		
+						</ul>
+
+						</div>
+					</div>
+					<div class="panel">
+				
+					<div class="panel-body">
+
+						<div class="tab-content with-panel">
+
+						<% @results.each do |key,value| %>
+
+							
+							<% if key == "Student" %>
+
+							<div id="students" class="tab-pane <%= @show_view == "student" || @show_view == "univ" ? "active" : "" %>">
+								<div class="row">
+
+									<% if @students.count > 0 %>
+										<%= render 'homes/partials/student_card' %>
+									<% else %>
+										<h4 class="text-center m-t-50"> No name matches for students </h4>
+									<% end %>
+								</div><!--.row-->
+							</div><!--.tab-pane-->
+
+							<% end %>
+
+
+							<% if key == "User" %>
+
+							<div id="staff" class="tab-pane <%= @show_view == "user" ? "active" : "" %>">
+								<div class="row">
+									<% if @users.count > 0 %>
+										<%= render 'searches/partials/user_card' %>
+									<% else %>
+										<h4 class="text-center m-t-50"> No name matches for staff </h4>
+									<% end %>
+								</div><!--.row-->
+							</div><!--.tab-pane-->
+
+							<% end %>
+
+
+							<% if key =="Report" %>
+
+							<div id="reports" class="tab-pane">
+								<div class="search-results search-file">
+									<!-- Addclass "list-striped" to ul element if you want to list rows with stripe colors -->
+									<ul class="search-list list-hover">
+									<% if @reports.count > 0 %>
+										<% @reports.each do |report| %>
+											<li>
+												<div class="file-icon"><a href="#"><i class="fa fa-file-pdf-o pdf"></i></a></div><!--.file-icon-->
+												<div class="search-result">
+												  <% if !report.status.in? ["IP"]%>
+												  <h6><%=link_to report.title,report_path(report.id)%></h6>
+
+												  <%else%>
+												   <h6><%= link_to report.title, edit_report_path(report, student_id: report.student_id) %></h6>
+												  <%end%>
+												  		<!-- <h6><a href="#"> <%= report.title %></a></h6> -->
+													<ul class="list-inline">
+														<li><i class="fa fa-calendar-o"></i> <%= report.submitted_at.blank? ? "Not Submitted" : report.submitted_at.strftime("%d/%m/%Y") %></li>
+														<li><i class="fa fa-child"></i> <%= report.student.name %></li>
+														<li><i class="fa fa-user"></i> <%= report.tutor.name %></li>
+													</ul>
+												</div><!--.search-result-->
+											</li>
+										<% end %>
+									<% else %>
+										<h4 class="text-center m-t-50"> No reports available for selected criteria </h4>
+									<% end %>
+									</ul>
+								</div><!--.search-results-->
+							</div><!--.tab-pane-->
+
+							<% end %>
+							<% end %>
+
+						</div><!--.tab-content-->
+
+					</div><!--.panel-body-->
+				</div><!--.panel-->
+
+				<script type="text/javascript">
+	$('.photoupload').on('change',function(){
+// alert("hy");
+   fd = new FormData();  
+      fd.append( 'file', $(this)[0].files[0] );
+      var studentid = $(this).attr('studentid');
+      fd.append('student_id',studentid);
+      $('.loader').show();
+      $.ajax({
+        beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+        type:"POST",
+        data: fd,
+        cache: false,
+        contentType: false,
+        processData: false,
+        url:"<%= save_only_evidence_path %>"
+        // enter url here, url: "<%#= path %>"
+            
+      });
+      return false;
+});
+</script>
+	

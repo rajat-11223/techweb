@@ -1,0 +1,208 @@
+<div class="panel-body">
+
+	<div class="unseen">
+		<table class="table table-bordered table-striped table-condensed">
+			<thead>
+				<tr>
+
+					<th>Objective</th>
+					<th class="hidden-xs hidden-sm">Focus In</th>
+					<th class="hidden-xs hidden-sm">Level</th>
+					<th class="hidden-xs hidden-sm">Subject</th>
+					<th>Progress</th>
+					<th class="hidden-xs hidden-sm">Date Set</th>
+					<th>Status</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% @student_learning_objectives.each do |lo| %>
+				<tr <% if lo.is_completed || lo.is_closed %><% end %> <% if lo.is_completed.present?  %> class="bg-antiquewhite" <% end %> <% if lo.is_closed.present?  %> class="bg-antiquered" <% end %> >
+					<td class="col-md-2"><%= raw lo.title %>
+						<% if !(lo.is_completed || lo.is_closed) %>
+						<% if current_user.is_team_lead? || current_user.is_student_tutor?(session[:global_academic_session], @student.id) %>
+						<%= link_to edit_learning_objective_path(:lo=>lo.id), remote: true, method: :post,:class=>" show_loader m-r-5",:data=>{:toggle=>"tooltip", :title=>"Edit"} do %>(Edit)<% end %>			<% end %>
+						<% end %>
+
+					</td>
+					<td class="col-md-1 hidden-sm hidden-xs"> 
+
+						<% if !(lo.is_completed || lo.is_closed) %> 
+						<% lo_focus_classes_current_user = lo.focus_classes.where(academic_session_id: session[:global_academic_session], term_id: session[:global_current_term], user_id: current_user.id) %>
+						<%# lo_focus_classes = lo.focus_classes.where(academic_session_id: session[:global_academic_session], term_id: session[:global_current_term]) %>
+						<% lo_focus_classes = lo.focus_classes.where('academic_session_id =? AND term_id =? AND user_id != ?', session[:global_academic_session], session[:global_current_term], current_user.id) %>
+						
+						<%if lo_focus_classes_current_user.present?%>
+
+
+						<%= link_to "Unfocus", add_focus_class_to_lo_path(:lo_id=>lo.id), remote: true, method: :post, :class => 'show_loader' %>
+
+						<%#=	lo.focus_classes.where(academic_session_id: session[:global_academic_session], term_id: session[:global_current_term],user_id: current_user.id).first.sub_subject.show_name %>
+						<%=	lo_focus_classes_current_user.first.sub_subject.show_name %>
+
+						<%# if lo.focus_classes.where(academic_session_id: session[:global_academic_session], term_id: session[:global_current_term]).count > 1 %>
+
+						<% if lo_focus_classes_current_user.count > 1 %>
+
+						<%#=	lo.focus_classes.where(academic_session_id: session[:global_academic_session], term_id: session[:global_current_term]).count - 1 %>
+						+<%=	lo_focus_classes_current_user.count - 1 %>
+
+
+						<%= link_to "more", show_focus_subject_path(:lo_id=>lo.id, for_current_user: true) ,remote: true, method: :post ,class: "show_loader"%>
+						<% end %>
+						<% else %>
+						<%= link_to "Focus", add_focus_class_to_lo_path(:lo_id=>lo.id), remote: true, method: :post, :class => 'show_loader hidden-xs hidden-sm' %>
+						<% end %>
+
+						<%#if (!(lo_focus_classes_current_user.present?) && (lo_focus_classes.present?))%>
+						<%if (lo_focus_classes.present?)%>
+						<%focus_count = lo_focus_classes.map(&:user).uniq.count%>
+						<%other_or_others = focus_count > 1 ? 'others' : 'other'%>
+							<br><%= link_to "Also focused by #{focus_count} #{other_or_others}", show_focus_subject_path(:lo_id=>lo.id, for_current_user: false) ,remote: true, method: :post ,class: "show_loader", style: 'color: green;'%>
+
+						<% end %>
+						<% end %>
+					</td>
+					<td class="col-md-1 hidden-xs hidden-sm"><%= lo.show_p_level%></td>
+					<td class="col-md-1 hidden-xs hidden-sm"> 
+						<%= lo.show_subject %>
+					</td>
+
+					<td class="axis_data col-md-4">
+						<% @master_csd_axis.each do |axis| %>
+						<div class="row">
+							<div class = "col-md-3"><small><%= axis.display_name %> </small></div>
+							<div class="col-md-9 pull-right axis_parent" id="axisparent<%= axis.id %>">
+								<input type="hidden" name="student_objective_id" value="<%= lo.id %>" class="student_objective_id">
+								<%# for x in (axis.min_value)..(axis.max_value) do %> 
+								<%#= x.to_i == lo.target_lower_bound(axis.id) ? raw('<a><i class="btn btn-orange btn-xs">B</i></a>') : x.to_i == lo.target_upper_bound(axis.id) ? raw('<a><i class="btn btn-blue btn-xs">T</i></a>') : x.to_i < lo.achievement_value(axis.id) ? raw('<a><i class="btn btn-green btn-xs">&nbsp;</i></a>') : raw('<a><i class="btn btn-white btn-xs">&nbsp;</i></a>') %>
+
+								<%# end %>
+								<input type="hidden" value="<%= axis.id %>" name="master_axis_id" class="master_axis_id">
+								<input type="hidden" value="<%= axis.min_value %>" name="minaxisvalue" class="minaxisvalue">  
+								<input type="hidden" value="<%= axis.max_value %>" name="maxaxisvalue" class="maxaxisvalue">
+
+								<% for x in (axis.min_value)..(axis.max_value) do %>
+
+								<% target_btn = (x.to_i == lo.achievement_value(axis.id) ? 'btn-success' : 'btn-default') %>
+								<%# btn_state = (lo.is_completed || lo.is_closed ? 'disabled' : '') %>
+								<% btn_state = 'disabled' %>
+								<%= x.to_i < lo.target_lower_bound(axis.id).to_i ? 
+								raw("<a class='btn btn-grey disabled btn-xs pull-left axis-click'>" << x.to_s << "</a>") : x.to_i > lo.target_upper_bound(axis.id) ? 
+								raw("<a class='btn btn-grey disabled btn-xs pull-left axis-click'>" << x.to_s << "</a>") : x.to_i == lo.target_lower_bound(axis.id) ? 
+								raw("<a class='btn btn-success #{btn_state} bg-beatrice border-beatrice btn-xs pull-left axis-click min-value' axis-value=" << x.to_s << " id=minaxis" << x.to_s << ">B</a>") : x.to_i == lo.target_upper_bound(axis.id) ? 
+								raw("<a class='btn #{target_btn} btn-xs pull-left axis-click max-value max-value border-grey #{btn_state} no-box-shadow' axis-value="<< x.to_s << " id=axisvalue"<< lo.id.to_s << axis.id.to_s << x.to_s << ">T</a>") : x.to_i <= lo.achievement_value(axis.id) ? 
+								raw("<a class='btn btn-success border-grey btn-xs pull-left axis-click #{btn_state} no-box-shadow' axis-value="<< x.to_s << " id=axisvalue"<< lo.id.to_s << axis.id.to_s << x.to_s << ">" << x.to_s << "</a>") : 
+								raw("<a class='btn btn-default  btn-xs pull-left axis-click #{btn_state} no-box-shadow border-grey' axis-value="<< x.to_s << " id=axisvalue"<< lo.id.to_s << axis.id.to_s << x.to_s << ">" << x.to_s << "</a>") %>
+								<% end %>
+							</div>
+						</div>
+						<% end %>
+					</td>
+					<td class="col-md-1 hidden-xs hidden-sm">
+						<!-- <%#= lo.assigned_date.strftime("%d/%m/%Y") %><br /><small>Target Completion <br /><%#= lo.target_date.strftime("%d %b %Y") %></small> -->
+						<%= lo.assigned_date.strftime("%d/%m/%Y") %><br /><small>Target Achieved <br /><%= lo.target_date.present? ? lo.target_date.strftime("%d %b %Y") : "-" %></small>
+					</td>
+					<td class="actions col-md-2 col-sm-2 col-xs-2">
+
+						<!-- View & Add Observations -->  
+
+						<% if !(lo.is_completed || lo.is_closed) %>
+						Observations:<br>
+
+						<%= link_to view_observation_path(:lo=>lo.id,student_id: @student.id), remote: true, method: :post,:class=>" show_loader m-r-5",:data=>{:toggle=>"tooltip", :title=>"View Observations"}  do %>
+						View
+						<%end%>	
+
+
+
+						<%= link_to add_observation_path(:lo=>lo.id,student_id: @student.id), remote: true, method: :post,:class=>"show_loader",:data=>{:toggle=>"tooltip", :title=>"Add Observation"}  do %>
+
+						Add<br/>
+						<%end%>
+
+						<% if !StudentLearningObjectiveFocusSubject.where(student_learning_objective_id: lo.id,academic_session_id: session[:global_academic_session], term_id: session[:global_current_term], user_id: current_user.id).pluck(:sub_subject_id).blank? %>
+
+
+
+						<%= link_to "Summary",add_summary_path(:lo=>lo.id,student_id: @student.id), remote: true, method: :post,:class=>"show_loader",:data=>{:toggle=>"tooltip", :title=>"Write Summary"} %>
+						<% end %>
+						<br><br>
+
+						<!-- Tutor can mark LO achieved -->
+						<% if !lo.temp_complete && !(current_user.is_team_lead? || current_user.is_student_tutor?(session[:global_academic_session], @student.id)) %>
+						Actions:<br>
+
+
+						<%#= link_to temp_complete_learning_objective_path(:lo=>lo.id,:current_lo=> 1), remote: true, method: :post,:class=>"click_loader m-r-5" ,:data=>{confirm:"Are you sure you wish to mark this objective as complete?",:toggle=>"tooltip", :title=>"Mark Achieved"} do %>
+						<%= link_to temp_complete_learning_objective_path(:lo=>lo.id,:current_lo_state=>@current_lo,:closed_lo_state=>@closed_lo,:completed_lo_state=>@completed_lo), remote: true, method: :post,:class=>"click_loader m-r-5" ,:data=>{confirm:"Are you sure you wish to mark this objective as complete?",:toggle=>"tooltip", :title=>"Mark Achieved"} do %>
+						Mark achieved
+						<% end %>
+
+						<% end %>
+
+
+
+						<% if current_user.is_team_lead? || current_user.is_student_tutor?(session[:global_academic_session], @student.id) %>
+						Actions:<br>
+<!-- 
+	<%#= link_to temp_accept_learning_objective_path(:lo=>lo.id,:current_lo=> 1), remote: true, method: :post,:class=>"click_loader m-r-5",:data=>{confirm:"Are you sure you wish to mark this objective as achieved?",:toggle=>"tooltip", :title=>"Complete Objective"} do %> Mark Achieved <%#end %><br> -->
+	<%= link_to temp_accept_learning_objective_path(:lo=>lo.id,:current_lo_state=>@current_lo,:closed_lo_state=>@closed_lo,:completed_lo_state=>@completed_lo), remote: true, method: :post,:class=>"click_loader m-r-5",:data=>{confirm:"Are you sure you wish to mark this objective as achieved?",:toggle=>"tooltip", :title=>"Complete Objective"} do %> Mark Achieved <%end %><br> 
+
+	<%= link_to close_lo_learning_objective_path(:lo=>lo.id,:current_lo_state=>@current_lo,:closed_lo_state=>@closed_lo,:completed_lo_state=>@completed_lo,:student_id=>@student.id), remote: true, method: :post ,:class=>"",:data=>{confirm: "Doing so will make it inactive, teachers will no longer be able to focus on it or add observations to it, and it will not appear in the student’s End of Term report. Are you sure?", :toggle=>"tooltip",:title=>"Close Objective"} , :class=>"show_loader" do %> Close without achieving <% end %><br>
+
+	<%= link_to delete_lo_learning_objective_path(:lo=>lo.id,:current_lo_state=>@current_lo,:closed_lo_state=>@closed_lo,:completed_lo_state=>@completed_lo,:student_id=>@student.id), method: :post,:class=>"click_loader m-r-5",:data=>{confirm:"Deleting this learning objective would unlink all associated observations but preserve them for later use. Are you sure you wish to continue deleting this objective? ",:toggle=>"tooltip", :title=>"Delete Objective"} do %> Delete <% end %><br>
+
+	<% end %>
+
+	<br><br>
+
+	<% if lo.temp_complete && (current_user.is_team_lead? || current_user.is_student_tutor?(session[:global_academic_session], @student.id))%>
+	LO was marked complete.<br>
+
+
+	<%#= link_to temp_accept_learning_objective_path(:lo=>lo.id,:current_lo=> 1), remote: true, method: :post,:class=>"click_loader m-r-5",:data=>{:toggle=>"tooltip", :title=>"Accept Completion"} do %>
+	<%= link_to temp_accept_learning_objective_path(:lo=>lo.id,:current_lo_state=>@current_lo,:closed_lo_state=>@closed_lo,:completed_lo_state=>@completed_lo), remote: true, method: :post,:class=>"click_loader m-r-5",:data=>{:toggle=>"tooltip", :title=>"Accept Completion"} do %>
+	<!-- <i class="  fa fa-check"></i> -->
+	Accept
+	<%end%>
+
+
+	<%#= link_to temp_decline_learning_objective_path(:lo=>lo.id,:current_lo=> 1), remote: true, method: :post, :class=>"click_loader",:data=>{:toggle=>"tooltip", :title=>"Reject Completion"}  do %>
+	<%= link_to temp_decline_learning_objective_path(:lo=>lo.id,:current_lo_state=>@current_lo,:closed_lo_state=>@closed_lo,:completed_lo_state=>@completed_lo), remote: true, method: :post, :class=>"click_loader",:data=>{:toggle=>"tooltip", :title=>"Reject Completion"}  do %>
+
+	Reject
+	<% end %>
+
+	<% end %>
+
+	<% else %>
+
+	<% if lo.is_completed %>
+
+	Completed <br >
+
+	<%= link_to view_observation_path(:lo=>lo.id,student_id: @student.id), remote: true, method: :post,:class=>" show_loader m-r-5",:data=>{:toggle=>"tooltip", :title=>"View Observations"}  do %> View Observations <% end %> <br />
+
+	<%= link_to  unachieve_lo_learning_objective_path(:lo=>lo.id,:current_lo_state=>@current_lo,:closed_lo_state=>@closed_lo,:completed_lo_state=>@completed_lo,:student_id=>@student.id),remote: true, method: :post ,:class=>"",:data=>{:toggle=>"tooltip",:title=>"Mark Unachieved"} , :class=>"show_loader" do %> Mark Unachieved <% end %>
+
+	<% elsif lo.is_closed %>	
+
+	Closed <br>
+
+	<%= link_to view_observation_path(:lo=>lo.id,student_id: @student.id), remote: true, method: :post,:class=>" show_loader m-r-5",:data=>{:toggle=>"tooltip", :title=>"View Observations"}  do %> View Observations <% end %>	<br />								
+	<%= link_to  reopen_lo_learning_objective_path(:lo=>lo.id,:current_lo_state=>@current_lo,:closed_lo_state=>@closed_lo,:completed_lo_state=>@completed_lo,:student_id=>@student.id),remote: true, method: :post ,:class=>"",:data=>{:toggle=>"tooltip",:title=>"Reopen Objective"} , :class=>"show_loader" do %> Reopen LO <% end %>
+
+	<% end %>
+
+	<% end %>
+
+</td>
+</tr>
+<% end %>
+</tbody>
+</table>
+</div>
+</div>
+
+
+

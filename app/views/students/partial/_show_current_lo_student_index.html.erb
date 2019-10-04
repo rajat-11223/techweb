@@ -1,0 +1,165 @@
+
+	<div class="row">
+			<div class="col-md-12">
+				<div class="panel">
+					<div class="panel-heading">
+						<div class="panel-title"><h4>Learning Objectives</h4></div>
+					</div>
+<div class="panel-heading">
+						<div class="panel-title">
+						<!-- <div class="icheck icheck-flat"> -->
+                        <div class="checkbox">
+						<h4>Show : </h4>
+                          <label>
+                            <input type="checkbox"  class="filter_checkbox current_lo"   student-id='<%=@student.id%>' checked-value="1" unchecked-value="0" <% if @current_lo.present?%> checked <%end%> > Current
+                          </label>
+                          <label>
+                            <input type="checkbox" class="filter_checkbox completed_lo"  student-id='<%=@student.id%>' checked-value="1" unchecked-value="0" <% if @completed_lo.present?%> checked <%end%>> Completed
+                          </label>
+                          <label>
+                            <input type="checkbox" class="filter_checkbox closed_lo"  student-id='<%=@student.id%>' checked-value="1" unchecked-value="0" <% if @closed_lo.present?%> checked <%end%>> Closed
+                          </label>
+                      	<%= link_to "Add Learning Objective", assign_new_learning_objective_path(:id=>@student.id), remote: true, method: :post, :class => 'btn btn-primary btn-condensed pull-right'  %>
+                        </div>
+                        <!-- </div> -->
+                  
+						
+						</div>
+					</div>
+
+				
+					<div class="panel-body">
+
+						<div class="unseen">
+							<table class="table table-bordered table-striped table-condensed">
+								<thead>
+									<tr>
+
+										<th>Objective</th>
+										<th>Focus In</th>
+										<th>Level</th>
+										<th>Subject</th>
+										<th>Progress</th>
+										<th>Date Set</th>
+										<th>Status</th>
+								  </tr>
+								</thead>
+								<tbody>
+								<% @student_learning_objectives.each do |lo| %>
+									<tr>
+										<td class="col-md-2"><%= lo.description %></td>
+										<td class="col-md-1"> 
+										<% if !lo.show_focus_classes3(session[:global_academic_session], session[:global_current_term], current_user.id).blank? %>
+											<% if lo.show_focus_classes3(session[:global_academic_session], session[:global_current_term], current_user.id).count < 2 %>
+												<%= lo.show_focus_classes3(session[:global_academic_session], session[:global_current_term], current_user.id).first %>
+											 <% else %>
+											 	<%= lo.show_focus_classes3(session[:global_academic_session], session[:global_current_term], current_user.id).first %> <br /><%= link_to "+ " + (lo.show_focus_classes3(session[:global_academic_session], session[:global_current_term], current_user.id).count.to_i - 1).to_s + " more", nil  %>
+											 <% end %> 
+										<% else %> 
+											
+										<% end %>
+										<% if !(lo.is_completed || lo.is_closed) %> 
+											<%= link_to "Focus", add_focus_class_to_lo_path(:lo_id=>lo.id), remote: true, method: :post, :class => 'btn btn-primary btn-xs' %>
+										<% end %>
+										</td>
+										<td class="col-md-1"><%= lo.show_p_level %></td>
+										<td class="col-md-1"> 
+											<%= lo.show_subject %>
+										</td>
+
+<td class="axis_data col-md-4">
+<% @master_csd_axis.each do |axis| %>
+<div class="row">
+<div class = "col-md-3"><small><%= axis.display_name %> </small></div>
+<div class="col-md-9 pull-right axis_parent" id="axisparent<%= axis.id %>">
+<input type="hidden" name="student_objective_id" value="<%= lo.id %>" class="student_objective_id">
+<%# for x in (axis.min_value)..(axis.max_value) do %> 
+<%#= x.to_i == lo.target_lower_bound(axis.id) ? raw('<a><i class="btn btn-orange btn-xs">B</i></a>') : x.to_i == lo.target_upper_bound(axis.id) ? raw('<a><i class="btn btn-blue btn-xs">T</i></a>') : x.to_i < lo.achievement_value(axis.id) ? raw('<a><i class="btn btn-green btn-xs">&nbsp;</i></a>') : raw('<a><i class="btn btn-white btn-xs">&nbsp;</i></a>') %>
+
+<%# end %>
+<input type="hidden" value="<%= axis.id %>" name="master_axis_id" class="master_axis_id">
+<input type="hidden" value="<%= axis.min_value %>" name="minaxisvalue" class="minaxisvalue">  
+<input type="hidden" value="<%= axis.max_value %>" name="maxaxisvalue" class="maxaxisvalue">
+
+<% for x in (axis.min_value)..(axis.max_value) do %>
+
+<% target_btn = (x.to_i == lo.achievement_value(axis.id) ? 'btn-success' : 'btn-default') %>
+<% btn_state = 'disabled' %>
+<%= x.to_i < lo.target_lower_bound(axis.id).to_i ? 
+raw('<a class="btn btn-grey disabled btn-xs pull-left axis-click">' << x.to_s << '</a>') : x.to_i > lo.target_upper_bound(axis.id) ? 
+raw('<a class="btn btn-grey disabled btn-xs pull-left axis-click">' << x.to_s << '</a>') : x.to_i == lo.target_lower_bound(axis.id) ? 
+raw('<a class="btn btn-success btn-xs pull-left axis-click disabled min-value" axis-value=' << x.to_s << ' id=minaxis' << x.to_s << '>B</a>') : x.to_i == lo.target_upper_bound(axis.id) ? 
+raw("<a class='btn #{target_btn} #{btn_state} btn-xs pull-left axis-click max-value border-grey no-box-shadow' axis-value="<< x.to_s << " id=axisvalue"<< x.to_s << ">T</a>") : x.to_i <= lo.achievement_value(axis.id) ? 
+raw('<a class="btn btn-success #{btn_state} border-grey btn-xs pull-left axis-click no-box-shadow" axis-value='<< x.to_s << ' id=axisvalue'<< lo.id.to_s << axis.id.to_s << x.to_s << '>' << x.to_s << '</a>') : 
+raw('<a class="btn btn-default btn-xs  #{btn_state}pull-left axis-click no-box-shadow border-grey" axis-value='<< x.to_s << ' id=axisvalue'<< lo.id.to_s << axis.id.to_s << x.to_s << '>' << x.to_s << '</a>') %>
+<% end %>
+</div>
+</div>
+<% end %>
+</td>
+										<td class="col-md-1">
+											<%= lo.assigned_date.strftime("%d/%m/%Y") %><br /><small>Target Completion <br /><%= lo.target_date.strftime("%d %b %Y") %></small>
+										</td>
+										<td class="actions col-md-2">
+											<% if !(lo.is_completed || lo.is_closed) %>
+
+											<%#= link_to  edit_learning_objective_path(:lo=>lo.id), remote: true, method: :post,:class=>" btn btn-default btn-xs",:data=>{:toggle=>"tooltip", :title=>"Edit"} do %>
+												<i  class="fa fa-pencil"></i>
+												<%#end%>
+
+													<%= link_to view_observation_path(:lo=>lo.id), remote: true, method: :post,:class=>" btn btn-info btn-xs",:data=>{:toggle=>"tooltip", :title=>"View Observations"}  do %>
+												<i  class="fa fa-eye"></i>
+												<%end%>		
+													<%= link_to add_observation_path(:lo=>lo.id), remote: true, method: :post,:class=>" btn btn-primary btn-xs",:data=>{:toggle=>"tooltip", :title=>"Add Observations"}  do %>
+												<i  class="fa fa-plus"></i>
+												<%end%>
+
+
+												
+												<% if !lo.temp_complete %>
+												<div id="temp_complete">
+												<%= link_to  temp_complete_learning_objective_path(:lo=>lo.id), remote: true, method: :post,:class=>" btn btn-success btn-xs" ,:data=>{:toggle=>"tooltip", :title=>"Mark Complete"} do %>
+												<i  class=" fa fa-check"></i>
+												<%end%>
+												</div>
+
+												<%end%>
+												<% if lo.temp_complete %>						
+												<div>
+												<%= link_to  temp_accept_learning_objective_path(:lo=>lo.id), remote: true, method: :post,:class=>" btn btn-light-green btn-xs",:data=>{:toggle=>"tooltip", :title=>"Accept Completion"} do %>
+												<i class="  fa fa-check"></i>
+												<%end%>
+
+												<%= link_to  temp_decline_learning_objective_path(:lo=>lo.id), remote: true, method: :post, :class=>" btn btn-inverted btn-xs",:data=>{:toggle=>"tooltip", :title=>"Reject Completion"}  do %>
+												<i  class="fa fa-times"></i>
+												<%end%>
+												</div>
+												<%end%>
+
+												<%= link_to  close_lo_learning_objective_path(:lo=>lo.id), remote: true, method: :post ,:class=>" btn btn-red btn-xs",:data=>{:toggle=>"tooltip",:title=>"Close Objective"} do %>
+												<i class=" fa fa-exclamation"></i>
+												<%end%>
+
+											<% else %>
+												<% if lo.is_completed %>
+													Completed
+												<% elsif lo.is_closed %>	
+													Closed									
+												<% end %>											
+											<% end %>
+										</td>
+									</tr>
+								<% end %>
+								</tbody>
+							</table>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+				<script type="text/javascript">
+		 $(document).ready(function(){
+      	$('.loader').fadeOut('slow')
+      })     
+		 </script>

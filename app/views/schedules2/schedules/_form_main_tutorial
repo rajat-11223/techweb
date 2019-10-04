@@ -1,0 +1,72 @@
+<div class="col-md-10 col-md-offset-1 col-sm-10 col-sm-offset-1">
+<%= form_for(@slot_schedule ,:url=>url_for(:controller=>'schedules',:action=>"create")) do |f| %>
+  <% if @slot_schedule.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@slot_schedule.errors.count, "error") %> prohibited this schedule from being saved:</h2>
+
+      <ul>
+      <% @slot_schedule.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+<%=f.hidden_field :slot_id,:value=>@slot.id%>
+<%=f.hidden_field :master_day_id,:value=>@master_day.id%>
+<%=f.hidden_field :term_id,:value=>@term.id%>
+<input type="hidden" value="<%= @schedule_display %>" name="schedule_display">
+
+
+<!--   <div class="row form-group m-b-20">
+    <div class="col-md-3">
+      <label class="control-label">Subject:</label>
+    </div>
+    <div class="col-md-7">
+      <%#= f.select(:subject_id, @subjects.collect {|u| [u.name, u.id]},{:include_blank=>"Select subject"},{:class=>"selectpicker",:onchange=>"show_sub_subjects()"}) %>
+    </div>    
+  </div>
+  <div class="row form-group m-b-20">
+   <div class="col-md-3">
+      <label class="control-label">Sub-Subject:</label>
+    </div>
+    <div id="sub_subjects">
+    <div class="col-md-7">
+      <%#= f.select(:sub_subject_id,{},{:include_blank=>"Select subject first"},{:class=>"selectpicker",:onchange=>"show_sub_subjects()"}) %>
+    </div> 
+    </div>
+  </div> -->
+  <input type="hidden" name="slot_schedule[subject_id]" value="2">
+  <input type="hidden" name="sub_subject_id[subject_id]" value="2">
+   <div class="row form-group m-b-20">
+    <div class="col-md-3">
+      <label class="control-label">Tutor Group:</label>
+    </div>
+    <div class="col-md-9">
+      <%#= select_tag("tutor_group",options_for_select(@tutor_groups.collect {|u| [u.name, u.id]}),{:include_blank=>"Select Tutor Group",:class=>"selectpicker new_tg_value",:onchange=>"select_tg()"}) %>
+      <%= select_tag("tutor_group",options_for_select(@tutor_groups.collect {|u| [u.name, u.id]}),{:include_blank=>"Select Tutor Group",:class=>"selectpicker new_tg_value",:required=>true}) %>
+    </div>    
+  </div>
+  <div class="show_tutor_group_students">
+    
+  </div>
+  <div class="modal-footer">
+    <div class="form-actions">
+    <div class="row">
+      <div class="pull-right">
+        <%=f.submit "Schedule", :class=>"btn btn-beatrice text-white pull-right"%>
+      </div>
+      <div class="pull-left">
+        <button class="btn btn-default" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+    </div>
+    </div>
+<% end %>
+</div>
+  <script>
+  //$(document).ready(function () {
+
+  //});
+  </script>
+

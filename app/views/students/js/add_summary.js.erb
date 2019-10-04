@@ -1,0 +1,15 @@
+$('.add_summary_modal').modal('show');
+$('.add_summary_body').html("<%=escape_javascript(render 'students/partial/add_summary')%>");
+// $(".losummary").summernote();
+ FormsIcheck.init();
+ $('form').each(function(){
+$(this).on('submit',function(){
+    if($(this).valid()){
+    $('.loader').show();
+    }
+});
+});
+
+$('form').each(function(){
+	$(this).validate();
+});

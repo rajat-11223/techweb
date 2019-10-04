@@ -1,0 +1,2 @@
+<p>Hi <%=@user.fname%>,</p>
+<p><%=raw "I’ve approved #{@student.fname}’s <a href='#{edit_report_url(id: @rs.id, student_id: @student.id)}#tab_create_reports_subjects'>#{@rs.title}</a> <br /> <br /> <br /> Regards <br /> #{@current_user.fname}"%></p>

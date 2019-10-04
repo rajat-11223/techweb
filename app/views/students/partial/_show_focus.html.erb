@@ -1,0 +1,59 @@
+ <%= form_for  @student_learning_objectives_focus ,:url=>url_for(:controller=>'students', :action=>'save_focus') do |f| %>
+         <div class="form-group">
+         <div class="row">
+                  <div class="col-md-3">
+                    <label class="control-label "><b>Learning Objective:</b> </label>
+                  </div>
+                  <div class="col-md-9">
+                   
+                  </div>
+             </div>
+                </div> 
+               <div class="form-group">
+                  <div class="col-md-12">
+                    <label class="control-label ">Select a class to focus on this Learning Objective: </label>
+                  </div>
+                
+                </div>     
+<%=f.hidden_field :student_learning_objectives_id ,:value=>@lo_id.id%>
+
+<% @lo_id.student.slot_schedule_students.joins(:slot_schedule).where("slot_schedules.academic_session_id = ?", session[:global_academic_session]).pluck(:sub_subject_id).uniq.collect{|s| SubSubject.find(s)}.each do |sub| %>
+
+     <div class="form-group">
+                  <div class="col-md-3">
+                    <!-- <div class="icheck icheck-flat"> -->
+                        <div class="checkbox">
+                          <label>
+                            <!-- <input type="checkbox" value="<%#=schedule.id%>"> -->
+                          </label>
+                        </div>
+                      <!-- </div> -->
+                  </div>
+                  <div class="col-md-9">
+
+                   <div class="icheck icheck-square-blue">
+                   <div class="checkbox">
+
+                  <%=check_box_tag "sub_subject_id[]",sub.id%>
+                  </div>
+                                 <%=sub.show_name%>
+
+                </div>
+                  </div>
+                </div> 
+            
+                <%end%>
+
+                	<div class="modal-footer">
+  	<div class="form-actions">
+      <div class="row">
+         <div class="pull-right">
+           <%= f.submit :class=>"btn btn-success" %>
+          </div>
+          <div class="pull-left">
+             <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+       </div>
+     </div>
+ </div>
+               <%end%>

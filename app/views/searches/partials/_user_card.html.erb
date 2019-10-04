@@ -1,0 +1,32 @@
+  <% @users.each do |user| %>
+
+  	<div class="col-md-2 col-sm-2 col-xs-6 vv"  style="position:relative;">
+		<div class="card card-user">
+			<div class="card-heading heading-center text-color-white">
+				<%= image_tag user.show_avatar(:thumb), :class=>"user-image" %>
+				<h3 class="card-title"><%= link_to user.name, staff_path(user) %></h3>
+				<!-- <div class="subhead">Lead Marketing Manager</div>
+ -->			</div><!--.card-heading-->
+
+			<div class="card-body " style="min-height: 70px">
+			<div class="row"> 
+				<span class="text-title fa fa-envelope pull-left p-5"></span><span><%= raw"<a href=mailto:'#{user.email}'>#{user.email}</a>" %></span>
+			</div>
+			<div class="row">
+				<span class="text-title fa fa-mobile pull-left p-5 font-size-20"></span><span class="pull-left" style="padding: 3px;"><%= user.mobile_phone.present? ? raw("<a href='tel:#{user.mobile_phone}'>#{user.mobile_phone}</a>") : "Unavailable"%></span>
+			</div>
+			<div class="row">
+				<span class="text-title fa fa-phone pull-left p-5 font-size-15" ></span><span class="pull-left"><%= user.home_phone.present? ? raw("<a href='tel:#{user.home_phone}'>#{user.home_phone}</a>") : "Unavailable" %></span>
+			</div>
+			</div><!--.card-body-->
+
+			<!-- <div class="card-footer"> -->
+<!-- 				<button class="btn btn-xs btn-default pull-left btn-ripple">Add as a Friend</button>
+				<a href="#" class="pull-right"><small>8 friends in common</small></a> -->
+			<!-- </div> -->
+			<!--.card-footer-->
+		</div><!--.card-->
+	</div>
+
+
+				<% end %>

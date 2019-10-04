@@ -1,0 +1,141 @@
+<%# @students.each do |student|%>
+<!--   <div class="row form-group">
+    <span class="col-md-1">
+      <div class="nav-user" style="  position: inherit;">
+        <div class="user" style="padding: 0">
+          <img src="<%#= student.image(:thumb) %>" alt="<%#=student.fname%>" title="<%#=student.fname%>"  border="0" style="background-color: #ffffff;">
+        </div>
+      </div>
+    </span>
+    <span class="col-md-2 text-danger font-size-20">
+      <%#=student.fname + " " + student.lname.to_s%>
+    </span>
+    <%#=link_to "Remove",remove_student_path(student.id) ,remote: true,method: :post%>
+    <span class="col-md-2 font-size-20">Remove</span>
+  </div> -->
+<%# end%>
+<%@students.map(&:id).each do |id|%>
+  <%= hidden_field_tag "students[]", id %>
+<%end%>
+
+<%# if @students_val.present?%>
+  <!-- <div class="row form-group">
+    <div class="btn-group">
+      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+        Upper scholl
+          <span class="caret"></span>
+      </button>
+    </div>
+  </div> -->
+<%#end%>
+
+<%# @students_val.each do |student|%>
+<!--    <div class="row form-group v">
+      <span class="col-md-1">
+        <div class="nav-user" style="  position: inherit;">
+          <div class="user" style="padding: 0">
+            <img src="<%#= student.image(:thumb) %>" alt="<%#=student.fname%>" title="<%#=student.fname%>"  border="0" style="background-color: #ffffff;">
+          </div>
+        </div>
+      </span>
+      <span class="col-md-2 text-danger font-size-20">
+        <%#=student.fname + " " + student.lname.to_s%>
+      </span>
+      <%#=link_to "add",add_student_path(student.id) ,remote: true,method: :post,:id=>"a"%>
+      <span class="col-md-2 font-size-20">Remove</span>
+    </div> -->
+<%#end%>
+<!-- new accordian -->
+
+      <div class="panel-group toggle" id="accordian1">
+          <div class="panel bg-beatricegreen">
+            <div class="panel-heading">
+
+            </div>
+ 
+            <div id="tutorgroupstudents" class="panel-collapse collapse in">
+              <div class="panel-body" id="show_add_student">
+              <% if @students.present?%>
+              <% @students.each do |student|%>
+              <div class="row form-group p-10">
+                <span class="col-md-1">
+                  <div class="nav-user" style="  position: inherit;">
+                    <div class="user" style="padding: 0">
+                      <img src="<%= student.show_avatar(:thumb) %>" alt="<%=student.fname%>" title="<%=student.fname%>"  border="0" style="background-color: #ffffff;">
+                    </div>
+                  </div>
+                </span>
+                <span class="col-md-9 text-black">
+                  <%=student.fname + " " + student.lname.to_s%>
+                                    <footer class="font-size-15 text-black">Tutor Group: <%=student.show_tutor_group_name(session[:global_academic_session])%> | Learning Group: <%=student.show_learning_group_name(session[:global_academic_session])%> </footer>
+
+                </span>
+                <span class="col-md-2">
+                <%=link_to "REMOVE",remove_student_path(student.id) ,remote: true,method: :post,:class=>"text-black"%>
+                <!-- <span class="col-md-2 font-size-20">Remove</span> -->
+                </span>
+              </div>
+            <%end%>
+            <%else%>
+            Please select a student below
+            <%end%>
+              </div>
+             </div>
+          </div>
+        </div>
+         <div class="row form-group m-b-20">
+        <div class="col-md-3">
+     <label class="control-label">Select a phase:</label>
+    </div>
+    <div class="col-md-9">
+                <select class="selectpicker" id="school_dropdown">
+    <option>Select a Phase</option>
+    <%@phases.each do |phase|%>
+    <option id="phase<%= phase.id %>" <% if phase.id == @student_phase %> selected <% end %>><%= phase.name %></option>
+    <% end %>
+       </select>
+       </div>
+       </div>
+      <%@phases.all.each_with_index do |phase,index|%>
+     <div class="panel-group toggle phase_div phase<%= phase.id %>" <% if phase.id == @student_phase %> style="display:block;" <% end %>>
+              <div class="panel bg-antiquewhite">
+                <div class="panel-heading ">
+                  
+                </div>
+     
+                <div id="tutorgroupstudents" class="panel-collapse collapse in">
+                 <% if phase.students.where("temp_tg_user_id != ?", current_user.id).present? %>
+                    <% phase.students.where("temp_tg_user_id != ?", current_user.id).each do |student| %>
+                  <div class="panel-body">
+                                      <!-- <div class="row form-group v"> -->
+                    <span class="col-md-1">
+                        <div class="nav-user" style="  position: inherit;">
+                          <div class="user" style="padding: 0">
+                             <img src="<%= student.show_avatar(:thumb) %>" alt="<%=student.fname%>" title="<%=student.fname%>"  border="0" style="background-color: #ffffff;">
+                          </div>
+                        </div>
+                    </span>
+                    <span class="col-md-9 text-danger">
+                      <%=student.fname + " " + student.lname.to_s%>
+                        <footer class="font-size-15 text-black">Tutor Group: <%=student.show_tutor_group_name(session[:global_academic_session])%> | Learning Group: <%=student.show_learning_group_name(session[:global_academic_session])%></footer>
+                         
+                    </span>
+                     <span class="col-md-2">
+                      <%=link_to "ADD",add_student_path(student.id) ,remote: true,method: :post,:class=>"text-black"%>
+                      </span>
+                  
+                  <!-- </div> -->
+                  </div>
+                <% end %>  
+                 <%else%>
+                  <span class="m-t-10"> No student available </span>
+                <%end%>
+                 </div>
+              </div>
+        </div>
+      <% end %>
+
+
+
+     
+

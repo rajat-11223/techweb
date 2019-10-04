@@ -1,0 +1,5 @@
+$('#edit_subject').modal('show');
+
+$("#modal1").html("<%= raw escape_javascript(render '/subjects/partial/sub_subject') %>");
+
+FormsIcheck.init();

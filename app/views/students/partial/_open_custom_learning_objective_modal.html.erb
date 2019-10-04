@@ -1,0 +1,117 @@
+  <%= form_for @student_lo ,:url=>url_for(:controller=>'students', :action=>'save_custom_learning_objective') do |f| %>
+
+
+ <div class="row form-group m-b-20">
+    <div class="col-md-3">
+      <label class="control-label ">Subject:</label>
+    </div>
+    <div class="col-md-9">
+      <%= f.select(:subject_id, @pivats_subjects.collect {|u| [u.name, u.id]},{:include_blank=>"Select Subject"},{:class=>"selectpicker subject_id",:onchange=>"show_custom_sub_subjects()",:required=>true}) %>
+    </div>    
+  </div>
+  <div id="custom_sub_subjects">
+  </div>
+<div class="row form-group m-b-20">
+ <!--   <div class="col-md-3">
+      <label class="control-label">P Level:</label><br><label style="display:none;color:red;" class="description_missing">No P-Level selected</label>
+    </div> -->
+    <div id="pivats_show">
+     <div class="col-md-12 m-b-20 no-p">
+   <div class="col-md-3 ">
+      <label class="control-label">Custom P-Level:</label>
+    </div>
+   
+    <div class="col-md-2">
+      <%= select_tag("custom_plevel",options_for_select(@p_level.collect {|u| u }),{:include_blank=>"Select",:class=>"selectpicker m-b-20 add_lo2_level",required: true}) %>
+       <span class="text-red font-size-10 err-level display-none" >This field is required</span>
+      </div>
+
+    <div class="col-md-2">
+
+ <%= select_tag("custom_psublevel",options_for_select(@p_sublevel.collect {|u| u}),{:include_blank=>"Select",:class=>"selectpicker add_lo2_sublevel",required: true}) %>
+  <span class="text-red font-size-10 err-sublevel display-none" >This field is required</span>
+    </div>
+   
+  </div>
+<!--     <div class="col-md-9 clearfix">
+
+      <%# @custom_global_pivats_objectives.each_with_index do |plevel,index| %>
+        <a class="btn btn-success pull-left custom_plevel_button pivats_description" plevel-id="<%#=plevel%>" style="border-radius:0px;min-width:82px;"><%#= plevel %></a>
+      <%# end %>
+    </div>  -->
+    </div>
+  </div>
+  <div class="row m-b-20">
+<div class = "col-md-3"><label class="control-label required"> Baseline/ Target:</label><br><label style="display:none;color:red;" class="baseline_target_missing">Please select baseline and target for all axes</label></div>
+<% @master_csd_axis.each do |axis| %>
+
+<input type="hidden" name="master_axis_id[]" value="<%= axis.id %>">
+
+<div class="col-md-9 pull-right">
+<div class="col-md-3"><small><%= axis.display_name %> </small></div>
+
+<%# for x in (axis.min_value)..(axis.max_value) do %> 
+<%#= x.to_i == lo.target_lower_bound(axis.id) ? raw('<a><i class="btn btn-orange btn-xs">B</i></a>') : x.to_i == lo.target_upper_bound(axis.id) ? raw('<a><i class="btn btn-blue btn-xs">T</i></a>') : x.to_i < lo.achievement_value(axis.id) ? raw('<a><i class="btn btn-green btn-xs">&nbsp;</i></a>') : raw('<a><i class="btn btn-white btn-xs">&nbsp;</i></a>') %>
+
+<%# end %>
+
+
+<div class="col-md-9 axis_parent">
+<input type="hidden" class="min_axis base_axis_class" name="base_axis_value[]">
+<input type="hidden" class="max_axis target_axis_class" name="target_axis_value[]">
+<input type="hidden" class="check_first" value="0">
+
+<% for x in (axis.min_value)..(axis.max_value) do %> 
+
+<a class="axis_setting axis_setting_width btn btn-success button-striped button-full-striped btn-ripple btn-xs pull-left" value-of-axis="<%= x.to_i %>" id="axis<%= x.to_i %>"><%= x.to_i %></a> 
+<% end %>
+<a class="clear_axis m-l-10">clear</a> 
+</div>
+</div> 
+<% end %>
+
+</div>
+
+  <div class="form-group row m-b-20 clearfix">
+    <div class="col-md-3">
+      <label class="control-label required">Short Title</label>
+    </div>
+    <div class="col-md-9">
+        <%= f.text_field :title,:class=>"form-control ",:placeholder=>"Please enter title",:required=>true %>
+    </div>
+  </div>
+ <div class="row form-group m-b-20">
+    <div class="col-md-3">
+      <label class="control-label required">Description:</label>
+    </div>
+    <div class="col-md-9">
+
+<%= hidden_field_tag "plevel"%>
+      <%=f.hidden_field :student_id ,:value=>@student.id%>
+      <%#= text_area_tag :description,nil, :class=>"pivats_description_field width-100", :rows=>"3",:style=>"border:1px solid #f0f0f0" ,:placeholder=>"Enter Description",:required=>true  %> 
+      <%= text_area_tag :description,nil, :class=>"width-100 summernote_custom", :rows=>"3",:style=>"border:1px solid #f0f0f0" ,:placeholder=>"Enter Description",:required=>true  %>
+    </div>    
+  </div>
+
+
+    <div class="form-group m-b-20 clearfix row">
+    <div class="col-md-3">
+      <label class="control-label required"> Target Date</label>
+    </div>
+    <div class="col-md-9">
+        <%= f.text_field :target_date,:class=>"form-control datepicker",:placeholder=>"dd-mm-yyyy",:required=>true,:value=>Time.now.strftime('%d-%m-%Y'),:readonly=>true  %>
+    </div>
+  </div>
+  <div class="modal-footer">
+  	<div class="form-actions">
+      <div class="row">
+         <div class="pull-right">
+           <%= f.submit "Create LO", :class=>"btn btn-beatrice learning_objective_submit text-white add_lo2_submit" %>
+          </div>
+          <div class="pull-left">
+             <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+       </div>
+     </div>
+ </div>
+  <%end%>

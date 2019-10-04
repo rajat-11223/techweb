@@ -1,0 +1,596 @@
+// $('.observation_summary').html("<%=escape_javascript(render partial: 'reports/partial/observation_summary', locals: {observation: @report_observation})%>");
+$('.report_lo').html("<%=escape_javascript(render partial: 'reports/partial/reports_lo', locals: {})%>");
+
+$(".report_lo_summernote").summernote();
+
+
+$(document).ready(function(){
+        $('.loader').fadeOut('slow')
+      }) 
+// toastr["success"]("changes saved..")
+
+// toastr.options = {
+//   "closeButton": true,
+//   "progressBar": false,
+//   "positionClass": "toast-top-right",
+//   "timeOut": "10000",
+//   "showMethod": "slideDown"
+  
+// }
+$(function() {
+
+      $(".sorting-div").sortable({
+        connectWith: ".empty",
+        handle: ".portlet-header",
+        cancel: "observation-sort,filled",
+        dropOnEmpty: true,
+        grid: [ 20, 10 ],
+        cursor: "move",
+        scroll: true,
+        revert : true ,
+        placeholder: "portlet-placeholder ui-corner-all",
+
+        start: function(event,ui){
+          $(this).addClass("empty");
+          $(this).removeClass("filled");
+          ui.item.file_id = $(this).children(".portlet").attr("file");
+          ui.item.temp_id = $(this).attr("temp-id");
+
+
+        },
+
+        stop: function(event,ui){
+          $(this).addClass("empty");
+          $(this).removeClass("filled");
+
+          $(".sorting-div").each(function(){
+            if($(this).children().hasClass('portlet')){
+              $(this).addClass("filled");
+              $(this).removeClass("empty");
+
+            }
+            else{
+              $(this).addClass("empty");
+              $(this).removeClass("filled");
+            }
+          });
+        },
+
+        update: function(event,ui,e) {
+          var report_id = $(this).attr("report-id");
+          var file_id =  ui.item.file_id;
+          var temp_id = ui.item.temp_id;
+          var position = $(this).attr("position");
+          var observation_id = $(this).attr("observation");
+
+          a = $(this).attr("file");
+          b = $(this).attr("position");
+          $(this).addClass("filled");
+          $(this).removeClass("empty");
+          console.log(report_id);
+
+          if (this === ui.item.parent()[0]) {
+
+
+
+
+
+            $.ajax({
+              beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+              type:'post',
+              async: true,
+
+              url: '/save_sort_evidence',
+              data: {file_id: file_id, position_id: position,observation_id: observation_id, report_id: report_id}
+
+
+            });
+
+          }
+        },
+
+      });
+$(".sorting-div").disableSelection(),
+
+
+
+
+
+
+$( ".portlet" )
+.addClass( "ui-widget ui-widget-conten ui-helper-clearfix ui-corner-all" )
+.find( ".portlet-header" )
+
+.addClass( "custom-widget ui-corner-all" )
+
+
+
+});
+
+
+ 
+
+
+  $(function() {
+
+
+    $(".observation-sort").sortable({
+      tolerance: "pointer",
+      cursor: "move",
+      scroll: true,
+      revert : true ,
+      zIndex: 9999,
+
+      dropOnEmpty: true,
+
+      start: function(event,ui){
+        ui.item.observe_position_old = $(this).attr("observe-position");
+        ui.item.observation_id_old = $(this).attr("observation-id");
+      },
+
+      update: function(event,ui){
+
+
+        var current_observation = ui.item.children().attr("observation-id");
+        var current_obseravtion_position =ui.item.children().attr("observe-position");
+        var report_id=ui.item.children().attr("report");
+
+        var prev_observation_position = ui.item.prev().attr("observe-position");
+        var prev_observation = ui.item.prev().attr("observation-id");  
+        var next_observation_position = ui.item.next().attr("observe-position");
+        var next_observation = ui.item.next().attr("observation-id");
+
+
+
+
+        if (this === ui.item.parent()[0]) {
+
+
+          $.ajax({
+            beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+            type:'post',
+            async: true,
+
+            url: '/save_observation_sort',
+            data: {
+              current_observation: current_observation,
+              current_observation_position: current_obseravtion_position, 
+
+              prev_observation: prev_observation, 
+              prev_observation_position: prev_observation_position,
+
+              next_observation: next_observation, 
+              next_observation_position: next_observation_position,
+              report_id: report_id
+            }
+
+
+          });
+        }
+      }
+
+    });
+
+$( ".observation-sort" ).disableSelection();
+
+
+
+
+})
+
+ //  $(document).on("click",".evidence_close",function(){
+ //    var observation_id = $(this).attr("observation-id");
+ //    var file_id = $(this).attr("file-id");
+ //    $(this).parent().parent().parent().parent().removeClass("filled");
+ //    $(this).parent().parent().parent().parent().addClass("empty");
+ //    $(this).parent().parent().remove();
+ // if(file_id !=""){
+ //    $.ajax({
+ //      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+ //      type:'post',
+ //      url: '/evidence_close',
+ //      data: {observation_id: observation_id, file_id: file_id}
+
+
+ //    });
+ //  }
+ //  })
+
+ //  $(document).on("click",".curriculum_evidence_close",function(){
+ //    var curriculum_observation_id = $(this).attr("observation-id");
+ //    var file_id = $(this).attr("file-id");
+ //    $(this).parent().parent().parent().parent().removeClass("filled-subject");
+ //    $(this).parent().parent().parent().parent().addClass("empty-subject");
+ //    $(this).parent().parent().remove();
+
+ //    $.ajax({
+ //      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+ //      type:'post',
+ //      url: '/curriculum_evidence_close',
+ //      data: {curriculum_observation_id: curriculum_observation_id, file_id: file_id}
+
+
+ //    });
+ //  })
+
+ //  $(document).on("click",".observation_close",function(){
+ //    var observation_id = $(this).attr("observation-id");
+ //    $(this).parent().parent().parent().parent().remove();
+
+ //    $.ajax({
+ //      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+ //      type:'post',
+ //      url: '/observation_close',
+ //      data: {observation_id: observation_id}
+
+
+ //    });
+ //  })
+
+ //  $(document).on('click',".save_observation_summary",function(){
+
+ //    var summary  = $(this).prev("#observation_summary").val();
+ //    var observation_id = $(this).attr("observation-id");
+
+ //    $.ajax({
+ //      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+ //      type:'post',
+ //      url: '/save_observation_summary',
+ //      data: {summary: summary,observation_id: observation_id}
+
+ //    });
+ //  })
+
+ //  $(document).on('click',".edit_reportsubject_lo_summary",function(){
+
+ //    $(this).parents(".hide_summary").hide();
+
+
+ //    $(this).parents(".hide_summary").siblings(".show_summary").show();
+
+ //    $(this).parents(".hide_summary").siblings(".show_summary").find(".reportsubject_summernote").summernote();
+ //    $(this).parents(".hide_summary").siblings(".show_summary").find(".reportsubject_summernote").code($(this).attr("summary"));
+
+ //  });
+
+
+ //  $(document).on('click',".save_curriculum_lo_summary",function(){
+ //    var summary = $(this).prev().prev(".reportsubject_summernote").code();
+
+ //    var reportsubject_id = $(this).attr("reportsubjectid");
+ //    $.ajax({
+ //      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+ //      type:'post',
+ //      url: '/save_reportsubject_summary',
+ //      data: {summary: summary,reportsubject_id: reportsubject_id}
+
+ //    });
+
+
+
+ //  })
+
+
+ //  $(document).on('click',".edit_report_lo_summary",function(){
+
+ //    $(this).parents(".hide_summary").hide();
+
+
+ //    $(this).parents(".hide_summary").siblings(".show_summary").find(".report_lo_summernote").summernote();
+ //    $(this).parents(".hide_summary").siblings(".show_summary").find(".report_lo_summernote").code($(this).attr("summary"));
+ //    $(this).parents(".hide_summary").siblings(".show_summary").show();
+ //    $(".reportsubject_summernote").summernote();
+
+ //  });
+
+
+ //  $(document).on('click',".save_report_lo_summary",function(){
+
+
+ //    var summary = $(this).prev().prev(".report_lo_summernote").code();
+
+ //    var report_lo_id = $(this).attr("reportloid");
+ //    $.ajax({
+ //      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+ //      type:'post',
+ //      url: '/save_report_summary',
+ //      data: {summary: summary,report_lo_id: report_lo_id}
+
+ //    });
+
+
+
+ //  })
+
+
+ //  $(document).on('click',".edit_observation_summary",function(){
+
+
+ //    $(this).parents(".hide_summary").hide();
+ //    $(this).parents(".hide_summary").siblings(".show_summary").find("#observation_summary").val($(this).attr("summary"));
+ //    $(this).parents(".hide_summary").siblings(".show_summary").show();
+
+ //  });
+
+
+  $('.report_plevel').on('change', function(){
+    var plevel = $(this).find('option:selected').val();
+    report_core_subject_id = $(this).attr("report_core_subject_id");
+    toastr["success"]("changes saved..")
+
+    toastr.options = {
+      "closeButton": true,
+      "progressBar": false,
+      "positionClass": "toast-top-right",
+      "timeOut": "10000",
+      "showMethod": "slideDown"
+
+    }
+    $.ajax({
+      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+      type: 'post',
+      url: '/save_report_plevel',
+      data: {report_core_subject_id: report_core_subject_id,plevel: plevel}
+
+
+    });
+
+
+  });
+
+  $('.report_sublevel').on('change', function(){
+    var p_sublevel = $(this).find('option:selected').val();
+    report_core_subject_id = $(this).attr("report_core_subject_id");
+    toastr["success"]("changes saved..")
+
+    toastr.options = {
+      "closeButton": true,
+      "progressBar": false,
+      "positionClass": "toast-top-right",
+      "timeOut": "10000",
+      "showMethod": "slideDown"
+
+    }
+    $.ajax({
+      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+      type: 'post',
+      url: '/save_report_sublevel',
+      data: {report_core_subject_id: report_core_subject_id,p_sublevel: p_sublevel}
+
+
+    });
+
+
+  });
+
+
+$('.report_subject_plevel_one').on('change', function(){
+  var p_level_one = $(this).find('option:selected').val();
+  reportsubject_id = $(this).attr("reportsubject_id");
+  toastr["success"]("changes saved..")
+
+  toastr.options = {
+    "closeButton": true,
+    "progressBar": false,
+    "positionClass": "toast-top-right",
+    "timeOut": "10000",
+    "showMethod": "slideDown"
+
+  }
+  $.ajax({
+    beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+    type: 'post',
+    url: '/save_reportsubject_plevel_one',
+    data: {reportsubject_id: reportsubject_id,p_level_one: p_level_one}
+
+
+  });
+
+
+});
+
+  $('.reportsubject_psublevel_one').on('change', function(){
+    var p_sublevel_one = $(this).find('option:selected').val();
+    reportsubject_id = $(this).attr("reportsubject_id");
+    toastr["success"]("changes saved..")
+
+    toastr.options = {
+      "closeButton": true,
+      "progressBar": false,
+      "positionClass": "toast-top-right",
+      "timeOut": "10000",
+      "showMethod": "slideDown"
+
+    }
+    $.ajax({
+      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+      type: 'post',
+      url: '/save_reportsubject_psublevel_one',
+      data: {reportsubject_id: reportsubject_id,p_sublevel_one: p_sublevel_one}
+
+
+    });
+
+
+  });
+
+  $(function() {
+
+    $(".sorting-subject-div").sortable({
+      connectWith: ".empty-subject",
+      handle: ".portlet-subject-header",
+      cancel: "filled-subject",
+      dropOnEmpty: true,
+      grid: [ 20, 10 ],
+      cursor: "move",
+      scroll: true,
+      revert : true ,
+      placeholder: "portlet-placeholder ui-corner-all",
+
+      start: function(event,ui){
+        $(this).addClass("empty-subject");
+        $(this).removeClass("filled-subject");
+
+        ui.item.file_id = $(this).children(".portlet-subject").attr("file");
+
+      },
+
+      stop: function(event,ui){
+        $(this).addClass("empty-subject");
+        $(this).removeClass("filled-subject");
+
+        $(".sorting-subject-div").each(function(){
+          if($(this).children().hasClass('portlet-subject')){
+            $(this).addClass("filled-subject");
+            $(this).removeClass("empty-subject");
+
+          }
+          else{
+            $(this).addClass("empty-subject");
+            $(this).removeClass("filled-subject");
+          }
+        });
+      },
+
+      update: function(event,ui,e) {
+        var report_id = $(this).attr("report-id");
+
+        var file_id =  ui.item.file_id;
+
+        var position = $(this).attr("position");
+        var observation_id = $(this).attr("observation");
+
+
+        $(this).addClass("filled-subject");
+        $(this).removeClass("empty-subject");
+
+        if (this === ui.item.parent()[0]) {
+
+          $.ajax({
+            beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+            type:'post',
+            async: true,
+
+            url: '/save_report_sort_evidence',
+            data: {file_id: file_id, position_id: position,observation_id: observation_id, report_id: report_id}
+          });
+
+        }
+      },
+
+    });
+$(".sorting-subject-div").disableSelection(),
+$( ".portlet-subject" )
+.addClass( "ui-widget ui-widget-conten ui-helper-clearfix ui-corner-all" )
+.find( ".portlet-subject-header" )
+
+.addClass( "custom-widget ui-corner-all" )
+});
+
+  // $(document).on('click',".save_reportsubjectobservation_summary",function(){
+
+  //   var summary  = $(this).prev("#reportsubjectobservation_summary").val();
+  //   var observation_id = $(this).attr("observation-id");
+
+  //   $.ajax({
+  //     beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+  //     type:'post',
+  //     url: '/save_reportsubjectobservation_summary',
+  //     data: {summary: summary,observation_id: observation_id}
+
+  //   });
+  // })
+
+  // $(document).on('click',".edit_reportsubjectobservation_summary",function(){
+  // $(this).parents(".hide_summary").hide();
+  // $(this).parents(".hide_summary").siblings(".show_summary").find("#reportsubjectobservation_summary").val($(this).attr("summary"));
+  // $(this).parents(".hide_summary").siblings(".show_summary").show();
+ 
+
+  // });
+
+
+$(".lo_summary_summernote").summernote();
+
+  $(function() {
+
+
+    $(".curriculum-sort").sortable({
+      tolerance: "pointer",
+      cursor: "move",
+      scroll: true,
+      revert : true ,
+      zIndex: 9999,
+
+
+      
+      dropOnEmpty: true,
+
+      start: function(event,ui){
+        // console.log($(this).attr("observe-position"));
+        // console.log($(this).attr("observation-id"));
+        // ui.item.observe_position_old = $(this).attr("observe-position");
+        // ui.item.observation_id_old = $(this).attr("observation-id");
+      },
+
+      update: function(event,ui){
+
+
+
+        var current_observation = ui.item.children().attr("observation-id");
+        var current_obseravtion_position =ui.item.children().attr("observe-position");
+        var report_id=ui.item.children().attr("report");
+
+        var prev_observation_position = ui.item.prev().attr("observe-position");
+        var prev_observation = ui.item.prev().attr("observation-id");  
+        var next_observation_position = ui.item.next().attr("observe-position");
+        var next_observation = ui.item.next().attr("observation-id");
+// console.log("current obs" + current_observation);
+// console.log("current pos" + current_obseravtion_position);
+// console.log("prv obs " +prev_observation);
+// console.log("prv pos" + prev_observation_position);
+// console.log("nxt obs " + next_observation);
+// console.log("next obs pos" + next_observation_position);
+
+
+
+
+        if (this === ui.item.parent()[0]) {
+
+
+          $.ajax({
+            beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+            type:'post',
+            async: true,
+
+            url: '/save_curriculum_sort',
+            data: {
+              current_observation: current_observation,
+              current_observation_position: current_obseravtion_position, 
+
+              prev_observation: prev_observation, 
+              prev_observation_position: prev_observation_position,
+
+              next_observation: next_observation, 
+              next_observation_position: next_observation_position,
+              report_id: report_id
+            }
+
+
+          });
+        }
+      }
+
+    });
+
+$( ".curriculum-sort" ).disableSelection();
+
+
+
+
+})
+
+
+
+
+

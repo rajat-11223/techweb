@@ -1,0 +1,124 @@
+ <div class="row">
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="panel">
+      <div class="panel-heading">
+        <div class="panel-title">
+          <h4>Reports</h4>
+          <footer class="font-size-15" > </footer>
+          <div class="col-md-6 pull-right">
+            <% if current_user.is_team_lead? || current_user.is_student_tutor?(session[:global_academic_session], @student.id) %>
+            <%= link_to "Create Report",reports_path(student_id: @student.id),:class=>"pull-right btn btn-primary show_loader" ,method: :post%>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-body">
+
+        <% if !@report_years.blank? %>
+
+        <div class="row no-gutters">
+          <div class="styled-tabs tab-primary">
+            <div class="col-md-12">
+              <div class="col-md-2">
+                <ul class="nav nav-tabs tabs-left">
+                  <% @report_years.each do |ry| %>
+                  <li <% if @report_years.first == ry %>class="active"<% end %>><a href="#year<%= ry %>" data-toggle="tab" aria-expanded="true"><%= AcademicSession.find(ry).name %></a></li>
+                  <% end %>
+                </ul>
+              </div>
+              <div class="col-md-10">
+                <div class="tab-content">
+
+                  <% @report_years.each do |ry| %>
+                  <div class="tab-pane<% if @report_years.first == ry %> active<% end %>" id="year<%= ry %>">
+
+                    <table class="table table-striped">
+                      <thead>
+                        <tr>
+
+                          <th>Title</th>
+                          <th>Phase</th>
+                          <th>Teacher</th>
+                          <th>Started on</th>
+                          <th>Submitted</th>
+                          <th>Status</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+
+
+                      <tbody>
+
+                        <% @reports[ry].each do |report| %>
+                        <% check_tutor = report.check_tutor_user_changed%>
+                        <% if check_tutor[0]%>
+                         <%edit_link =  link_to "Edit", edit_report_path(report, student_id: report.student_id, tutor_changed: true), data: {confirm: "It seems the report has been created by another tutor. We will assign this report to the current tutor for group #{check_tutor[1]}."}, method: :get %> 
+                        <% else %>
+                         <%edit_link =  link_to "Edit", edit_report_path(report, student_id: report.student_id, tutor_changed: false) %> 
+                          <% end %>
+
+                        <tr>
+                          <td><%= report.title %></td>
+                          <td><%= report.phase_name %></td>
+                          <td><%= report.tutor.name %></td>
+                          <td><%= report.created_at.strftime("%d/%m/%Y") %></td>
+                          <td><%= report.submitted_at.blank? ? "Not Submitted" : report.submitted_at.strftime("%d/%m/%Y") %></td>
+                          <td><%= report.status == "AP" ? "Approved" : report.status == "AA" ? "Awaiting Approval" : report.status == "IP" ? "In Progress" : "Unavailable" %></td>
+                          <td>
+                            <% if report.status == "AP" %> 
+                            <%= link_to "View", report_path(report) %>
+                            <% if current_user.is_team_lead? || current_user.is_admin? %>
+                            &nbsp;<%= link_to "Edit", edit_report_path(report, student_id: report.student_id, tutor_changed: false) %>
+
+                            <% end %>
+                            <%#=link_to "Download",report_download_path(report.id), method: :post,remote: true %>
+                            <% elsif report.status == "AA" %>
+
+                            <%= link_to "View", report_path(report) %>
+
+                            <% if current_user.is_team_lead? || current_user.is_admin? %>
+                            &nbsp;<%= link_to "Edit", edit_report_path(report, student_id: report.student_id, tutor_changed: false) %>
+                            <% end %>
+
+                            <% elsif report.status == "IP" %> 
+                            <%#= link_to "Edit", edit_report_path(report, student_id: report.student_id) %>  
+                            
+                            <%=edit_link%>                                  
+                            <% else %>
+                            Unavailable <!-- # This condition should never occur! -->
+                            <% end %>
+
+                            <% if policy(report).admin_check?  && report.status != "AP" %>
+
+                            &nbsp;<%= link_to report_delete_path(report_id: report.id), method: :post,:class=>"click_loader m-r-5",:data=>{confirm:"Are you sure you wish to delete this report? This action is irreversible and may impact the system data.",:toggle=>"tooltip", :title=>"Delete Report"} do %> Delete <% end %>
+
+                            <% end %>
+
+                          </td>
+                        </tr>
+                        <% end %>
+
+                      </tbody>
+                    </table>
+
+                  </div>
+                  <% end %>
+
+                </div>
+              </div>
+              <div class="clearfix"></div>
+            </div><!--.col-md-6-->
+          </div><!--.styled-tabs-->
+        </div><!--.row-->
+        <% else %>
+        No reports available
+        <% end %>
+      </div>
+      
+    </div>
+
+  </div>
+
+</div>
+

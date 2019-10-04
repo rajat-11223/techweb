@@ -1,0 +1,84 @@
+
+  <div class="row">
+    <div class="">
+      <div class="">
+        <%=form_for@student_profile_new,:url=>url_for(:controller=>'students', :action=>'save_profile_data'),	 method: :post  do |f| %>
+          <div class="row">
+            <div class="form-body">
+              <% if @student.errors.any? %>
+                  <div id="error_explanation">
+                    <h2><%= pluralize(@student.errors.count, "error") %> prohibited this student from being saved:</h2>
+                    <ul>
+                      <% @student.errors.full_messages.each do |message| %>
+                        <li><%= message %></li>
+                      <% end %>
+                    </ul>
+                  </div>
+                <% end %>
+                <%=hidden_field_tag "student_id" ,@student.id%>
+                 <div class="profile_spc">
+               <% if @student_profile.present?   %>
+               <% @student_profile.each do |profile| %>
+  <div class="form-group">
+    <label for="Heading1">Heading1</label>
+     <%=f.text_field :heading1, :value=>profile.heading1,:class=>"form-control", :required=>true %>  
+  </div>
+   <div class="form-group">
+    <label for="Heading2">Heading2</label>
+     <%=f.text_field :heading2,:value=>profile.heading2, :class=>"form-control", :required=>true %>  
+  </div>
+  <div class="form-group">
+    <label for="Heading3">Heading3</label>
+     <%=f.text_field :heading3,:value=>profile.heading3, :class=>"form-control", :required=>true %>  
+  </div>
+  <div class="form-group">
+    <label for="Heading4">Heading4</label>
+     <%=f.text_field :heading4,:value=>profile.heading4, :class=>"form-control", :required=>true %>  
+  </div>
+   <%=hidden_field_tag "profile_id" ,profile.id%>
+  <% end %>
+
+  <% else %>
+
+ <div class="form-group">
+    <label for="Heading1">Heading1</label>
+     <%=f.text_field :heading1, :class=>"form-control", :required=>true %>  
+  </div>
+   <div class="form-group">
+    <label for="Heading2">Heading2</label>
+     <%=f.text_field :heading2, :class=>"form-control", :required=>true %>  
+  </div>
+  <div class="form-group">
+    <label for="Heading3">Heading3</label>
+     <%=f.text_field :heading3, :class=>"form-control", :required=>true %>  
+  </div>
+  <div class="form-group">
+    <label for="Heading4">Heading4</label>
+     <%=f.text_field :heading4, :class=>"form-control", :required=>true %>  
+  </div>
+
+  <% end %>
+</div>
+
+
+           		</div>
+           	</div>
+           	  <div class="modal-footer">              
+        
+                  <div class="form-actions">
+                  <div class="row">
+                    <div class="pull-right">
+                     
+                      <%= f.submit "Save", :class=>"btn btn-success btn-beatrice update_medical" %>
+                    </div>
+                    <div class="pull-left">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                  </div>
+                  </div>
+                  </div>
+               <%end%>
+
+          </div>
+        </div>
+      </div>

@@ -1,0 +1,261 @@
+<table>
+		<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td> </tr>
+		<tr>
+			<td colspan="12">
+				<i class="pull-right align-justify"><h4><%= @report.title %></h4></i>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="3" class="p-5z">
+				<%if @print_type=="pdf"%>
+				<% if @student.avatar.present?%> 
+				<%=wicked_pdf_image_tag(@student.avatar(:thumb))	%>
+				<%else%>
+				<%=wicked_pdf_image_tag('/assets/custom/1.jpg')%>
+				<%end%>
+				<%else%>
+				<% if @student.avatar.present?%> 
+				<img src="<%=@student.avatar(:thumb)%>" >		
+				<%else%>
+				<img src="/assets/custom/no-image.png" height="128px" width="128px">
+				<%end%>
+				<%end%>
+			</td>
+			<td colspan="4" class="vert-align-base p-5">
+				<h5 class="no-m-b"><%= @report.student.name %></h5>
+				<%= @report.phase_name %><br />
+				Learning group: <%= @report.lg_name %><br />
+				Tutor group: <%= @report.tutor.show_tutor_group_name(@report.academic_session_id) %><br />
+				Tutor: <%= @report.tutor.name %> <br />
+			</td> 
+			<td colspan="5" class="vert-align-base p-5"> 
+			<img src="/assets/brt-logo.png">
+			</td>
+		</tr>
+		<tr><td colspan="12"><h4 style="border-bottom: 3px solid #003A6A;">Learning Objectives</h4></td></tr>
+		<% @report_learning_objectives.each do |report_lo| %>
+		<tr>
+			<td colspan="12" class="bullets numbers align-justify vr-baseline">
+				<b><%=raw report_lo.student_learning_objective.title.present? ? report_lo.student_learning_objective.title : "-" %></b>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="12" class="numbers bullets align-justify" >
+				<%=raw report_lo.student_learning_objective.description.present? ? report_lo.student_learning_objective.description : "-"%>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="7" class="no-p-l">
+				<table>
+					<tr>
+						<td colspan="3" class="vr-baseline font-size-12" style="font-weight: 600;">Area</td>
+						<td colspan="3" class="vr-baseline font-size-12"><%= report_lo.report_show_subject %>	</td></tr>
+						<tr>
+							<td colspan="3" class="vr-baseline font-size-12" style="font-weight: 600;" >P-Scale Level</td>
+							<td colspan="3" class="vr-baseline font-size-12"><%= report_lo.report_show_p_level %></td>
+						</tr>
+						<tr>
+							<td colspan="3" class="vr-baseline font-size-12" style="font-weight: 600;">Assigned</td>
+							<td colspan="3" class="vr-baseline font-size-12"><%= report_lo.assigned_date.strftime("%d %b %Y") %></td>
+						</tr>
+						<tr>
+							<td colspan="3" class="vr-baseline font-size-12" style="font-weight: 600;">Target completion</td>
+							<td colspan="3" class="vr-baseline font-size-12" ><%= report_lo.target_date.strftime("%d %b %Y") %></td>
+						</tr>
+					</table>
+				</td>
+				<td colspan="5" class="vr-baseline no-p p-l-10">
+					<table class="m-t-10">
+						<td colspan="12" class="vr-baseline no-p ">
+							<b>Progress</b>
+							<!-- <%#if report_lo.student_learning_objective.is_completed && report_lo.student_learning_objective.achieved_date < report_lo.report.term.end_date %> <b class="pull-right">Achieved</b> -->
+							<%# end %>
+						<!-- </td> -->
+						<!-- <td colspan="6" class="vr-baseline no-p ">							 -->
+							<% if report_lo.translate_lo_status.present? %>
+							<span class="pull-right" style="color: <%= report_lo.translate_lo_status[1] %>!important"> <%= report_lo.translate_lo_status[0] %></span>
+							<% end %>
+							
+						</td>
+						<% if report_lo.report.status=="AP" || report_lo.report.status=="AA" %>
+
+							<% @master_csd_axis.each do |axis| %>
+							<tr>
+								<td colspan="3" style="font-size: 12px;padding: 0px;    padding-right: 4px;"><small><%= axis.display_name %> </small></td>
+								<td colspan="9"class=" pull-right no-p" >
+									<% for x in (axis.min_value)..(axis.max_value) do %>
+									<%# target_btn = (x.to_i == report_lo.student_learning_objective.achievement_value(axis.id) ? 'btn-success' : 'btn-default') %>
+									<%# btn_state = (report_lo.student_learning_objective.is_completed || report_lo.student_learning_objective.is_closed ? 'disabled' : '') %>
+									<%= x.to_i < report_lo.report_observation_achievements.find_by(master_csd_axis_id: axis.id).baseline_value.to_i ?
+									raw("<a  class='btn btn-grey disabled btn-xs pull-left btn-10' >" << x.to_s << "</a>") : x.to_i > report_lo.report_observation_achievements.find_by(master_csd_axis_id: axis.id).target_value ?
+									raw("<a class='btn btn-grey disabled btn-xs pull-left btn-10 '>" << x.to_s << "</a>") : x.to_i == report_lo.report_observation_achievements.find_by(master_csd_axis_id: axis.id).baseline_value ? 
+									raw("<a class='btn btn-success disabled border-grey btn-xs pull-left btn-10' axis-value=" << x.to_s << " id=minaxis" << x.to_s << ">B</a>") : x.to_i == report_lo.report_observation_achievements.find_by(master_csd_axis_id: axis.id).target_value  ? 
+									raw("<a class='btn btn-default disabled btn-xs pull-left border-grey  no-box-shadow btn-10' axis-value="<< x.to_s << " id=axisvalue"<< report_lo.student_learning_objective.id.to_s << axis.id.to_s << x.to_s << ">T</a>") : x.to_i <= ( !report_lo.report_observation_achievements.find_by(master_csd_axis_id: axis.id).achievement_value.blank? ? report_lo.report_observation_achievements.find_by(master_csd_axis_id: axis.id).achievement_value : 0) ?  
+									raw("<a class='btn btn-success disabled border-grey btn-xs pull-left  no-box-shadow btn-10' axis-value="<< x.to_s << " id=axisvalue"<< report_lo.student_learning_objective.id.to_s << axis.id.to_s << x.to_s << ">" << x.to_s << "</a>") : 
+									raw("<a class='btn btn-default disabled btn-xs pull-left  no-box-shadow border-grey btn-10' axis-value="<< x.to_s << " id=axisvalue"<< report_lo.student_learning_objective.id.to_s << axis.id.to_s << x.to_s << ">" << x.to_s << "</a>") %>
+									<% end %>
+								</td>
+							</tr>
+							<%end%>
+						<% else %>
+
+							<% @master_csd_axis.each do |axis| %>
+							<tr>
+								<td colspan="3" style="font-size: 12px;padding: 0px;    padding-right: 4px;"><small><%= axis.display_name %> </small></td>
+								<td colspan="9"class=" pull-right no-p" >
+									<% for x in (axis.min_value)..(axis.max_value) do %>
+									<%# target_btn = (x.to_i == report_lo.student_learning_objective.achievement_value(axis.id) ? 'btn-success' : 'btn-default') %>
+									<%# btn_state = (report_lo.student_learning_objective.is_completed || report_lo.student_learning_objective.is_closed ? 'disabled' : '') %>
+									<%= x.to_i < report_lo.student_learning_objective.target_lower_bound(axis.id).to_i ? 
+									raw("<a  class='btn btn-grey disabled btn-xs pull-left btn-10' >" << x.to_s << "</a>") : x.to_i > report_lo.student_learning_objective.target_upper_bound(axis.id) ? 
+									raw("<a class='btn btn-grey disabled btn-xs pull-left btn-10 '>" << x.to_s << "</a>") : x.to_i == report_lo.student_learning_objective.target_lower_bound(axis.id) ? 
+									raw("<a class='btn btn-success disabled border-grey btn-xs pull-left btn-10' axis-value=" << x.to_s << " id=minaxis" << x.to_s << ">B</a>") : x.to_i == report_lo.student_learning_objective.target_upper_bound(axis.id) ? 
+									raw("<a class='btn btn-default disabled btn-xs pull-left border-grey  no-box-shadow btn-10' axis-value="<< x.to_s << " id=axisvalue"<< report_lo.student_learning_objective.id.to_s << axis.id.to_s << x.to_s << ">T</a>") : x.to_i <= report_lo.student_learning_objective.achievement_value(axis.id) ? 
+									raw("<a class='btn btn-success disabled border-grey btn-xs pull-left  no-box-shadow btn-10' axis-value="<< x.to_s << " id=axisvalue"<< report_lo.student_learning_objective.id.to_s << axis.id.to_s << x.to_s << ">" << x.to_s << "</a>") : 
+									raw("<a class='btn btn-default disabled btn-xs pull-left  no-box-shadow border-grey btn-10' axis-value="<< x.to_s << " id=axisvalue"<< report_lo.student_learning_objective.id.to_s << axis.id.to_s << x.to_s << ">" << x.to_s << "</a>") %>
+									<% end %>
+								</td>
+							</tr>
+							<%end%>
+
+						<% end %>
+					</table>
+				</td>
+			</tr>
+			<td colspan="12"><b>Summary</b></td>
+	
+		<tr>
+			<td colspan="12" class="align-justify" style="text-align:justify;">
+				<%=raw report_lo.summary%>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="12" >
+				<table>
+					<tr>
+						<% 3.times do |report_index| %>
+						<%#if report_lo.report_objective_observations.joins(:report_observation_evidences).where("report_observation_evidences.on_observation = false").pluck("report_observation_evidences.position").include?(report_index+1) %>
+						  <%if report_lo.report_objective_observations.with_deleted.joins(:report_observation_evidences).where("report_observation_evidences.on_observation=0").pluck("report_observation_evidences.position").include?(report_index+1) %>
+						<%# file = report_lo.report_objective_observations.joins(:report_observation_evidences).map{|a| a.report_observation_evidences}.flatten.find{|a| a.position == report_index+1} %>  
+						  <% file = report_lo.report_objective_observations.with_deleted.map(&:report_observation_evidences).flatten.collect{|s| s.on_observation == false ? s : nil}.compact.find{|a| a.position == report_index+1} %> 
+						<td>
+							<% if file.student_learning_objective_observation_file.evidence_content_type.in? ["image/jpg" ,"image/png","image/jpeg"]%>
+							<%if @print_type=="pdf"%>
+							<%=wicked_pdf_image_tag(file.student_learning_objective_observation_file.evidence(:thumb))%>
+							<%else%>
+							<%#=image_tag(file.student_learning_objective_observation_file.evidence(:thumb))%>
+							<%=link_to image_tag(file.student_learning_objective_observation_file.evidence(:thumb)),report_play_video_path(:file_id=>file.student_learning_objective_observation_file) ,:remote=>true,method: :post %>
+							<%end%>
+							<%else%>
+							<%if @print_type=="pdf"%>
+							<div style="position:relative;text-color:white;">
+								<%=wicked_pdf_image_tag(file.student_learning_objective_observation_file.evidence(:thumb))%>
+								<i class="fa fa-4x fa-play-circle-o text-white report-play-center" style="text-color: white"></i>
+							</div>
+							<%else%>
+							<div style="position:relative;">
+							<%=link_to image_tag(file.student_learning_objective_observation_file.evidence(:thumb)),report_play_video_path(:file_id=>file.student_learning_objective_observation_file) ,:remote=>true,method: :post %>
+								<%#=image_tag(file.student_learning_objective_observation_file.evidence(:thumb))%>
+								<i class="fa fa-4x fa-play-circle-o text-white report-play-center"></i>
+							</div>
+							<%end%>
+							<%end%>
+						</td>
+						<%else%>
+						<td colspan="1" style="width: 220px;">
+						</td>
+						<%end%>
+						<%end%>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<tr> 
+		<div class="aa">
+			<td colspan="12">
+				<% if report_lo.report_objective_observations.present? %>
+				<table>
+					<% report_lo.report_objective_observations.order(:position).each do |observation| %>
+					<tbody>
+						<tr>
+							<td colspan="12">
+								<b><%= observation.create_date.strftime("%d %b %Y") %>  <%= observation.sub_subject.present? ? observation.sub_subject.show_name : ( !observation.summary_subject_name.blank? ?  observation.summary_subject_name : "Unavailable") %>, <%= observation.user.name %></b>		</td>
+							</tr>
+							<tr>
+								<td colspan="12" class="align-justify">
+									<%=raw observation.summary%>
+								</td>
+							</tr>
+							<tr>
+								<td colspan="12">
+									<table>
+										<tr>
+											<% 3.times do |slot_index| %>
+											<% if observation.report_observation_evidences.where("report_observation_evidences.on_observation =true").pluck("report_observation_evidences.position").include?(slot_index+1) %>
+											<% file = observation.report_observation_evidences.find_by(position: slot_index+1) %>  
+											<td>
+												<% if file.student_learning_objective_observation_file.evidence_content_type.in? ["image/jpg" ,"image/png","image/jpeg"]%>
+												<%if @print_type=="pdf"%>
+												<%=wicked_pdf_image_tag(file.student_learning_objective_observation_file.evidence(:thumb))%>
+												<%else%>
+												<%#=image_tag(file.student_learning_objective_observation_file.evidence(:thumb))%>
+												<%=link_to image_tag(file.student_learning_objective_observation_file.evidence(:thumb)),report_play_video_path(:file_id=>file.student_learning_objective_observation_file) ,:remote=>true,method: :post %>
+												<%end%>
+												<%else%>
+												<%if @print_type=="pdf"%>
+												<div style="position:relative;text-color:white;">
+													<%=wicked_pdf_image_tag(file.student_learning_objective_observation_file.evidence(:thumb))%>
+													<i class="fa fa-4x fa-play-circle-o text-white report-play-center" style="text-color: white"></i>
+												</div>
+												<%else%>
+												<div style="position:relative;">
+													<%#=image_tag(file.student_learning_objective_observation_file.evidence(:thumb))%>
+													<%= link_to report_play_video_path(:file_id=>file.student_learning_objective_observation_file) ,:remote=>true,method: :post do %>
+													<%= image_tag(file.student_learning_objective_observation_file.evidence(:thumb)) %>
+
+													<%#=link_to image_tag(file.student_learning_objective_observation_file.evidence(:thumb)),report_play_video_path(:file_id=>file.student_learning_objective_observation_file) ,:remote=>true,method: :post %>
+
+
+													<i class="fa fa-4x fa-play-circle-o text-white report-play-center"></i>
+													<% end %>
+												</div>
+												<%end%>
+												<%end%>
+											</td>
+											<%else%>
+											<td colspan="1" style="width: 220px;">
+											</td>
+											<%end%>
+											<%end%>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							<%  if report_lo.report_objective_observations.last.id != observation.id%>
+							<tr>
+								<td colspan="1"></td>
+								<td colspan="2"  style="border-bottom: 1px solid #E0E0E0;"></td>
+								<td colspan="1"></td>
+							</tr>
+							<%end%>
+						</tbody>
+						<%end%>
+					</table>
+					<%end%>
+				</td>
+				</div>
+			</tr>
+			<%if @report_learning_objectives.last.id !=report_lo.id%>
+			<tr>
+				<td colspan="12"  style="border-bottom: 1px solid #bbb"></td>
+			</tr>
+			<%end%>
+
+			<%end%>
+
+		
+		
+	
+	
+	
+	</table>

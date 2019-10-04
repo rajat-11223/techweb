@@ -1,0 +1,14 @@
+$('#edit_observation_from_staff').modal('hide');
+$('#view_observation_from_staff').modal('show');
+$('#view_observation_from_staff_body').html("<%=escape_javascript(render 'observations/partial/view_observation_for_staff')%>");
+
+$('form').each(function(){
+	$(this).validate();
+});
+ 
+
+$('.datepicker').datepicker({ 
+    format: 'dd-mm-yyyy' }).on('changeDate', function(ev){ $(this).datepicker('hide'); });
+
+
+$('.selectpicker').selectpicker();

@@ -1,0 +1,32 @@
+ <%tutor_group.students.map(&:id).each do |id|%>
+ <%= hidden_field_tag "students[]", id %>
+ <%end%>
+ <div class="panel-group">
+  <div class="panel bg-antiquewhite">
+    <div class="panel-heading">
+    </div>
+    <div class="panel-body select_stud_div">
+      <% if tutor_group_students.present?%>
+      <% tutor_group_students.each do |student|%>
+      <div class="row form-group p-10 tg_stud_div">
+        <span class="col-md-1">
+          <div class="nav-user" style="  position: inherit;">
+            <div class="user" style="padding: 0">
+              <img src="<%= student.show_avatar(:thumb) %>" alt="<%=student.fname%>" title="<%=student.fname%>"  border="0" style="background-color: #ffffff;">
+            </div>
+          </div>
+        </span>
+        <span class="col-md-9 text-danger">
+          <%=student.fname + " " + student.lname.to_s%>
+        </span>
+        <span class="col-md-2 remove_tg_student" student_id = <%=student.id%> tg_id= <%=tutor_group.id%> phase_val= <%=phase_id%> style='cursor: pointer;'>
+          Remove
+        </span>
+      </div>
+      <%end%>
+      <%else%>
+      No student present.
+      <%end%>
+    </div>
+  </div>
+</div>

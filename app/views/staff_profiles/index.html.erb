@@ -1,0 +1,209 @@
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="panel">
+          <div class="panel-heading">
+            <!-- <div class="panel-title"><h4>Staff Listing</h4></div> -->
+            <div class="panel-title">
+
+              <div class="row">
+                  <div class="col-md-6"> 
+                     <%= link_to new_staff_path, method: :post, remote: :true do %>
+                      <button data-toggle=tooltip data-title="Add New Staff" class="btn btn-primary">ADD</button>
+                      <%end%>
+                  </div>
+            
+                <div class="col-md-6 ">
+                 
+                  <div class="col-md-4 pull-right">
+                    <%= form_tag staff_index_path ,method: :get do%>
+                       <% if @user_deactive.present?%>
+                        <%=select_tag "view" ,options_for_select(["Active","Deactive"] ,:selected=>"Deactive"),:class=>"show_staff selectpicker"%>
+                       <%else%>
+                        <%=select_tag "view" ,options_for_select(["Active","Deactive"]) ,:class=>"show_staff selectpicker"%>
+                      <%end%>
+                    <%end%>
+                  </div>
+                   <div class="col-md-1 pull-right">
+                    <label>Show:</label>
+                  </div>
+                </div>
+              </div>
+           
+            </div>
+
+          </div>
+          <div class="panel-body">
+
+            <div class="overflow-table">
+            <table class="display datatables-alphabet-sorting">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Tutor Group</th>
+                  <th>Team Leader</th>
+                  <th>Phase</th>
+                  <th></th>
+                </tr>
+              </thead>
+
+              <tfoot>
+                <tr>
+                  <th>Name</th>
+                  <th>Tutor Group</th>
+                  <th>Team Leader</th>
+                  <th>Phase</th>
+                  <th>Action</th>
+                </tr>
+              </tfoot>
+
+              <tbody>
+                <% @users.each do |user| %>
+                  <tr>
+                    <td><%= link_to user.name, staff_path(user) %></td>
+                    <td> <%= user.show_tutor_group_name(session[:global_academic_session]) %> </td>
+                    <td> <%= user.is_team_lead? ? "Yes" : "No" %> </td>
+
+                    <td> <%= user.lead_phase_name(session[:global_academic_session]) %> </td>
+                     <td>
+                        <% if user.deleted_at.present?%>
+                  <%= link_to reactivate_user_path(:user_id=>user.id),data: {confirm: "Are you sure you want to reactivate this user?",toggle: "tooltip", title: "Reactivate staff"}, method: :post, :class=>"show_loader btn btn-default btn-sm" do%>
+                  <i class="fa fa-recycle"></i>
+                  <%end%>
+                  <%else%>
+                     <button class="btn btn-default btn-sm" onclick="edit_staff(<%=user.id%>)" data-toggle=tooltip data-title="Edit Staff"><span class="fa fa-pencil"></span></button>
+                    <%= link_to staff_path(user.id), data: {confirm: "Are you sure you want to deactivate this user?", toggle: "tooltip", title: "Delete Staff"}, method: :delete, :class=>"btn btn-danger btn-sm" do %>
+                        <i class="fa fa-trash"></i><%end%>
+                      <%if user.sign_in_count == 0 %>
+                          <%=link_to send_invite_path(user), data: { confirm: 'Are you sure you want to invite this user to ARR system?' , toggle: "tooltip", title: "Invite Staff"}, method: :post, :class => "btn btn-info btn-sm" do %>
+                          <i class="fa fa-share-square-o"></i><%end%>
+                        <%end%>
+                        <%end%>
+                    </td>
+                  </tr>
+                <% end %>
+
+              </tbody>
+            </table>
+            </div><!--.overflow-table-->
+
+          </div><!--.panel-body-->
+        </div><!--.panel-->
+      </div><!--.col-md-12-->
+    </div><!--.row-->
+
+
+    <div class="modal scale fade staff_profile" id="new_staff" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header bg-beatrice text-white">
+            <h4 class="modal-title text-white">ADD STAFF MEMBER<span class="fa fa-times pull-right cursor-pointer" data-dismiss="modal"></span></h4>
+          </div>
+          <div class="modal-body" id="new_staff_modal_body">
+              <%#= render '/staff_profiles/form'%>
+         <!-- 
+            <div class="row">
+              <button class="btn btn-default pull-left">Cancel</button>
+              <button class="btn btn-default pull-right">Add</button>
+            </div> -->
+          </div>
+        </div><!--.modal-content-->
+      </div><!--.modal-dialog-->
+    </div><!--.modal-->
+
+     <div class="modal scale fade staff_profile" id="edit_staff" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header bg-beatrice text-white">
+            <h4 class="modal-title text-white">EDIT STAFF MEMBER<span class="fa fa-times pull-right cursor-pointer" data-dismiss="modal"></span></h4>
+          </div>
+          <div class="modal-body" id="edit_staff_modal_body">
+              <%#= render '/staff_profiles/form'%>
+         <!-- 
+            <div class="row">
+              <button class="btn btn-default pull-left">Cancel</button>
+              <button class="btn btn-default pull-right">Add</button>
+            </div> -->
+          </div>
+        </div><!--.modal-content-->
+      </div><!--.modal-dialog-->
+    </div><!--.modal-->
+
+
+<script type="text/javascript">
+  function edit_staff(staff_id){
+
+    $.ajax({
+     beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+      type:'post', 
+        url: '/edit_staff_from_table',
+       data: { staff_id :staff_id}
+      
+      });
+      
+
+  }
+</script>
+
+<script>
+$('.modal').on('shown.bs.modal', function() {
+
+    FormsIcheck.init();
+})
+</script>
+
+<script type="text/javascript">
+  $(document).on('blur','.create_email',function(){
+var email = $('.create_email').val();
+
+
+      
+      $.ajax({
+     beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+      type:'post', 
+        url: '/unique_user_email',
+          data: {email :email}
+
+      
+      });
+      return false
+    });
+  
+</script>
+
+<script type="text/javascript">
+  $(document).on('blur','.update_email',function(){
+var email = $('.update_email').val();
+var user_id =$(this).attr("user_id");  
+
+
+      
+      $.ajax({
+     beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+      type:'post', 
+        url: '/update_unique_user_email',
+          data: {email :email,user_id :user_id}
+
+      
+      });
+      return false
+    });
+  
+</script>
+<script type="text/javascript">
+    $(document).on("change",".show_staff",function(){
+       var view =$(this).val();
+      $('form').submit();
+
+
+    });
+
+$(document).ready(function(){
+  $('.loader').fadeOut('slow')
+})
+
+
+</script>
+
+
+

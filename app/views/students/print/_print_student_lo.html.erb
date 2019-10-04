@@ -1,0 +1,307 @@
+<style type="text/css" >
+ 
+
+	@media print {
+a[href]:after {
+    content: none !important;
+  }
+		title{
+			display: block;
+			text-align: center;
+		}
+		.pg-break{
+			page-break-before: always;
+		}
+	
+		.fa:before{
+			color: #ffffff !important;
+			/*background-color: #3F6CAF !important;*/
+		}
+		.aa {
+			page-break-before: avoid!important;
+		}
+		.none{display: none}
+		 thead 
+                { 
+                    display: table-header-group; 
+                }
+		
+	}
+
+
+	td { 
+		min-width: 54px; 
+		padding: 5px;
+	}
+	.vert-align-base{  
+		vertical-align: -webkit-baseline-middle;
+	}
+	td p {
+		margin: 0px;
+	}
+	.btn-success {
+		color: #ffffff!important;
+		background-color: #5cb85c!important;
+		border-color: #20861f!important;
+	}
+	.btn-default {
+		color: #333333!important;
+		background-color: #ffffff!important;
+		border-color: #cccccc!important;
+		border: 1px solid #cccccc!important;
+	}
+
+	.btn-xs{
+		padding: 2px 8px;
+		margin-bottom: 0px!important;
+		/*font-size: 16px;*/
+		/*line-height: 1.5;*/
+		border-radius: 1px;
+	}
+	.no-box-shadow{
+		box-shadow: none!important;
+	}
+	.border-grey{
+		border-color:#BFBFBF!important;
+	}
+	.disabled{   
+		background-color: transparent;
+	}
+	.btn-default{
+		color: rgba(0, 0, 0, 0.87)!important;
+	}
+	.bg-beatrice{
+		background:#003A6A!important;
+		color: #ffffff!important;
+
+	}
+	.btn-grey{
+		background-color: grey!important;
+		color: #ffffff!important;
+	}
+	.vr-baseline{
+		vertical-align: baseline;
+	}
+	.report-play-center{
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		margin-left: -24px;
+		margin-top: -28px;
+	}
+
+	.btn-10{
+		width: 19px!important;
+
+		padding-left: 5px!important;
+		font-size: 9px!important;
+	}
+	.btn-b{
+		width: 19px!important;
+
+		padding-left: 5px!important;
+		font-size: 9px!important;
+	}
+
+	body{
+		background: #ffffff;
+	}
+	.font-size-12{
+		font-size: 12px
+	}
+</style>
+<div class="none">
+<a href="javascript:window.print();" class="btn btn-beatrice text-white pull-right ">Print</a>
+<a href="javascript:window.close();" class="btn btn-beatrice text-white pull-right m-r-10">Close</a>
+</div>
+<div style=" width: 650px;    height: auto;    order:1px solid #bbb;   margin: auto;">
+	<div>
+		<table>
+			<tr>
+				<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+			</tr>
+			<tr>
+				<td colspan="3" class="p-5z">
+					<% if @student.avatar.present?%> 
+					<img src="<%=@student.avatar(:thumb)%>" >		
+					<%else%>
+					<img src="/assets/custom/no-image.png" height="128px" width="128px">
+					<%end%>
+				</td>
+				<td colspan="4" class="vert-align-base p-5">
+					<h5 class="no-m-b">
+						<%= @student.name %>
+
+					</h5>
+					Phase: <%= @student.show_phase%><br />
+					Learning group: <b><%=@student.show_learning_group_name(session[:global_academic_session])%></b><br />
+					Tutor group: <b><%=@student.show_tutor_group_name(session[:global_academic_session])%></b><br />
+					Tutor: <b><%=@student.show_tutor_group_tutor_name(session[:global_academic_session])%> </b><br />
+				</td> 
+				<td colspan="5" class="vert-align-base p-5"> 
+					<img src="/assets/brt-logo.png">
+				</td>
+			</tr>
+			<tr>
+				<td colspan="12">
+					<h4 style="border-bottom: 3px solid #003A6A;">
+						Learning Objectives
+					</h4>
+						</td>
+							<td colspan="12">
+									<tr>
+
+<!-- 					<td colspan="2">
+						<% if @current_lo.present? %>
+							<img src="/assets/check_beat.png">
+						<%else%> 
+							<img src="/assets/check_square_beat.png">
+						 <%end%>
+					
+						Current
+					</td> -->
+<!-- 					<td colspan="2">
+						<% if @completed_lo.present? %> 
+								<img src="/assets/check_beat.png">
+						<%else%> 
+							<img src="/assets/check_square_beat.png">
+						 <%end%>
+				
+						Completed
+					</td> -->
+<!-- 					<td colspan="2">
+						<%  if @closed_lo.present? %>
+			<img src="/assets/check_beat.png">
+						<%else%> 
+							<img src="/assets/check_square_beat.png">
+						 <%end%>
+				
+						Closed
+					</td> -->
+				</tr>
+				</td>
+			</tr> 
+
+			<% @student_learning_objectives.each do |lo| %>
+			
+			<tr <% if lo.is_completed || lo.is_closed %> class="bg-antiquewhite" <% end %>>
+			
+				<td colspan="12" class="bullets numbers align-justify vr-baseline">
+					<b><%=raw lo.title.present? ? lo.title : "-" %></b>
+				</td>
+			</tr>
+			<tr <% if lo.is_completed || lo.is_closed %> class="bg-antiquewhite" <% end %>>
+		
+				<td colspan="12" class="numbers bullets align-justify" >
+					<%=raw lo.description.present? ? lo.description : "-"%>
+				</td>
+			</tr>
+			<tr <% if lo.is_completed || lo.is_closed %> class="bg-antiquewhite" <% end %>>
+
+				<td colspan="7" class="no-p-l">
+					<table>
+						<tr>
+							<td colspan="3" class="vr-baseline font-size-12" style="font-weight: 600;">
+								Area
+							</td>
+							<td colspan="3" class="vr-baseline font-size-12">
+								<%= lo.show_subject %>	
+							</td>
+						</tr>
+						<tr>
+							<td colspan="3" class="vr-baseline font-size-12" style="font-weight: 600;" >
+								P-Scale Level
+							</td>
+							<td colspan="3" class="vr-baseline font-size-12">
+								<%= lo.show_p_level %>	
+							</td>
+						</tr>
+						<tr>
+							<td colspan="3" class="vr-baseline font-size-12" style="font-weight: 600;">
+								Assigned
+							</td>
+							<td colspan="3" class="vr-baseline font-size-12">
+								<%= lo.assigned_date.strftime("%d %b %Y") %>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="3" class="vr-baseline font-size-12" style="font-weight: 600;">
+								Target completion
+							</td>
+							<td colspan="3" class="vr-baseline font-size-12" >
+								<%= lo.target_date.present? ? lo.target_date.strftime("%d %b %Y") : "-" %>
+							</td>
+						</tr>
+					</table>
+				</td>
+				<td colspan="5" class="vr-baseline no-p p-l-10">
+					<table class="m-t-10">
+						<td colspan="6" class="vr-baseline no-p ">
+							<b>Progress</b>
+						
+						</td>
+							<% @master_csd_axis.each do |axis| %>
+							<tr>
+							<td colspan="3" style="font-size: 12px;padding: 0px;    padding-right: 4px;"><small><%= axis.display_name %> </small></td>
+								<td colspan="9"class=" pull-right no-p" >
+									<% for x in (axis.min_value)..(axis.max_value) do %>
+									<% target_btn = (x.to_i == lo.achievement_value(axis.id) ? 'btn-success' : 'btn-default') %>
+								<% btn_state = (lo.is_completed || lo.is_closed ? 'disabled' : '') %>
+								<% btn_state = 'disabled' %>
+								<%= x.to_i < lo.target_lower_bound(axis.id).to_i ? 
+								raw("<a class='btn btn-grey disabled btn-xs pull-left btn-10'>" << x.to_s << "</a>") : x.to_i > lo.target_upper_bound(axis.id) ? 
+								raw("<a class='btn btn-grey disabled btn-xs pull-left btn-10'>" << x.to_s << "</a>") : x.to_i == lo.target_lower_bound(axis.id) ? 
+								raw("<a class='btn btn-success #{btn_state} bg-beatrice border-beatrice btn-xs pull-left min-value btn-10' axis-value=" << x.to_s << " id=minaxis" << x.to_s << ">B</a>") : x.to_i == lo.target_upper_bound(axis.id) ? 
+								raw("<a class='btn #{target_btn} btn-xs pull-left max-value max-value border-grey #{btn_state} no-box-shadow btn-10' axis-value="<< x.to_s << " id=axisvalue"<< lo.id.to_s << axis.id.to_s << x.to_s << ">T</a>") : x.to_i <= lo.achievement_value(axis.id) ? 
+								raw("<a class='btn btn-success border-grey btn-xs pull-left #{btn_state} no-box-shadow btn-10' axis-value="<< x.to_s << " id=axisvalue"<< lo.id.to_s << axis.id.to_s << x.to_s << ">" << x.to_s << "</a>") : 
+								raw("<a class='btn btn-default btn-xs pull-left #{btn_state} no-box-shadow border-grey btn-10' axis-value="<< x.to_s << " id=axisvalue"<< lo.id.to_s << axis.id.to_s << x.to_s << ">" << x.to_s << "</a>") %>
+								<% end %>
+								</td>
+								</tr>
+								<%end%>
+								</table>
+								</td>
+							</tr>
+							<%  if @student_learning_objectives.last.id != lo.id%>
+							<tr>
+								<td colspan="12"  style="border-bottom: 1px solid #bbb"></td>
+							</tr>
+							<%end%>
+
+							
+			<%end%>
+	</table>
+</div>
+</div>
+
+
+
+<script>
+$(document).ready(function(){	
+	setTimeout( function(){ 
+		window.print();
+  $('.loader').fadeOut('slow');
+  }  , 1000 );
+})
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

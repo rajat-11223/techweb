@@ -1,0 +1,5 @@
+$('#edit_schedule_student_show').modal('show');
+$('#edit_schedule_student_show_header').html('<h4 class="modal-title text-white">Update Schedule for <%=@slot.name%> on <%=@master_day.name%><span class="fa fa-times text-white pull-right cursor-pointer" data-dismiss="modal"></span></h4>')
+$('.edit_schedule_student_show_body').html("<%=escape_javascript(render 'students/partial/edit_schedule_student_show')%>");
+
+$('.selectpicker').selectpicker();

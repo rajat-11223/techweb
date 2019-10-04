@@ -1,0 +1,300 @@
+  <div class="col-md-10 col-md-offset-1 col-sm-10 col-sm-offset-1 col-xs-10 col-xs-offset-1">
+    <%=nested_form_for @student_learning_objective_observation,:html => {:multipart=> true,},:url=>url_for(:controller=>'students',:action=>'save_lo_summary'),method: :post do |f| %>
+    <%=f.hidden_field :student_learning_objective_id,:value=>params[:lo]%>
+    <%=f.hidden_field :summary_user,:value=> @summary_user%>
+    <div class="row form-group m-b-20">
+      <div class="col-md-3">
+        <label class="control-label">
+          Student name:
+        </label>
+      </div>
+      <div class="col-md-9">
+        <%=@student_lo.student.name%>
+      </div>    
+    </div>
+    <div class="row form-group m-b-20">
+      <div class="col-md-3">
+        <label class="control-label">
+          Tutor group:
+        </label>
+      </div>
+      <div class="col-md-9">
+        <%=  @student_lo.student.show_tutor_group_name(session[:global_academic_session])%>
+      </div>    
+    </div>
+    <div class="row form-group m-b-20">
+      <div class="col-md-3">
+        <label class="control-label required">
+          Class:
+        </label>
+      </div>
+      <div class="col-md-9">
+        <% @sub_val = !@student_learning_objective_observation.summary_subject_name.blank? ?  @student_learning_objective_observation.summary_subject_name : !@student_lo.show_focus_classes3(session[:global_academic_session], session[:global_current_term], current_user.id).blank? ? @student_lo.show_focus_classes3(session[:global_academic_session], session[:global_current_term], current_user.id) : "Unavailable"%>
+        <%= text_field_tag "classes",@sub_val,class: "width-100",required:true, autocomplete: :off %>
+      </div>    
+    </div>
+    <div class="row form-group m-b-20">
+      <div class="col-md-3">
+        <label class="control-label required">Term:</label>
+      </div>
+      <div class="col-md-9">
+        <%= @term_year %>
+        <%=f.hidden_field :term,:value=>@term_year%>
+      </div>    
+    </div>
+    <div class="row form-group m-b-20">
+      <div class="col-md-3">
+        <label class="control-label">
+          Learning Objective:
+        </label>
+      </div>
+      <div class="col-md-9 bullets">
+        <p class="align-justify p_description">
+          <%= raw @student_lo.description %>
+        </p>
+      </div>    
+    </div> 
+    <div class="row form-group m-b-20">
+      <div class="col-md-3">
+        <label class="control-label required">
+          Summary:
+        </label>
+      </div>
+      <div class="col-md-9">
+        <%= text_area_tag "summary",@student_learning_objective_observation.description, required: true, class: "width-100 losummary" ,rows: "5"%>
+      </div>    
+    </div> 
+    <!-- #121925577 -->
+    <div class="row form-group m-b-20">
+      <!-- <div class="col-md-12 col-sm-12 col-xs-12"> -->
+        <div class="col-md-3 col-sm-3 col-xs-3">
+          <label class="control-label required">
+          Progress:
+        </label>
+        </div>
+
+    <div class="axis_data col-md-9 m-b-20">
+      <% @master_csd_axis.each do |axis| %>
+      <input type="hidden" name="master_axis_id[]" value="<%= axis.id %>">
+
+      <div class="row">
+        <div class = "col-md-3"><small><%= axis.display_name %> </small></div>
+        <div class="col-md-9 pull-right summary-axis_parent" id="axisparent<%= axis.id %>">
+          <input type="hidden" name="student_objective_id" value="<%= @student_lo.id %>" class="student_objective_id">
+          <input type="hidden" value="<%= axis.min_value %>" name="minaxisvalue" class="minaxisvalue">  
+          <input type="hidden" value="<%= axis.max_value %>" name="maxaxisvalue" class="maxaxisvalue">
+
+          <input type="hidden" value="<%= @student_lo.target_lower_bound(axis.id) %>" name="lower_bound[]" class="lower_bound">
+          <input type="hidden" value="<%= @student_lo.target_upper_bound(axis.id) %>" name="upper_bound[]" class="upper_bound">
+          <input type="hidden" value="<%=@student_learning_objective_observation.summary_achievements.present? ? @student_learning_objective_observation.summary_achievement_value(axis.id) : @student_lo.achievement_value(axis.id) %>" name="targetaxisvalue[]" class="targetaxisvalue">
+          <% for x in (axis.min_value)..(axis.max_value) do %>
+          <% if  @student_learning_objective_observation.summary_achievements.present?%>
+            <% target_btn = (x.to_i == @student_learning_objective_observation.summary_achievement_value(axis.id) ? 'btn-deep-orange' : 'btn-default') %>
+          <%else%>
+            <% target_btn = (x.to_i == @student_lo.achievement_value(axis.id) ? 'btn-success' : 'btn-default') %>
+          <%end%>
+          <% btn_state = (@student_lo.is_completed || @student_lo.is_closed ? 'disabled' : '') %>
+
+          <%= x.to_i < @student.check_basevalue(@student_lo.id,axis.id,session[:global_academic_session],session[:global_current_term]) ? 
+            raw("<a class='btn btn-grey disabled btn-xs pull-left summary_axis_click summary-axis'>" << x.to_s << "</a>") : 
+            x.to_i > @student_lo.target_upper_bound(axis.id) ? 
+            raw("<a class='btn btn-grey disabled btn-xs pull-left summary_axis_click summary-axis'>" << x.to_s << "</a>") : 
+            x.to_i == @student.check_basevalue(@student_lo.id,axis.id,session[:global_academic_session],session[:global_current_term]) ? 
+            raw("<a class='btn btn-success #{btn_state} bg-success border-success btn-xs pull-left  min-value summary_axis_click summary-axis axis-value#{x.to_s}' axis-value=" << x.to_s << " id=minaxis" << x.to_s << ">B</a>") : 
+            x.to_i == @student_lo.target_upper_bound(axis.id) ? 
+            raw("<a class='btn #{target_btn} btn-xs pull-left summary_axis_click summary-axis max-value max-value border-grey #{btn_state} no-box-shadow  axis-value#{x.to_s}' axis-value="<< x.to_s << " id=axisvalue"<< @student_lo.id.to_s << axis.id.to_s << x.to_s << ">T</a>") : 
+            x.to_i <= (@student_learning_objective_observation.summary_achievements.present? ? 
+            @student_learning_objective_observation.summary_achievement_value(axis.id) : 
+            @student_lo.achievement_value(axis.id) )? 
+            raw("<a class='btn btn-deep-orange border-grey btn-xs pull-left summary_axis_click summary-axis #{btn_state} no-box-shadow  axis-value#{x.to_s}' axis-value="<< x.to_s << " id=axisvalue"<< @student_lo.id.to_s << axis.id.to_s << x.to_s << ">" << x.to_s << "</a>") : 
+            raw("<a class='btn btn-default btn-xs pull-left summary_axis_click summary-axis #{btn_state} no-box-shadow border-grey  axis-value#{x.to_s}' axis-value="<< x.to_s << " id=axisvalue"<< @student_lo.id.to_s << axis.id.to_s << x.to_s << ">" << x.to_s << "</a>") %>
+          <% end %>
+        </div>
+      </div>
+      <% end %>
+      </div>
+    </div>
+    
+    <div class="row form-group m-b-20">
+      <!-- <div class="col-md-12 col-sm-12 col-xs-12"> -->
+        <div class="col-md-3 col-sm-3 col-xs-3">
+          <label class="control-label">
+            Attachments:
+          </label>
+        </div>
+
+        <div class="col-md-9 col-sm-9 col-xs-9">
+          <%=f.fields_for :student_learning_objective_observation_files, f.object.student_learning_objective_observation_files.reject{|j| j.original_obs_id.present? } do |a| %>
+          <div class="m-b-20">
+            <div class="fileinput fileinput-new" data-provides="fileinput" style="position:relative;">
+              <span style="position:absolute;top:5px;right:5px;z-index: 1;">
+                <%= a.link_to_remove  class: "btn btn-sm btn-danger pull-left"  do %>
+                <i class="fa fa-times"></i>
+                <% end %> 
+              </span>
+              <div class="fileinput-new thumbnail" style="width: 300px; height: 200px; position: relative;">
+                <%=a.object.check_content%>
+              </div>
+              <div class="fileinput-preview fileinput-exists thumbnail" style="width: 300px; height: 200px;position:relative;"> 
+              </div>
+              <div>
+                <span class="btn btn-default btn-file">
+                  <span class="fileinput-new">
+                    Select file
+                  </span>
+                  <span class="fileinput-exists">
+                    Change
+                  </span>
+                  <%= a.file_field :evidence %>
+                </span>
+                <a href="#" class="btn btn-default fileinput-exists" data-dismiss="fileinput">
+                  Remove
+                </a>
+              </div>
+            </div>     
+          </div>
+          <% end %> 
+          <%= f.link_to_add :student_learning_objective_observation_files, class: "btn btn-primary btn-sm pull-left add_new_file_link" do %>
+          <i class="fa fa-plus"></i> 
+          Add New
+          <%end%>
+        </div>
+    </div>
+    <!-- </div> -->
+    <!-- end -->
+      <div class="row m-t-20">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+          <div class="panel">
+            <div class="panel-heading">
+              <div class="panel-title">
+                <h4>
+                  My Observations
+                </h4>
+              </div>
+            </div>
+            <div class="panel-body">
+              <% if @student_lo_observations.where(is_summary: false,term_id: session[:global_current_term],academic_session_id: session[:global_academic_session],user_id: @t_summary_user).blank? %>
+              <p>
+                No observations available.
+              </p> 
+              <% else %>
+              <div class="table-responsive">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th></th>
+                      <th>Date</th>
+                      <th>Teacher</th>
+                      <th>Subject</th>
+                      <th>Class</th>
+                      <th>Observation</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% @student_lo_observations.where(is_summary: false,term_id: session[:global_current_term],academic_session_id: session[:global_academic_session],user_id: @t_summary_user).collect do |observation|%>
+                    <tr>
+                      <td class="col-md-1">
+                        <div class="icheck icheck-square-blue report_checkbox ">
+                          <%if @summary.include?(observation.id) %> 
+                          <%=check_box_tag "check_ids[]", observation.id,checked: true%>
+                          <%else%>
+                          <%=check_box_tag "check_ids[]", observation.id%>
+                          <%end%> 
+                        </div>
+                      </td>
+                      <td class="col-md-1">
+                        <%=observation.date.present? ? observation.date.strftime("%d %b %Y") : "no date present"%>
+                      </td>
+                      <td class="col-md-1">
+                        <%=observation.user.name%>
+                      </td>
+                      <td class="col-md-2">
+                       <%=observation.sub_subject.present? ? observation.sub_subject.subject.name : "N/A" %>
+                     </td>
+                     <td class="col-md-1">
+                       <%=observation.sub_subject.present? ? observation.sub_subject.name : "N/A" %>
+                     </td>
+                     <td class="observation_column col-md-6">
+                      <div class="row">
+                        <div class="col-md-12">
+                          <p class="align-justify p-10">
+                            <%=observation.description%>
+                          </p>
+                        </div>
+                        <div class="col-md-12" style="display: -webkit-box;" > 
+                          <%if observation.student_learning_objective_observation_files.present?%>
+                          <% observation.student_learning_objective_observation_files.each do |file|%>
+                          <% if file.evidence_content_type.in? ["image/jpg" ,"image/png","image/jpeg"]%>
+                          <div style="position:relative;">
+                            <%=image_tag(file.show_evidence(:thumb)) %>
+                          </div>   
+                          <%else%>
+                          <div style="position:relative;">
+                            <%=image_tag(file.show_evidence(:thumb)) %>
+                            <i class="fa fa-4x fa-play-circle-o text-white play-fa-center"></i>
+                          </div>
+                          <%end%>
+                          <%end%>
+                          <%end%>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+            <% end %>
+            <div class="modal-footer">              
+              <div class="form-actions">
+                <div class="row">
+                  <div class="pull-right">
+                    <%= submit_tag "Save", :class=>"btn btn-success btn-beatrice show-loader" %>
+                  </div>
+                  <div class="pull-left">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+      <%end%>
+    </div>
+    <script type="text/javascript">
+      $(document).ready(function(){
+        $('.loader').fadeOut('slow')
+      })   
+    </script>
+
+    <script>
+
+
+
+      $('formss').each(function(){
+        $(this).on('submit',function(){
+          if($(this).valid()){
+            $('.loader').show();
+          }
+        });
+      });
+
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,17 @@
+
+ <%if @tutor_group.present?%>
+
+
+
+ $('.change_group').html("<%=escape_javascript(render 'schedules/partial/show_tutor_details')%>");
+ $('.show_learning_group_students').show();
+$('.show_learning_group_students').html("<%=escape_javascript(render 'schedules/partial/show_tutor_students')%>");
+
+$('.selectpicker').selectpicker();
+<%else%>
+$('.change_group_msg').show();
+ $('.change_group').hide();
+ $('.change_group_msg').html("Sorry, no tutor group has been assigned to the tutor.");
+ $('.show_learning_group_students').hide();
+$('input.update[type="submit"]').prop('disabled', true);
+<%end%>

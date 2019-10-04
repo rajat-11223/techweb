@@ -1,0 +1,157 @@
+<style type="text/css">
+  .lg{color: transparent!important;text-decoration: none!important;}
+
+
+</style>
+<div class="col-md-10 col-md-offset-1 col-sm-10 col-sm-offset-1 col-xs-10 col-xs-offset-1">
+    <%= form_for(@learning_group) do |f| %>
+      <% if @learning_group.errors.any? %>
+        <div id="error_explanation">
+         <h2><%= pluralize(@learning_group.errors.count, "error") %> prohibited this learning_group from being saved:</h2>
+          <ul>
+            <% @learning_group.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+    <div class="row form-group ">
+      <div class="col-md-3"><label class="control-label ">Group Name</label>
+      </div>
+      <div class="col-md-9">
+   
+        <%=f.text_field :name ,:class=>"form-control update_learning_group_name",:placeholder=>"Group name should be unique...", :required=>true ,lg: @learning_group.id%> <span class="color-red display-none learning_group_name_unique" > Group name is already taken</span>
+      </div>
+    </div>
+  
+    <!-- <div class="row form-group">
+      <div class="col-md-3"><label class="control-label">Tutor</label>
+      </div>
+      <div class="col-md-9">
+       <%#= f.select(:user_id, @teamlead.collect {|u| [u.name, u.id]},{:include_blank=>"select tutor", :required => true},:class=>"selectpicker",:required=>true) %>
+      </div>    
+    </div> -->
+   <div class="row form-group"> 
+    <div class="col-md-3">
+      <label class="control-label">Color</label>
+    </div>
+
+    <div class="col-md-9">
+       <%=f.text_field :color ,:class=>"form-control lg",:style=>"background-color: #{@learning_group.color}", :placeholder=>"Please Select Group Color" ,:spellcheck=>'false'%>
+    </div>    
+  </div>
+<div id="update_lo_students">
+
+    <div class="row">
+      <div class="col-md-12">
+       Selected Students: 
+        <div class="panel-group">
+          <div class="panel bg-beatricegreen">
+            <div class="panel-body">
+              <% if @students.present?%>
+                <% @students.each do |student|%>
+                  <div class="row form-group ">
+                    <span class="col-md-1">
+                      <div class="nav-user" style="  position: inherit;">
+                        <div class="user" style="padding: 0">
+                          <img src="<%= student.show_avatar(:thumb) %>" alt="<%=student.fname%>" title="<%=student.fname%>"  border="0" style="background-color: #ffffff;">
+                        </div>
+                      </div>
+                    </span>
+                    <span class="col-md-9 text-danger">
+                      <%=student.fname + " " + student.lname.to_s%>
+                       <footer class="font-size-15 text-black"> Learning Group: <%=student.show_learning_group_name(session[:global_academic_session])%> | Tutor Group: <%=student.show_tutor_group_name(session[:global_academic_session])%> </footer>
+                    </span>
+                    <span class="col-md-2">
+
+                    <%=link_to "REMOVE",remove_student_from_learning_group_while_editing_path(:student=>student.id,:learning_group=>@learning_group)  ,remote: true,method: :post,:class=>"text-black"%>
+                    </span>
+                  </div>
+                <%end%>
+              <%else%>
+                Please select a student below
+              <%end%>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <%@students.map(&:id).each do |id|%>
+      <%= hidden_field_tag "students[]", id %>
+    <%end%>
+      <div class="row form-group m-b-20">
+        <div class="col-md-3">
+     <label class="control-label">Select a phase:</label>
+    </div>
+    <div class="col-md-9">    
+
+    <select class="selectpicker" id="school_dropdown_update">
+    <option id="selectaphase">Select a Phase..</option>
+    <%@phases.each do |phase|%>
+    <option id="updatephase<%= phase.id %>" <% if phase.id == current_user.lead_phase_id(session[:global_academic_session]) %> selected <% end %>><%= phase.name %></option>
+    <% end %>
+       </select>
+       </div>
+       </div>
+       Available Students
+     <%@phases.each do |phase|%>
+     <div class="panel-group toggle phase_div updatephase<%= phase.id %>" <% if phase.id == current_user.lead_phase_id(session[:global_academic_session]) %> style="display:block;" <% end %>>
+              <div class="panel bg-antiquewhite">
+                <div class="panel-heading ">
+                  
+                </div>
+     
+                <div id="tutorgroupstudents" class="panel-collapse collapse in">
+                 <% if phase.students.where("temp_lg_user_id != ?", current_user.id).present?%>
+                        <% phase.students.where("temp_lg_user_id != ?", current_user.id).each do |student|%>
+                  <div class="panel-body">
+                                      <!-- <div class="row form-group v"> -->
+                    <span class="col-md-1">
+                        <div class="nav-user" style="  position: inherit;">
+                          <div class="user" style="padding: 0">
+                             <img src="<%= student.show_avatar(:thumb) %>" alt="<%=student.fname%>" title="<%=student.fname%>"  border="0" style="background-color: #ffffff;">
+                          </div>
+                        </div>
+                    </span>
+                         <span class="col-md-9 text-danger">
+                                <%=student.fname + " " + student.lname.to_s%>
+                                <footer class="font-size-15 text-black"> Learning Group: <%=student.show_learning_group_name(session[:global_academic_session])%> | Tutor Group: <%=student.show_tutor_group_name(session[:global_academic_session])%> </footer>
+                              </span>
+                               <span class="col-md-2">
+                                <%=link_to "ADD",update_added_student_while_editing_path(:student=>student.id,:learning_group=>@learning_group)   ,remote: true,method: :post,:class=>"text-black"%>
+                                </span>
+                  
+                  <!-- </div> -->
+                  </div>
+                <% end %>
+                <% end %>  
+                 </div>
+              </div>
+        </div>
+      <% end %>
+
+</div>
+
+
+
+  <div class="modal-footer">
+    <div class="form-actions">
+      <div class="row">
+        <div class="pull-left">
+            <button class="btn btn-default" data-dismiss="modal">Cancel</button>
+        </div>
+         <div class="pull-right">   
+          <%=f.submit "Update Group", :class=>"btn btn-success btn-beatrice"%>
+        </div>   
+      </div>
+    </div>
+  </div>
+<% end %>
+</div>
+
+<script>
+
+$('.selectpicker').selectpicker();
+</script>
+

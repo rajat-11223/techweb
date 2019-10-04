@@ -1,0 +1,36 @@
+<% if report_lo.summary.blank?%>
+
+<%#=raw text_area_tag :summary,nil,:value=>report_lo.summary,:rows=>"3",:style=>"width: 100%;" ,:class=>"report_lo_summernote" ,:reportobjective_id =>report_lo.id%>
+  <!-- <button type="button" class="btn btn-default save_lo_summary" report-lo-id="<%=report_lo.id%>">Save</button> -->
+      
+
+<div class="object-summ">
+  <% if policy(report_lo.report).editable_report_check?(report_lo.report.academic_session_id, @student.id,report_lo.report) %> 
+
+    <%=raw text_area_tag :summary,nil,:value=> report_lo.summary,:rows=>"5",:style=>"width:100%;",:class=>"report_lo_summernote"%>
+
+    <button type="button" class="btn btn-default save_report_lo_summary show_loader" reportloid="<%=report_lo.id%>">Save</button>    
+    <% else %>
+      No summary written 
+      <% end %>
+
+    </div>
+<%else%>
+
+
+<div class="hide_summary bullets numbers align-justify">
+  <%=raw report_lo.summary%>
+	<% if policy(report_lo.report).editable_report_check?(report_lo.report.academic_session_id, @student.id,report_lo.report) %>
+  <a class="edit_report_lo_summary " report-lo-id="<%=report_lo.id%>" summary="<%=report_lo.summary%>">(Edit)</a>
+	<%end%> 
+  </div>
+
+<%end%> 
+
+
+<div class="show_summary display-none object-summ">
+  <%=raw text_area_tag :summary,nil,:value=> report_lo.summary,:rows=>"5",:style=>"width:100%;",:class=>"report_lo_summernote m-b-10"%>
+
+    <button type="button" class="btn btn-default save_report_lo_summary show_loader" reportloid="<%=report_lo.id%>">Save</button>
+
+</div>

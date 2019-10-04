@@ -1,0 +1,38 @@
+<h1>Editing Home</h1>
+
+<%= render 'form' %>
+
+<%= link_to 'Show', @home %> |
+<%= link_to 'Back', homes_path %>
+
+
+
+    <div class="row">
+    <% (0..2).each do |x| %>
+      <div class="col-md-4">
+        <div class="card card-event">
+          <div class="card-heading bg-image sample-bg-image12">
+            <div class="context text-black">
+            <h3 class="no-m-b">Dummy</h3>
+            <span>Lower School</span>
+            <p class="no-m-b">Tutor Group: Red &nbsp; &nbsp; Tutor: Michelle</p>
+          </div>
+          </div><!--.card-heading-->
+
+          <div class="card-body">
+           <!--  <h4>Young Professionals London</h4> -->
+            <p class="border-bottom-grey p-b-20"><i class="fa fa-flag"></i>   Habiba has  one Learning Objective unassigned to teacher</p>
+             <p><i class="fa fa-warning text-red"></i>   Habiba has  one Learning Objective unassigned to teacher</p>
+          </div><!--.card-body-->
+
+          <div class="card-footer bg-beatrice align-right">
+            <!-- <div class="btn-group btn-merged btn-group-sm pull-right bg-beatrice"> -->
+              <button type="button" class="btn btn-default btn-flat text-white"><i class="fa fa-camera-retro"></i></button>
+              <button type="button" class="btn btn-default btn-flat text-white"><i class="fa fa-eye"></i></button>
+              <!-- <button type="button" class="btn btn-red btn-flat">Decline</button> -->
+            <!-- </div> -->
+          </div><!--.card-footer-->
+        </div><!--.card-->
+      </div><!--.col-md-6-->
+      <% end %>
+    </div><!--.row-->

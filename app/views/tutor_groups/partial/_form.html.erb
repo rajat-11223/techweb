@@ -1,0 +1,158 @@
+<div class="col-md-10 col-md-offset-1 col-sm-10 col-sm-offset-1 col-xs-10 col-xs-offset-1">
+<%= form_for(@tutor_group) do |f| %>
+  <% if @tutor_group.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@tutor_group.errors.count, "error") %> prohibited this tutor_group from being saved:</h2>
+
+      <ul>
+      <% @tutor_group.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <%end%>
+
+  <div class="row form-group ">
+    <div class="col-md-3">
+      <label class="control-label ">Group Name</label>
+    </div>
+    <div class="col-md-9">
+      <%=f.text_field :name ,:class=>"form-control create_tutor_group_name",:placeholder=>"Group name must be unique",:required=>true%><br>
+      <span class="color-red display-none group_name_unique"> Group name is already taken</span>
+    </div>
+
+  </div>
+
+
+  <div class="row form-group m-b-20">
+    <div class="col-md-3">
+      <label class="control-label">Tutor </label>
+    </div>
+    <div class="col-md-9">
+      <%= f.select(:user_id, @users.collect {|u| [u.name, u.id]},{:include_blank=>"Select Tutor"},{:required=>true,:class=>"selectpicker"}) %>
+    </div>    
+  </div>
+  
+
+  <div class="row">
+  <div class="col-md-12">
+      <div class="show_add_student">
+
+        <div class="panel-group toggle" id="accordian1">
+              <div class="panel bg-beatricegreen">
+                <div class="panel-heading ">
+                  
+                </div>
+     
+                <div id="tutorgroupstudents" class="panel-collapse collapse in">
+                  <div class="panel-body">
+                  Please select a student below
+                  </div>
+                 </div>
+              </div>
+        </div>
+        <div class="row form-group m-b-20">
+        <div class="col-md-3">
+     <label class="control-label">Select a phase:</label>
+    </div>
+    <div class="col-md-9">
+        <select class="selectpicker" id="school_dropdown" required class="m-b-20">
+    <option>Select a Phase..</option>
+    <%@phases.each do |phase|%>
+    <option id="phase<%= phase.id %>"  <% if phase.id == current_user.lead_phase_id(session[:global_academic_session]) %> selected <% end %>><%= phase.name %></option>
+    <% end %>
+       </select>
+       </div>
+       </div>
+     <%@phases.each do |phase|%>
+     <div class="panel-group toggle phase_div phase<%= phase.id %>" <% if phase.id == current_user.lead_phase_id(session[:global_academic_session]) %> style="display:block;" <% end %> >
+              <div class="panel bg-antiquewhite">
+                <div class="panel-heading ">
+                  
+                </div>
+     
+                <div id="tutorgroupstudents" class="panel-collapse collapse in">
+                <% phase.students.each do |student| %>
+                  <div class="panel-body">
+                                      <!-- <div class="row form-group v"> -->
+                    <span class="col-md-1">
+                        <div class="nav-user" style="  position: inherit;">
+                          <div class="user" style="padding: 0">
+                             <img src="<%= student.show_avatar(:thumb) %>" alt="<%=student.fname%>" title="<%=student.fname%>"  border="0" style="background-color: #ffffff;">
+                          </div>
+                        </div>
+                    </span>
+                    <span class="col-md-9 text-danger">
+                      <%=student.fname + " " + student.lname.to_s%>
+                        <footer class="font-size-15 text-black">Tutor Group: <%=student.show_tutor_group_name(session[:global_academic_session])%> | Learning Group: <%=student.show_learning_group_name(session[:global_academic_session])%> </footer>
+                         
+                    </span>
+                     <span class="col-md-2">
+                      <%=link_to "ADD",add_student_path(student.id) ,remote: true,method: :post,:class=>"text-black"%>
+</span>
+                  
+                  <!-- </div> -->
+                  </div>
+                <% end %>  
+                 </div>
+              </div>
+        </div>
+      <% end %>
+
+
+
+
+      </div>
+
+  </div>
+  </div>
+ <!--**** TO do ankit seth-///// drop down -->
+
+<!-- 
+ <ul class="nav" role="tablist">
+                 
+                  <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"> Phases <i class="fa fa-chevron-down"></i></a>
+                    <ul class="dropdown-menu" role="menu">
+
+                                          <%#Phase.all.each_with_index do |phase,index|%>
+                      <li><a href="#phase<%#=index+1%>" tabindex="-1" data-toggle="tab"><%#=phase.name%></a></li>
+                    
+
+                                        <%#end%>
+                    </ul>
+                  </li>
+                </ul>
+
+                <div class="tab-content">
+                    <%#Phase.all.each_with_index do |phase,index|%>
+                  <div <%#if index+1==1 %> class="tab-pane active" <%#else%>  class="tab-pane" <%#end%> id="phase<%#=index+1%>">
+                  <%#=phase.name%>
+                                    <%# phase.students.each do |student|%>
+                        <span class="col-md-2 text-danger font-size-20">
+                      <%#=student.fname + " " + student.lname.to_s%>
+                  <%#end%>
+                    </span>
+                  </div>
+                  <%#end%>
+                </div>-->
+
+
+<div class="modal-footer m-t-20">
+  <div class="form-actions">
+                  <div class="row">
+                    <div class="pull-right">
+                      <%= f.submit "Add Group", :class=>"btn btn-success btn-beatrice", :disabled=>true %>
+                    </div>
+                    <div class="pull-left">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                  </div>
+                  </div>
+                  </div>
+<% end %>
+
+</div>
+
+
+

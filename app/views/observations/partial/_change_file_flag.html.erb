@@ -1,0 +1,11 @@
+  <%if @observation.student_learning_objective_observation_files.present?%>
+        <% @observation.student_learning_objective_observation_files.where(:file_flag=>false).each do |file|%>
+          <div class="file pull-left" file-value="<%= file.id %>" observe-value="<%=@observation.id%>"  class="clearfix" style="position:relative;">
+
+        <%=image_tag(file.show_evidence(:thumb),:width=>"120px")%>
+
+        <i class="delete_image fa fa-times fa-2x" style="position:absolute;top:5px;right:5px;color:white;"></i>
+            </div>
+        <%end%>
+        <%end%>
+

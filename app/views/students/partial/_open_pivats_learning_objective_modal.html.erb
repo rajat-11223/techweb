@@ -1,0 +1,60 @@
+     
+  <%= form_for @student_lo ,:url=>url_for(:controller=>'students', :action=>'save_pivats_learning_objective') do |f| %>
+
+
+
+          <%=f.hidden_field :student_id ,:value=>@student.id%>
+
+<div class="row  m-b-20">
+   <div class="col-md-3">
+      <label class="control-label required">Subject:</label>
+    </div>
+    <div id="sub_subjects">
+    <div class="col-md-9">
+     <%= f.select(:subject_id, @pivats_subjects.collect {|u| [u.name, u.id]},{:include_blank=>"Select Subject"},{:class=>"selectpicker",:onchange=>"show_pivats_sub_subjects()",:required=>true}) %>
+    </div> 
+    </div>
+  </div>
+ <div id="pivats_show">
+  <div class="row  m-b-20">
+   <div class="col-md-3">
+      <label class="control-label required">Sub-Subject:</label>
+    </div>
+    <div >
+    <div class="col-md-9">
+      <%= f.select(:sub_subject_id,{},{:include_blank=>"Please select subject first"},{:class=>"selectpicker",:required=>true}) %>
+    </div> 
+    </div>
+  </div>
+
+
+</div>
+<!--  <div class="form-group  m-b-50">
+    <div class="col-md-3">
+      <label class="control-label required"> Target Date</label>
+    </div>
+    <div class="col-md-9">
+      <div class="input-group">
+        <%#= f.text_field :target_date,:class=>"form-control datepicker",:placeholder=>"dd-mm-yyyy" %>
+      </div>
+    </div>
+  </div> -->
+<!--   <div class="modal-footer">
+    <div class="form-actions">
+      <div class="row">
+         <div class="pull-right">
+           <%#= f.submit :class=>"btn btn-success" %>
+          </div>
+          <div class="pull-left">
+             <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+       </div>
+     </div>
+ </div> -->
+<%end%>
+
+
+
+<script type="text/javascript">
+  $('.selectpicker').selectpicker();
+</script>

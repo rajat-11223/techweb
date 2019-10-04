@@ -1,0 +1,47 @@
+
+  <div class="row">
+    <div class="">
+      <div class="">
+        <%=form_for@student,:url=>url_for(:controller=>'students', :action=>'save_medical_information'),	 method: :post  do |f| %>
+          <div class="row">
+            <div class="form-body">
+              <% if @student.errors.any? %>
+                  <div id="error_explanation">
+                    <h2><%= pluralize(@student.errors.count, "error") %> prohibited this student from being saved:</h2>
+                    <ul>
+                      <% @student.errors.full_messages.each do |message| %>
+                        <li><%= message %></li>
+                      <% end %>
+                    </ul>
+                  </div>
+                <% end %>
+                <%=hidden_field_tag "student_id" ,@student.id%>
+                <div class="form-group">
+                  <div class="col-md-4">
+                    <label class="control-label required">Medical Information</label>
+                  </div>
+                  <div class="col-md-8">
+                    <%=f.text_area :medical_information, :class=>"form-control",:rows=>"5", :required=>true %>
+                  </div>
+                </div>
+           		</div>
+           	</div>
+           	  <div class="modal-footer">              
+        
+                  <div class="form-actions">
+                  <div class="row">
+                    <div class="pull-right">
+                     
+                      <%= f.submit "Save", :class=>"btn btn-success btn-beatrice update_medical" %>
+                    </div>
+                    <div class="pull-left">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                  </div>
+                  </div>
+                  </div>
+               <%end%>
+
+          </div>
+        </div>
+      </div>

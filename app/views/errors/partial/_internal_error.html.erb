@@ -1,0 +1,15 @@
+        <div class="error-container">
+            <div class="error-code">500</div>
+            <div class="error-text">Internal server error</div>
+            <div class="error-subtext">The server encountered an internal error or misconfiguration and was unable to complete your request. <br/> You are requested to log the data and actions that led to this state and other important info that may be useful for the development team to recreate the issue. </div>
+            <div class="error-actions">                                
+                <div class="row">
+                    <div class="col-md-6">
+                        <button class="btn btn-primary btn-block btn-lg" onClick="document.location.href='<%= root_url %>'">Back to home</button>
+                    </div>
+                    <div class="col-md-6">
+                        <button class="btn btn-primary btn-block btn-lg" onClick="history.back();">Previous page</button>
+                    </div>
+                </div>                                
+            </div>            
+        </div>   

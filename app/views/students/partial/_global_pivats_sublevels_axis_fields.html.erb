@@ -1,0 +1,61 @@
+<div class="row m-b-20">
+<div class = "col-md-3"><label class="control-label required"> Baseline/ Target:</label><br><label style="display:none;color:red;" class="baseline_target_missing">Please select base and target for all</label></div>
+<% @master_csd_axis.each do |axis| %>
+
+<input type="hidden" name="master_axis_id[]" value="<%= axis.id %>">
+
+<div class="col-md-9 pull-right">
+<div class="col-md-3"><small><%= axis.display_name %> </small></div>
+
+<%# for x in (axis.min_value)..(axis.max_value) do %> 
+<%#= x.to_i == lo.target_lower_bound(axis.id) ? raw('<a><i class="btn btn-orange btn-xs">B</i></a>') : x.to_i == lo.target_upper_bound(axis.id) ? raw('<a><i class="btn btn-blue btn-xs">T</i></a>') : x.to_i < lo.achievement_value(axis.id) ? raw('<a><i class="btn btn-green btn-xs">&nbsp;</i></a>') : raw('<a><i class="btn btn-white btn-xs">&nbsp;</i></a>') %>
+
+<%# end %>
+
+
+<div class="col-md-9 axis_parent">
+<input type="hidden" class="min_axis base_axis_class" name="base_axis_value[]">
+<input type="hidden" class="max_axis target_axis_class" name="target_axis_value[]"> 
+<input type="hidden" class="check_first" value="0">
+
+<% for x in (axis.min_value)..(axis.max_value) do %> 
+
+<a class="axis_setting axis_setting_width btn btn-success button-striped button-full-striped btn-ripple btn-xs pull-left" value-of-axis="<%= x.to_i %>" id="axis<%= x.to_i %>"><%= x.to_i %></a> 
+<% end %>
+<a class="clear_axis m-l-10">clear</a> 
+</div>
+</div> 
+<% end %>
+
+</div>
+
+
+
+<div class="row m-b-20">
+ <div class="form-group">
+    <div class="col-md-3">
+      <label class="control-label required"> Target Dates</label>
+    </div>
+    <div class="col-md-9">
+     <!--  <div class="input-group"> -->
+        <%= text_field_tag :target_date,nil,:class=>"form-control datepicker",:placeholder=>"dd-mm-yyyy",:required=>true,:value=>Time.now.strftime('%d-%m-%Y'),:readonly=>true%>
+      <!-- </div> -->
+    </div>
+  </div>
+
+</div>
+
+  <div class="modal-footer">
+    <div class="form-actions">
+      <div class="row">
+         <div class="pull-right">
+           <%= submit_tag "Create LO", :class=>"btn btn-beatrice learning_objective_submit text-white" %>
+          </div>
+          <div class="pull-left">
+             <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+       </div>
+     </div>
+ </div>
+
+

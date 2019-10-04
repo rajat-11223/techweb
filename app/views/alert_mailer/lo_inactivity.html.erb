@@ -1,0 +1,3 @@
+<p>Hi <%= @recipient_id_array.map{|u| User.with_deleted.find(u)}.collect{|u| u.name}.to_sentence %></p>
+
+<p> There haven’t been any progress updates to <a href="<%= student_url(@student.id)%>"><%=@student.fname %>’s</a> Learning Objective <%= @learning_objective.title %> since <%= @learning_objective.observations.blank? ? @learning_objective.assigned_date.strftime("%d %b %Y") : @learning_objective.observations.last.created_at.strftime("%d %b %Y") %> </p>

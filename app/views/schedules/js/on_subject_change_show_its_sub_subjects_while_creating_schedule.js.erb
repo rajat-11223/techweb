@@ -1,0 +1,12 @@
+lg_hide_empty();
+tg_hide_empty();
+$(".slot_schedule_subject_id").empty();
+$('.sub_subjects').html('<div class="col-md-9"><%= j collection_select(:sub_subject_id,:subject_id, @sub_subjects.order(name: :asc),:id,:name,{:include_blank=>"Select Subject"},{:required=>true,:class=>"selectpicker create_subsubject_change schedule_sub_subject", :ppa=>@sub_subjects.find_by(name: "ppa").present? ? @sub_subjects.find_by(name: "ppa").name : ""}) %></div>');
+$('.select_lg_tg_div').empty();
+$('.selectpicker').selectpicker();
+$('.learning_group_select').hide();
+$('.updated_lg_tg').empty();
+$('.updated_lg_tg').hide();
+$('.present_students').hide();
+$('.updated_lg_tg').empty();
+$('.present_students').empty();

@@ -1,0 +1,31 @@
+<% if rs.summary.blank? %>
+
+	<% if policy(rs.report).editable_summary_check?(@student.id, rs.report, rs.sub_subject.id) %>	
+		<%=raw text_area_tag :summary,nil,:value=>rs.summary,:rows=>"5",:style=>"width: 100%;" ,:class=>"reportsubject_summernote" %>
+
+
+    	<button type="button" class="btn btn-default save_curriculum_lo_summary show_loader" reportsubjectid="<%=rs.id%>">Save</button>
+    	<% else %>
+    	No summary written
+    	<% end %>
+
+<%else%>
+
+<div class="hide_summary bullets numbers">
+  <%=raw rs.summary%>
+
+
+	<% if policy(rs.report).editable_summary_check?(@student.id,rs.report, rs.sub_subject.id) %>
+	    &nbsp;<a class="edit_reportsubject_lo_summary " report-id="<%=rs.id%>" summary="<%=rs.summary%>">(Edit)</a>
+	<% end %>
+
+</div>
+<%end%> 
+
+
+<div class="show_summary display-none">
+  <%=raw text_area_tag :summary,nil,:value=> rs.summary,:rows=>"5",:style=>"width:100%;",:class=>"reportsubject_summernote"%>
+
+    <button type="button" class="btn btn-default save_curriculum_lo_summary show_loader" reportsubjectid="<%=rs.id%>">Save</button>
+
+</div>

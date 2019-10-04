@@ -1,0 +1,124 @@
+
+<div class="change_term">
+<%= form_for(@term, method: :post) do |f| %>
+
+
+
+<div class="row">
+
+      <div class="col-md-12">
+        <div class="panel"  style="z-index: 1">
+          <div class="panel-heading">
+            <div class="panel-title">  
+                Terms
+            </div>
+          </div>
+
+          <div class="panel-body">
+          <%= form_for(@term, method: :post) do |f| %>
+          <div class="col-md-10 col-md-offset-1">
+            <div class="form-group">
+            <div class="row m-b-20">
+              <div class="col-md-4">
+                <label class="control-label"><b>For Year</b></label>
+              </div>
+              <div class="col-md-8" style="z-index: 10000">
+       
+                  <%=f.select :academic_session_id, options_for_select(@academic_sessions, selected: @selected_academic_session), {:required=>true}, :class=>"selectpicker" ,:onchange=>"change_scheduled()" %>
+              </div>
+              </div>
+            </div>
+
+            <div class="form-group" id="fields_changed">
+              <%=fields_for :terms do |t| %>
+                <% @master_term.each do |term|%>
+                  <%=t.fields_for term.id.to_s do |b| %>
+                    <div class="form-group m-b-20">
+                      <div class="row m-b-10">
+                        <div class="col-md-4">
+                          <label class="control-label"><b><%=term.display_name %></b></label>
+                            <%=b.hidden_field "term-"+term.id.to_s,:value=>term.id %>
+                        </div>
+                          <div class="col-md-4"><div class="input-group"><span class="input-group-addon"><small>From</small></span>
+                          <div ><%= b.text_field "start"+term.id.to_s ,:class=>"datepicker btn btn-default",:value=>term.populate_start(@selected_academic_session).strftime('%d-%m-%Y') %></div>  
+                          </div>
+                          </div>
+                          <div class="col-md-4"><div class="input-group"><span class="input-group-addon"><small>To</small></span>
+                             <div><%=b.text_field "end"+term.id.to_s ,:class=>"datepicker btn btn-default",:value=>term.populate_end(@selected_academic_session).strftime('%d-%m-%Y') %></div>
+                          </div>
+
+                        </div>
+                      </div>
+                        </div> 
+                  <% end %>
+                <% end %>
+              <% end %>
+             
+              </div>
+              <div class="col-md-2 col-md-offset-5 pull-right"><%=f.submit "Save", :class=>" btn btn-primary btn-beatrice btn-block ", data: { confirm: ' WARNING : This action would log-out all the other users currently logged in to the system and may cause them to lose their unsaved work. Please make sure no users are in the middle of any important actions before proceeding. Do you wish to continue?' }%></div>
+          
+          
+            
+          </div><!--.panel-body-->
+        <% end %>  
+        </div><!--.panel-->
+      </div>
+</div>
+</div>
+
+
+<%end%>
+</div>
+<script type="text/javascript">
+
+//  $('.datepicker').datepicker({ 
+//     format: 'dd-mm-yyyy',orientation: 'top auto' }).on('changeDate', function(ev){ $(this).datepicker('hide'); });
+// });
+
+</script>
+
+<script type="text/javascript">
+  function change_scheduled(){
+    var academic_session_id=$('#term_academic_session_id').val();
+      $(".loader").show();
+    // alert(session_id);
+      $.ajax({
+     beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+      type:'post', 
+      url: '/terms_new_scheduled',
+       data: { academic_session_id: academic_session_id}
+      
+      });
+  }
+</script>
+
+<script type="text/javascript">
+
+
+  //    $('#new_term').each(function(){
+
+  //   $(this).validate({
+  //        ignore: ":hidden:not(.selectpicker)",
+  //         errorPlacement: function (error, element) {
+  //           // alert(element);
+  //           if ($(element).is('select')) {
+  //               element.next().after(error); // special placement for select elements
+  //           } else {
+  //               error.insertAfter(element);  // default placement for everything else
+  //           }
+  //       }
+  //   });
+  // });
+
+
+</script>
+
+<script type="text/javascript">
+  
+      // $(document).ready(function(){
+      //   $('.loader').fadeOut('slow')
+      // })  
+
+
+</script>
+

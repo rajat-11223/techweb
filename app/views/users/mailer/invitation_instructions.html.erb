@@ -1,0 +1,15 @@
+<p>Hello <%= !@resource.name.nil? ? @resource.name : @resource.email %></p>  
+
+<p>Please click <%= link_to "here", accept_invitation_url(@resource, :invitation_token => @token) %> to create your password for the ARR system.</p>
+
+<p> Your username is : <b><%= @resource.email %></b>
+
+<p>Alternately, you may copy & paste the following URL in your browser <br/>
+<%= link_to accept_invitation_url(@resource, :invitation_token => @token), accept_invitation_url(@resource, :invitation_token => @token) %></p>
+
+<p>Please make sure your are connected to the Beatrice Tate LAN prior to logging in. You won't be able to access the ARR system until you visit the link above and set your password.</p>
+
+<p>If you think you have received this email in error, please contact +44 0203 7654 234 or support@beatricetate.com</p>
+
+<p>Regards,</p>
+<p>ARR System</p>

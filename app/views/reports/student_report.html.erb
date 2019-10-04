@@ -1,0 +1,220 @@
+<style type="text/css" >
+ 
+
+	@media print {
+a[href]:after {
+    content: none !important;
+  }
+		title{
+			display: block;
+			text-align: center;
+		}
+		.pg-break{
+			page-break-before: always;
+		}
+	
+		.fa:before{
+			color: #ffffff !important;
+			/*background-color: #3F6CAF !important;*/
+		}
+		.aa {
+			page-break-before: avoid!important;
+		}
+		.none{display: none}
+		 thead 
+                { 
+                    display: table-header-group; 
+                }
+		
+	}
+/*@media screen{
+	thead 
+                { 
+                    display: table-header-group; 
+                }
+		
+
+}*/
+/*@media screen{
+
+title{
+	display: none;
+}
+}*/
+
+	td { 
+		min-width: 54px; 
+		padding: 5px;
+	}
+	.vert-align-base{  
+		vertical-align: -webkit-baseline-middle;
+	}
+	td p {
+		margin: 0px;
+	}
+	.btn-success {
+		color: #ffffff!important;
+		background-color: #5cb85c!important;
+		border-color: #20861f!important;
+	}
+	.btn-default {
+		color: #333333!important;
+		background-color: #ffffff!important;
+		border-color: #cccccc!important;
+		border: 1px solid #cccccc!important;
+	}
+
+	.btn-xs{
+		padding: 2px 8px;
+		margin-bottom: 0px!important;
+		/*font-size: 16px;*/
+		/*line-height: 1.5;*/
+		border-radius: 1px;
+	}
+	.no-box-shadow{
+		box-shadow: none!important;
+	}
+	.border-grey{
+		border-color:#BFBFBF!important;
+	}
+	.disabled{   
+		background-color: transparent;
+	}
+	.btn-default{
+		color: rgba(0, 0, 0, 0.87)!important;
+	}
+	.bg-beatrice{
+		background:#003A6A!important;
+		color: #ffffff!important;
+
+	}
+	.btn-grey{
+		background-color: grey!important;
+		color: #ffffff!important;
+	}
+	.vr-baseline{
+		vertical-align: baseline;
+	}
+	.report-play-center{
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		margin-left: -24px;
+		margin-top: -28px;
+	}
+
+	.btn-10{
+		width: 19px!important;
+
+		padding-left: 5px!important;
+		font-size: 9px!important;
+	}
+	.btn-b{
+		width: 19px!important;
+
+		padding-left: 5px!important;
+		font-size: 9px!important;
+	}
+
+	body{
+		background: #ffffff;
+	}
+	.font-size-12{
+		font-size: 12px
+	}
+</style>
+<div class="none">
+
+<%#=link_to "Download",report_download_path(@report.id),class: "btn btn-beatrice pull-right text-white ",method: :post,remote: true%>
+<a href="javascript:window.print();" class="btn btn-beatrice text-white pull-right ">Print</a>
+
+
+</div>
+
+
+<div style=" width: 650px;    height: auto;    order:1px solid #bbb;   margin: auto;">
+<div>
+<%= render partial: "/reports/print/print_report_lo" %>
+</div>
+
+<% if @report.report_type == "EOY" %>
+<div class="pg-break" >
+<%= render partial: "/reports/print/print_report_curriculum" %>
+</div>
+<% end %>
+	
+</div>
+
+<!--   
+    <div class="modal scale fade report_play_video_modal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog image-modal-dialo modal-lg" style="width: 700px;">
+        <div class="modal-content image-modal-content">
+     
+          <div class="modal-body report_play_video_modal_body" style="padding: 0px;overflow: auto; ">
+            
+          </div>
+        
+        </div>
+      </div>
+    </div> -->
+<div class="modal scale fade report_play_video_modal" tabindex="-1" role="dialog" aria-hidden="true" style="background: rgba(0, 0, 0, 0.62);">
+      <div class="modal-dialog  modal-lg ">
+        <div class="modal-content  ">
+     	 <div class="modal-body report_play_video_modal_body" style="overflow: hidden;background: #313131;text-align: center">
+            
+          </div>
+        
+        </div><!--.modal-content-->
+      </div><!--.modal-dialog-->
+    </div><!--.modal-->  
+</div>
+
+  <script type="text/javascript">
+  $(".report_play_video_modal").on('click',function(){
+    $(this).find('.report_play_video_modal_body').html("");
+    });
+
+
+  </script>
+
+
+<script type="text/javascript">
+	(function() {
+	document.title="<%= @student.name%>  -  <%=@report.title%> "
+
+var link = document.createElement('link');
+    // link.type = 'image/x-icon';
+    link.rel = 'shortcut icon';
+    link.href = '<%= "#{root_url}/assets/brt-logo.jpg" %>';
+    document.getElementsByTagName('head')[0].appendChild(link);
+}());
+	
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

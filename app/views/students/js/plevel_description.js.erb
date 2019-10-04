@@ -1,0 +1,6 @@
+$('.plevel_desc').html("<%=escape_javascript(render 'students/partial/global_pivats_sublevels_descriptions')%>");
+$('.plevel_axis_fields').html("<%=escape_javascript(render 'students/partial/global_pivats_sublevels_axis_fields')%>");
+$('.datepicker').datepicker({ 
+    format: 'dd-mm-yyyy',orientation: 'bottom auto',autoclose: true,startDate: new Date() });
+    $('.summernote_pivats').summernote();
+$('.selectpicker').selectpicker();

@@ -1,0 +1,96 @@
+<div class="row">
+  <div class="col-md-4">
+    <label class="control-label "><b>Learning Objective :</b> </label>
+  </div>
+  <div class="col-md-8">
+    <%=@lo.title%>
+  </div>
+</div> 
+<% if params[:for_current_user] == 'true' %>
+<div class="row p-t-40">
+  <div class="col-md-12">
+    <label class="control-label ">
+<%if @focus_classes_current_user.present?%>
+    Is being focussed on in:
+<%end%>
+     </label>
+  </div>
+  <% @focus_classes_current_user.each do |sub| %>
+  <div class="form-group">
+    <div class="col-md-12">
+      <div class="icheck icheck-flat">
+        <div class="checkbox">
+          <input type="checkbox" class="icheck icheck-flat" checked="checked" disabled="disabled">
+          <%=sub.sub_subject.show_name%>
+        </div>
+      </div>
+    </div>
+  </div> 
+  <% end %>
+</div>
+
+<%else%> 
+<!-- <div class="row"> -->
+    <!-- <label class="control-label">Is being focussed by</label> -->
+  <%# @group_focus.each do |key,value| %>
+  <!-- <div class="col-md-4"> -->
+     <!-- <b><%#=value.first.user.name%></b>  -->
+  <!-- </div> -->
+    <!-- <div class="col-md-8"> -->
+  <%#value.each do |sub|%>
+  <!-- <div class="form-group"> -->
+      <!-- <div class="icheck icheck-flat"> -->
+        <!-- <div class="checkbox"> -->
+          <!-- <input type="checkbox" class="icheck icheck-flat" checked="checked" disabled="disabled"> -->
+          <%#=sub.sub_subject.show_name%>
+          <%#=sub.user.name%>
+        <!-- </div> -->
+      <!-- </div> -->
+    <!-- </div> -->
+  <%#end%>
+  <!-- </div> <hr> -->
+  <%#end%>
+<!-- </div>  -->
+
+<table class="table table-striped">
+  <thead>
+    <thead>
+      <th>Focused By</th>
+      <th>Subject Name</th>
+    </thead>
+  </thead>
+<tbody>
+  <% @group_focus.each do |key,value| %>
+  <tr>
+  <td>
+     <b><%=value.first.user.name%></b> 
+    
+  </td>
+    <td>
+  <%value.each_with_index do |sub, index|%>
+<%index = index+1%>
+          <%=sub.sub_subject.show_name%><%=(index == value.size - 1) ? ', '  : ''%> 
+  <%end%>
+
+      
+    </td>
+  </tr>
+  <%end%>
+
+</tbody>
+</table> 
+<% end %>  
+<div class="modal-footer">
+  <div class="form-actions">
+    <div class="row align-center">
+      <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+    </div>
+  </div>
+</div>
+
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    $('.loader').fadeOut('slow')
+  })     
+</script>

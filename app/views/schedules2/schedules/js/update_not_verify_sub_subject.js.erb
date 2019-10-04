@@ -1,0 +1,10 @@
+<% if @sub_subject.subject.is_ppa %>
+$('.change_group').hide();
+<%else%>
+$('.change_group_msg').hide();
+$('.change_group').show();
+$('.change_group').html("<%=escape_javascript(render 'schedules/partial/show_learning_groups')%>");
+<%end%>
+$('.show_learning_group_students').hide();
+$('input.update[type="submit"]').prop('disabled', false);
+$('.selectpicker').selectpicker();

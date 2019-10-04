@@ -1,0 +1,4 @@
+$('#update_main_tutorial_schedule_modal').modal('show');
+$('#update_main_tutorial_schedule_header').html('<h4 class="modal-title text-white">Update Class for <%=@slot.name%> on <%=@master_day.name%><span class="fa fa-times text-white pull-right cursor-pointer" data-dismiss="modal"></span></h4>')
+$('.update_main_tutorial_schedule_body').html("<%=escape_javascript(render 'schedules/partial/update_schedule_main_tutorial')%>");
+$('.selectpicker').selectpicker();

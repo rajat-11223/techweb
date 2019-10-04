@@ -1,0 +1,64 @@
+<div class="clearfix login-div text-white col-md-8 col-md-offset-2">
+<h2 class="text-center m-b-50 text-white">Assessment Recording and Reporting</h2>
+<h4 class="text-center text-white m-b-20">Enter your details below to get started.</h4>
+
+<%= form_for(resource, as: resource_name, url: session_path(resource_name), class: "form-horizontal") do |f| %>
+<div class="row m-b-20">
+  <div class="form-group">
+    <%= f.label :email, :class=>"control-label col-md-2" %>
+      <div class="col-md-10">
+        <!-- <div class="inputer">
+          <div class="input-wrapper"> -->
+              <!-- <input type="text" class="form-control" id="inputSuccess1" placeholder="Input with success"> -->
+              <%= f.email_field :email, autofocus: true, class:"form-control text-white", :required=>true %>
+      <!--     </div>
+        </div> -->
+      </div>
+  </div>
+</div>
+
+<div class="row m-b-20">
+  <div class="form-group">
+    <%= f.label :password, :class=>"control-label col-md-2" %>
+      <div class="col-md-10">
+       <!--  <div class="inputer">
+          <div class="input-wrapper"> -->
+              <!-- <input type="text" class="form-control" id="inputSuccess1" placeholder="Input with success"> -->
+              <%= f.password_field :password, autocomplete: "off", class:"form-control text-white", :required=>true %>
+      <!--     </div>
+        </div> -->
+      </div>
+  </div>
+</div>
+
+  <!-- <div class="field">
+    <%#= f.label :password %>
+    <%#= f.password_field :password, autocomplete: "off" %>
+  </div> -->
+
+  <%# if devise_mapping.rememberable? -%>
+<!--     <div class="field">
+      <%#= f.check_box :remember_me %>
+      <%#= f.label :remember_me %>
+    </div> -->
+  <%# end -%>
+
+<%#= render "users/shared/links" %>
+
+<div class="row m-b-50">
+<div class="col-md-2"></div>
+<div class="col-md-4">
+<%- if devise_mapping.recoverable? && controller_name != 'passwords' && controller_name != 'registrations' %>
+  <%= link_to "Forgot your password?", new_password_path(resource_name), :class=>"text-white" %><br />
+<% end -%>
+</div>
+  
+  <div class="actions col-md-6">
+    <%= f.submit "Log in", class: "btn btn-primary" %>
+  </div>
+  </div>
+<% end %>
+
+<h5 class="text-center text-white">If you do not have a login please contact Admin to request one</h5>
+<h5 class="text-center text-white"> 0203 7654 234 or support@beatricetate.com</h5>
+</div>

@@ -1,0 +1,77 @@
+<div class="col-md-12">
+  <%= form_tag('/send_report_parents') do %>
+
+  <div class="panel">
+    <div class="panel">
+      <div class="form-group col-md-12 ">
+        <div class="col-md-1">
+          <label class="control-label ">From:</label>
+        </div>
+        <div class="col-md-9">
+          <%=text_field_tag "from",current_user.name,class: "width-100"%>
+        </div>
+      </div>
+      <div class="form-group col-md-12">
+        <div class="col-md-1">
+          <label class="control-label ">To:</label>
+        </div>
+        <div class="col-md-9">
+          <%=text_field_tag "to","",class: "width-100 to_parent",required:"true"%>
+        </div>
+        <span class="text-red font-size-10 show_lo_err display-none" >This field is required</span>
+      </div>
+      <div class="form-group col-md-12">
+        <div class="col-md-1">
+          <label class="control-label ">Subject:</label>
+        </div>
+        <div class="col-md-9">
+          <%=text_field_tag "Subject",@rep.title + " for " + @rep.student.name,class: "width-100"%>
+        </div>
+      </div>
+      <div class="form-group col-md-12">
+<%@auto_text = "Hi #{@rep.tutor.fname} <br> <br> I have a few amends I’d like on #{@rep.student.fname}’s <a href= '#{student_report_url(id: @rep.slug)}'>#{@rep.title}</a>  <br /> <br /> <br /> Regards <br /> #{current_user.fname}"%>
+
+        <%=text_area_tag "desc", @auto_text,class: "amend_summernote"%>
+
+      </div>
+<%=hidden_field_tag "rs_id",@rep.id%>
+
+
+
+      <div class="modal-footer m-t-20">
+        <div class="form-actions">
+          <div class="row">
+            <div class="pull-right">
+              <%= submit_tag "Send ", :class=>"btn btn-success btn-beatrice observe" %>
+            </div>
+            <div class="pull-left">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% end -%>
+</div>
+
+ <script type="text/javascript">
+  $(document).on('click','.observe',function(){
+    var data = document.getElementById("to").value; 
+    if( data == ""){
+
+      //alert(data);
+        $('.show_lo_err').show();
+        //console.log("welcome here");
+       } 
+   else{
+    //console.log("welcome here new");
+    $('.show_lo_err').hide();
+   }
+ 
+  })
+
+</script>
+
+
+  

@@ -1,0 +1,51 @@
+
+<%= nested_form_for @student,:url=>url_for(:controller=>'students', :action=>'create_information'),	 method: :post do |f| %>
+
+     <%= hidden_field_tag "student_id",@student.id%>
+
+      <%= f.fields_for :student_important_infos do |s| %>
+<%=s.hidden_field :user_id, :value=>current_user.id%>
+          <div class="row border_bottom p-10 m-b-20 no-p-right">
+              <div class="form-group m-b-50">
+                <div class="col-md-2 ">
+                  <label class="control-label pull-right required"> Info</label>
+                </div>
+
+                <div class="col-md-9">
+                  <%=s.text_area :description ,:class=>"form-control" %>
+                </div>
+
+              <div class="col-md-1 no-p-right">
+                <%= s.link_to_remove  class: "btn btn-sm btn-danger " ,:style=>"float: right" do %>
+                  <i class="fa fa-times"></i>
+                <% end %>        
+              </div>
+            </div>
+
+  </div>
+  
+  <%end%>
+  <div class="row text-center m-b-20">
+    <%= f.link_to_add :student_important_infos, class: "btn btn-primary" do %>
+      <i class="fa fa-plus"></i> Add More Information
+    <% end %>
+  </div>
+
+
+  <div class="modal-footer">
+  <div class="form-actions">
+                  <div class="row">
+                    <div class="pull-right">
+                      <%= f.submit "Save", :class=>"btn btn-success" %>
+                    </div>
+                    <div class="pull-left">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                  </div>
+                  </div>
+                  </div>
+              
+<% end %>
+
+
+

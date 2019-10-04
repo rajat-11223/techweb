@@ -1,0 +1,82 @@
+<div class="col-md-10 col-md-offset-1 col-sm-10 col-sm-offset-1 col-xs-10 col-xs-offset-1">
+	<% if @caspa_students.blank? %>
+	<div class="col-md-12 col-sm-12 col-xs-12">
+		No students available
+	</div>
+	<% else %>
+	<%= form_tag export_caspa_data_path ,method: :get do %>
+	<div class="col-md-12 col-sm-12 col-xs-12">
+		<div class="panel">
+			<div class="panel-heading">
+				<div class="panel-title">
+					Export achievement data for the following students
+				</div>
+			</div>
+			<div class="panel-body p-10">
+				<div class="col-md-12 ">
+				<div class="row">
+					<div class="col-md-2 font-size-10"><label>For Year</label> </div>
+					<div class="col-md-10"> <%=select_tag "academic_year", options_from_collection_for_select(@academic_years, "id", "name"), :class=>"selectpicker" %></div> 
+				</div>
+				</div>
+				<div class="col-md-12 p-10">
+					<button type="button" id="#deselectallbutton" class="uncheck_all btn btn-beatrice pull-right text-white">Deselect all</button>
+					<button type="button" id="#selectallbutton" class="check_all btn btn-beatrice pull-right m-r-10 text-white">Select all</button>
+				</div>
+				<div class="table-responsive overflow-table m-b-20" style="max-height: 200px;overflow-y: auto;">
+					<table class="table">
+						<tbody>
+							<% @caspa_students.each_with_index do |student, index| %>
+							<tr>
+								<td class="col-md-1">
+									<div class="icheck icheck-square-blue ">
+										<%= check_box_tag "student_id[]",student.id%>
+									</div>
+								</td>
+								<td> <%= student.name %> </td>
+							</tr>
+							<% end %>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal-footer m-r-10 m-l-20">              
+		<div class="form-actions">
+			<div class="pull-right">
+				<%= submit_tag "Export", :class=>"btn btn-success btn-beatrice update_medical" %>
+			</div>
+			<div class="pull-left">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+			</div>
+		</div>
+	</div>
+	<% end %>   		
+	<% end %>   		
+</div>
+
+
+<script>
+
+$(document).on('click','#selectallbutton',function(){
+$('input[type="checkbox"]').each(function(){
+$(this).attr('checked','true');
+$(this).parent('.icheckbox_minimal-grey').addClass('checked');
+});
+$(this).hide();
+$('#unselectallbutton').show();
+});
+</script>
+
+<script>
+$(document).on('click','#deselectallbutton',function(){
+$('input[type="checkbox"]').each(function(){
+$(this).removeAttr("checked");
+$(this).parent('.icheckbox_minimal-grey').removeClass('checked');
+});
+$(this).hide();
+$('#selectallbutton').show();
+});
+
+</script>

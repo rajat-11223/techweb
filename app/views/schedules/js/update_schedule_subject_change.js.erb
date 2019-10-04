@@ -1,0 +1,3 @@
+
+$('#update_schedule_sub_subjects').html('<div class="col-md-9"><%= j collection_select(:sub_subject_id,:subject_id, @sub_subjects,:id,:name,{:include_blank=>"Select Sub-Subject"},{:required=>true,:class=>"selectpicker change_after_subsubject", :updateppa=>@sub_subjects.find_by(name: "ppa").present? ? @sub_subjects.find_by(name: "ppa").name : ""}) %></div>');
+$('.selectpicker').selectpicker();

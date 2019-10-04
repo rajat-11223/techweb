@@ -1,0 +1,17 @@
+for(var i=<%= @minaxisvalue.to_i + 1 %>;i<= <%= @maxaxisvalue.to_i %>;i++){
+		$('#axisvalue<%= @common_achievement.student_learning_objective_id %><%= @common_achievement.master_csd_axis_id %>'+i).css('background-color','#fff');
+		$('#axisvalue<%= @common_achievement.student_learning_objective_id %><%= @common_achievement.master_csd_axis_id %>'+i).css('color','#000');
+}
+for(var i= <%= @minaxisvalue.to_i + 1 %>;i<= <%= @common_achievement.achievement_value %>;i++){
+	$('#axisvalue<%= @common_achievement.student_learning_objective_id %><%= @common_achievement.master_csd_axis_id %>'+i).css('background-color','#5cb85c');
+		$('#axisvalue<%= @common_achievement.student_learning_objective_id %><%= @common_achievement.master_csd_axis_id %>'+i).css('color','#fff');
+}
+
+for(var i=<%= @minaxisvalue.to_i + 1 %>;i<= <%= @maxaxisvalue.to_i %>;i++){
+		$('#axisvalue_obs<%= @common_achievement.student_learning_objective_id %><%= @common_achievement.master_csd_axis_id %>'+i).css('background-color','#fff');
+		$('#axisvalue_obs<%= @common_achievement.student_learning_objective_id %><%= @common_achievement.master_csd_axis_id %>'+i).css('color','#000');
+}
+for(var i= <%= @minaxisvalue.to_i + 1 %>;i<= <%= @common_achievement.achievement_value %>;i++){
+	$('#axisvalue_obs<%= @common_achievement.student_learning_objective_id %><%= @common_achievement.master_csd_axis_id %>'+i).css('background-color','#5cb85c');
+		$('#axisvalue_obs<%= @common_achievement.student_learning_objective_id %><%= @common_achievement.master_csd_axis_id %>'+i).css('color','#fff');
+}

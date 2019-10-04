@@ -1,0 +1,60 @@
+
+<%= form_for(@slot_schedule_student ,:url=>url_for(:controller=>'students',:action=>"save_edit_schedule_student_show")) do |f| %>
+  <% if @slot_schedule_student.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@slot_schedule.errors.count, "error") %> prohibited this schedule from being saved:</h2>
+
+      <ul>
+      <% @slot_schedule.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+<%=f.hidden_field :student_id,:value=>@student_id%>
+<%=f.hidden_field :slot_id,:value=>@slot.id%>
+<%=f.hidden_field :master_day_id,:value=>@master_day.id%>
+<%=f.hidden_field :term_id,:value=>@term.id%>
+
+<div class="col-md-10 col-md-offset-1 col-sm-10 col-sm-offset-1 col-xs-10 col-xs-offset-1">
+<div class="row">
+<label><b>This student is currently scheduled to following classes:</b></label>
+
+<ul class="list-group">
+      <% @student_schedules.each do |schedule| %>
+       <li class="list-group-item"><%= schedule.sub_subject.show_name %> - <%= schedule.user.name %> </li>
+      <%end%>
+</ul>
+</div>
+
+  <div class="row form-group m-b-20">
+    <div class="col-md-3" style="padding-left:0px;">
+      <label class="control-label required">Subject:</label>
+    </div>
+    <div class="col-md-9" style="padding-right:0px;">
+
+      <%#= f.select(:slot_schedule_id, @slot_schedules.collect {|u|  [u.subject.name + ":" + u.sub_subject.name + ":" + u.user.name , u.id]}, {:include_blank=>"Select Subject"},{:class=>"selectpicker",:required=>true}) %>
+      <%= f.select(:slot_schedule_id, @slot_schedules.collect {|u|  [u.sub_subject.show_name + " - " + u.user.name , u.id]}, {:include_blank=>"Select Subject"},{:class=>"selectpicker",:required=>true}) %>
+    </div>    
+  </div>
+           <div class="modal-footer">
+                <div class="form-actions">
+                  <div class="row">
+                    <div class="pull-right">
+                    <%#= link_to delete_schedule_student_show_path(slot_id: @slot.id,master_day_id: @day,student_id: @student.id,term_id: @term.id),data: {confirm: "Are you sure you want to delete this schedule?", toggle: "tooltip", title: "Delete schedule"} , method: :post, :class=>"show_loader pull-right btn btn-danger" do %>
+                            <!-- <i class="fa fa-2x fa-trash text-redpink"></i> -->
+                                <!-- Delete      -->
+                            <%#end%>
+                      <%= f.submit "Save", :class=>"btn btn-success btn-beatrice m-r-5" %>
+                             
+                    </div>
+                    <div class="pull-left">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                  </div>
+                </div>
+                </div>
+         </div>       
+  <%end%>
+
+

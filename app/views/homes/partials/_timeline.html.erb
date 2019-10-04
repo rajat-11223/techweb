@@ -1,0 +1,241 @@
+
+<style>
+.datepicker_fixed{
+	position:fixed;
+	top:20%!important;
+	left:50%!important;
+	margin-left: -119px!important;
+}
+/*@media(max-width: 1280px){
+  .calendar-down-button{
+    width:6%;
+  }
+}*/
+</style>
+
+<div class="footer-links margin-top-40">
+
+<input type="text"  class="datepicker_field" style="float:right;display:none;">
+
+<div class="col-md-12 col-sm-12 col-xs-12 text-white class_bar" style="<%= !current_user.timeline_minimized ? 'display:none;' : '' %>" id="small_bar">
+    <div class="row no-gutters" style="margin-right: -15px!important;">
+    <div class="col-md-1 col-sm-1 hidden-xs bg-beatrice text-center border-right" style="display:table;min-height: 22px;">  
+    <span id="datepicker_button" style="display:table-cell;vertical-align:middle;"> <span><%= @timeline_selected_moment.strftime("%d %b") %></span></span>
+    </div>
+
+    <% selected_slot = (!@timeline_selected_slot.blank? ? @timeline_selected_slot.id : 0) %> 
+           
+    <% current_date = (params[:realm_date] ? params[:realm_date] : Time.now.strftime('%Y-%m-%d')) %>
+
+    <div class="hidden-xs col-md-10 col-sm-10 calendar_links_small text-center" style="display:table;background-color: white;">
+    
+    <% if !@timeline_slots.where(id: selected_slot).blank? %>
+    
+      <% slot = @timeline_slots.where(id: selected_slot).first %>
+      <% current_slot_id = slot.id %> 
+        
+        <a <% if selected_slot == slot.id %> class="text-black" <% else %> class="text-black" <% end %> style="display:table-cell;vertical-align:middle;" href="<%= homes_path(view:"realm", realm_date: current_date, realm_slot: current_slot_id) %>">
+        
+          <% @this_schedule = slot.slot_schedules.find_by(academic_session_id: @timeline_selected_academic_session_id, term_id: @timeline_selected_term_id, master_day_id: @timeline_selected_master_day_id, user_id: current_user.id) %>
+
+          <% if !@this_schedule.blank? %> 
+              
+           <%= @this_schedule.sub_subject.name.length > 61 ? (@this_schedule.sub_subject.name[0..60] + "...") : @this_schedule.sub_subject.name %>        
+
+            <% if @this_schedule.slot_schedule_students.present?%>:
+              
+              <% if @this_schedule.slot_schedule_students.pluck(:associated_group_id).uniq.count > 1 && @this_schedule.slot_schedule_students.pluck(:associated_group_type).include?("LearningGroup")%>
+
+                <%= @this_schedule.learning_group.try(:name) %><label class="required"></label>
+
+              <% else %>
+                
+                <% if @this_schedule.learning_group_id != 0 %>
+
+                  <% if @this_schedule.slot_schedule_students.count == @this_schedule.learning_group.students.count %>
+                        <%= @this_schedule.learning_group.try(:name) %>
+                  <% else %>
+                      <%= @this_schedule.learning_group.try(:name) %><label class="required"></label>
+                  <% end %>
+
+                <% end %>
+
+                <% if @this_schedule.tutor_group_id != 0 %>
+
+                  <%= @this_schedule.tutor_group.name %>
+
+                <% end %>
+              
+              <% end %>
+
+            <% else %>
+
+                <!-- No Students -->
+            
+            <% end %>
+
+          <% else %>
+          
+            <% if selected_slot==slot.id %>
+
+              <%=slot.name %>
+            
+            <% end %>
+            
+          <% end %>
+
+        </a>
+
+
+    <% else %>
+
+      <a class="text-black" style="display:table-cell;vertical-align:middle;" href="#"> Not available </a>
+
+    <% end %>
+    
+    </div>
+
+    <div class="col-md-1 col-sm-1 hidden-xs bg-beatrice text-center calendar-down-button-small" style="display:table;"> <i class="fa fa-chevron-up small_bar_collapse bg-beatrice text-white btn-striped btn-success btn-sm" style="display:table-cell;vertical-align:middle;"></i></div>
+
+    </div>
+</div>
+
+
+<div class="col-md-12 col-sm-12 col-xs-12 text-white class_bar" style="<%= current_user.timeline_minimized ? 'display:none;' : '' %>" id="big_bar">
+	<div class="row no-gutters yd" style="margin-right: -20px!important;">
+		<div class="col-md-1 col-sm-1 hidden-xs bg-beatrice text-center border-right" style="min-height:78px;display:table;padding-right: 5px;padding-left: 5px;">  <span id="datepicker_button" style="display:table-cell;vertical-align:middle;height:78px;"> <span class="fa fa-calendar text-white btn-striped  btn-sm"></span><br><span><%= @timeline_selected_moment.strftime("%a, %d %b %Y") %></span></span></div>
+
+    <% selected_slot = (!@timeline_selected_slot.blank? ? @timeline_selected_slot.id : 0) %> 
+    <% current_date = (params[:realm_date] ? params[:realm_date] : Time.now.strftime('%Y-%m-%d')) %>
+
+    <% @timeline_slots.each do |slot| %>
+    <% current_slot_id = slot.id %> 
+    <% selected_slot %> 
+
+		<div <% if selected_slot == slot.id %>class="border-right col-md-1 hidden-xs col-sm-1 bg-beatrice calendar_links text-center" <% else %> class="col-md-1 col-sm-1 hidden-xs text-black bg-white calendar_links text-center border-right" <% end %> style="display:table;">
+			<a <% if selected_slot == slot.id %> class="text-white" <% else %> class="text-black" <% end %> style="display:table-cell;vertical-align:middle;height:78px;" href="<%= homes_path(view:"realm", realm_date: current_date, realm_slot: current_slot_id) %>">
+			<% @this_schedule = slot.slot_schedules.find_by(academic_session_id: @timeline_selected_academic_session_id, term_id: @timeline_selected_term_id, master_day_id: @timeline_selected_master_day_id, user_id: current_user.id) %>
+			
+				<% if !@this_schedule.blank? %> 
+						
+          <%#= @this_schedule.sub_subject.name.length > 19 ? (@this_schedule.sub_subject.name[0..18] + "...") : @this_schedule.sub_subject.name %>         
+					<%= @this_schedule.sub_subject.name.split(" ")[0].length > 9 ? (@this_schedule.sub_subject.name[0..9] + "...") : @this_schedule.sub_subject.name[0..18] + "..." %>         
+
+          <% if @this_schedule.slot_schedule_students.present? %>: 
+            
+            <% if @this_schedule.slot_schedule_students.pluck(:associated_group_id).uniq.count > 1 && @this_schedule.slot_schedule_students.pluck(:associated_group_type).include?("LearningGroup")%>
+              
+              <%= @this_schedule.learning_group.try(:name) %><label class="required"></label>
+
+     
+            <% else %>
+              <% if @this_schedule.learning_group_id != 0 %>
+
+                <% if @this_schedule.slot_schedule_students.count == @this_schedule.learning_group.students.count %>
+                      <%= @this_schedule.learning_group.try(:name) %>
+                <% else %>
+                    <%= @this_schedule.learning_group.try(:name) %><label class="required"></label>
+                <% end %>
+              
+              <% end %>
+
+              <% if @this_schedule.tutor_group_id != 0 %>
+
+                <%= @this_schedule.tutor_group.name %>
+
+              <% end %>
+            
+            <% end %>
+
+          <% else %>
+
+              <!-- No Students -->
+          
+          <% end %>
+
+        <% else %>
+
+          <%=slot.name %>
+					
+				<% end %>
+				
+			</a>
+		</div>
+		<% end %>
+
+    <div class="col-md-1 col-sm-1 hidden-xs bg-beatrice text-center calendar-down-button" style="display:table;"> <i class="fa fa-2x fa-chevron-down big_bar_collapse bg-beatrice text-white btn-striped btn-success btn-sm" style="display:table-cell;vertical-align:middle;height:78px;"></i></div>
+</div>
+</div>
+		
+
+	</div><!--.row-->
+
+	<script type="text/javascript">
+ $(document).ready(function() {
+    $(".datepicker_field").datepicker({
+    	format: 'yyyy-mm-dd',
+      orientation: 'auto',
+      autoclose: true,
+      startDate: "<%= @ay_start_date %>",
+      endDate: "<%= @ay_end_date %>"
+    }).on('changeDate',function(){
+    	var fetchdate = $('.datepicker_field').val(); 
+    	var slot = "<%= selected_slot %>";
+    	location.href="<%= homes_path %>?view=realm&realm_date="+fetchdate+"&realm_slot="+slot;
+    	
+    }).on('show',function(){
+        $('.datepicker').addClass('datepicker_fixed');
+    }).on('hide',function(){
+        $('.datepicker').removeClass('datepicker_fixed');
+    });
+
+    $(document).on('click','#datepicker_button',function() {
+       $(".datepicker_field").datepicker("show"); 
+
+    });
+    // $('.datepicker').on("dp.change",function(e){
+    // 	alert("hello");
+    // });
+ });
+
+ 	// $('form.edit_learning_group').validate({
+  //        // ignore: ":hidden:not(.selectpicker)",
+  //         errorPlacement: function (error, element) {
+  //           // alert(element);
+  //           if ($(element).is('select')) {
+  //               element.next().after(error); // special placement for select elements
+  //           } else {
+  //               error.insertAfter(element);  // default placement for everything else
+  //           }
+  //       }
+  //   });
+</script>
+
+<script>
+$('.big_bar_collapse').on('click',function(){
+  $('#small_bar').show();
+  $('#big_bar').hide();
+  change_timeline_state(1);
+});
+
+$('.small_bar_collapse').on('click',function(){
+  $('#big_bar').show();
+  $('#small_bar').hide();
+  change_timeline_state(0);
+});
+
+
+  function change_timeline_state(tlstate){
+    $.ajax({
+     beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+      type:'post', 
+      url: '/change_timeline_state',
+       data: {timeline_state: tlstate}
+      
+      });
+      
+    return false;
+  }
+
+
+</script>

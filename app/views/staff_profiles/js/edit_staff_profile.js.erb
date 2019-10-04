@@ -1,0 +1,7 @@
+$('#edit_staff').modal('show');
+$("#edit_staff_modal_body").html('<%=escape_javascript(render "staff_profiles/partial/staff_profile_edit_form")%>');
+$('form').each(function(){
+	$(this).validate();
+});
+
+ FormsIcheck.init(); 

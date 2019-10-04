@@ -1,0 +1,28 @@
+
+$('#edit_observation').modal('show');
+$('#edit_observation_body').html("<%=escape_javascript(render 'observations/partial/edit_observation')%>");
+
+$('form').each(function(){
+	$(this).validate();
+});
+ 
+
+$('.datepicker').datepicker({ 
+    format: 'dd-mm-yyyy' }).on('changeDate', function(ev){ $(this).datepicker('hide'); });
+
+
+$('.selectpicker').selectpicker();
+
+ $(document).on("click", ".edit_ob_submit",function(e){
+
+  	if($('.edit_ob_subject').find('option:selected').val() ==""){
+  		 	$(".err-ob").show();
+  		 	e.preventDefault();
+
+  	}
+  	else
+  	{
+  		 	$(".err-ob").hide();
+
+  	}
+  })

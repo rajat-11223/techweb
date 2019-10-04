@@ -1,0 +1,246 @@
+
+<style>
+.datepicker{z-index:1151 !important;}
+</style>
+<div class="col-md-10 col-md-offset-1 col-sm-10 col-sm-offset-1 col-xs-10 col-xs-offset-1">
+  <div class="row">
+    <div class="panel">
+      <div class="panel-body">
+        <%=form_for(@student,:html=>{:class=>"form-horizontal"}) do |f| %>
+          <div class="row">
+            <div class="form-body">
+              <% if @student.errors.any? %>
+                  <div id="error_explanation">
+                    <h2><%= pluralize(@student.errors.count, "error") %> prohibited this student from being saved:</h2>
+                    <ul>
+                      <% @student.errors.full_messages.each do |message| %>
+                        <li><%= message %></li>
+                      <% end %>
+                    </ul>
+                  </div>
+                <% end %>
+                <div class="form-group">
+                  <div class="col-md-3">
+                    <label class="control-label required">First Name</label>
+                  </div>
+                  <div class="col-md-9">
+                    <%=f.text_field :fname, :class=>"form-control", :required=>true %>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="col-md-3">
+                    <label class="control-label required"> Last Name</label>
+                  </div>
+                  <div class="col-md-9">
+                    <%=f.text_field :lname, :class=>"form-control", :required=>true %>
+                  </div>
+                </div>   
+
+                <div class="form-group">
+                  <div class="col-md-3">
+                    <label class="control-label required"> Gender</label>
+                  </div>
+                  <div class="col-md-9">
+                    <div class="icheck icheck-square-blue">
+                    <div class="radio form-inline">
+                    <label>
+                      <%= f.radio_button :sex, '0',:id=>"radio1", :checked=>true %>
+                        Male
+                        </label>
+                    </div>
+                    <div class="radio form-inline">    
+                      <%= f.radio_button :sex, '1',:id=>"radio2" %>
+                       Female
+                    </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="col-md-3">
+                    <label class="control-label required"> Date of Birth</label>
+                  </div>
+                  <div class="col-md-9">
+                    <!-- <div class="input-group"> -->
+                      <!-- <span class="input-group-addon"><i class="ion-android-calendar"></i></span> -->
+
+                       
+                        <%=f.object.dob.present? ? (f.text_field :dob,:class=>"form-control datepicker",:placeholder=>"dd-mm-yyyy" ,:value=>f.object.dob.strftime('%d-%m-%Y'),:autocomplete=>"off",:readonly=>true) : (f.text_field :dob,:class=>"form-control datepicker",:placeholder=>"DD-MM-YYYY",:required=>true,:autocomplete=>"off",:readonly=>true) %>
+
+                    <!-- </div> -->
+                  </div>
+                </div>
+
+                <div class="form-group">
+                   <div class="col-md-3">
+                      <label class="control-label"> ASDAN</label>
+                    </div>
+                    <div class="col-md-9">
+                      <%=f.text_field :asdan_no, :class=>"form-control"%>
+                    </div>
+                </div>
+            
+                <div class="form-group">
+                  <div class="col-md-3">
+                    <label class="control-label"> UPN</label>
+                  </div>
+                  <div class="col-md-9">
+                    <%=f.text_field :upn_no, :class=>"form-control"%>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <div class="col-md-3">
+                    <label class="control-label required"> Current School Year</label>
+                  </div>
+                  <div class="col-md-9">
+                    <%= select_tag :school_year, options_for_select(@master_grades.collect { |g| [g.display_name, g.id]}, :selected=> @current_grade.id ), {:required=>true, :class=>"selectpicker"}%>
+                  </div>
+                </div>
+
+                <% if @show_lg_tg_options == true %>
+
+                <div class="form-group">
+                  <div class="col-md-3">
+                    <label class="control-label"> Learning Group</label>
+                  </div>
+                  <div class="col-md-9">
+                    <%= select_tag :learning_group, options_for_select(!@learning_groups.blank? ? @learning_groups.collect {|u| [u.name, u.id]} : ""), {:include_blank=>"Select Learning Group", :class=>"selectpicker"} %>
+
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <div class="col-md-3">
+                    <label class="control-label"> Tutor Group</label>
+                  </div>
+                  <div class="col-md-9">
+                    <%= select_tag :tutor_group, options_for_select(!@tutor_groups.blank? ? @tutor_groups.collect {|u| [u.name, u.id]} : ""), {:include_blank=>"Select Tutor Group", :class=>"selectpicker"} %>
+                  </div>
+                </div>
+
+                <% end %>
+
+                <div class="form-group">
+                  <div class="col-md-offset-3 col-md-6">
+                    <%= check_box_tag :is_pfc ,"1", @current_pfc ? true : false, :class=>"icheck icheck-square-blue"%> 
+                    <label class="control-label"> Is on the Pre-Formal Curriculum</label>
+                  </div>
+                </div>
+
+
+                <div class="form-group">
+                  <div class="col-md-3">
+                    <label class="control-label"> Medical Information</label>
+                  </div>
+                  <div class="col-md-9">
+                    <%=f.text_area :medical_information, :class=>"form-control"%>
+                  </div>
+                </div>
+                <!-- <div class="form-group">
+                    <div class="col-md-3">
+                      <label class="control-label"> Description</label>
+                    </div>
+                    <div class="col-md-9">
+                      <%#=f.text_area :description, :class=>"form-control"%>
+                    </div>
+                </div> -->
+             
+            
+                  <div class="form-group">
+                    <div class="col-md-3">
+                      <label class="control-label"> Profile Picture</label>
+                    </div>
+                    <div class="col-md-9">
+                      <!-- <div class="fileinput fileinput-new" data-provides="fileinput">
+                        <span class="btn btn-default btn-file">
+                          <span class="fileinput-new">Select file</span>
+                          <span class="fileinput-exists">Change</span>
+                           
+                        </span>
+                        <span class="fileinput-filename"></span>
+                        <a href="#" class="close fileinput-exists" data-dismiss="fileinput" style="float: none">&times;</a>
+                      </div> -->
+
+                      <div class="fileinput fileinput-new" data-provides="fileinput">
+                        <div class="fileinput-new thumbnail" style="width: 300px; height: 200px;">
+                        <%if f.object.avatar.present?%>
+                        
+                          <img src="<%=f.object.avatar.url(:medium)%>" alt="...">
+                        <%end%>
+                          <!-- <img data-src="holder.js/100%x100%" src="holder.js/100x100" alt="..."> -->
+                        </div>
+                        <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 300px; max-height: 200px;"></div>
+                        <div>
+                          <span class="btn btn-default btn-file">
+                            <span class="fileinput-new">Select image</span>
+                            <span class="fileinput-exists">Change</span>
+                            <%=f.file_field :avatar %>
+                          </span>
+                          <a href="#" class="btn btn-default fileinput-exists" data-dismiss="fileinput">Remove</a>
+                        </div>
+                      </div>
+
+                     
+                    </div>
+                  </div>
+                  <div class="modal-footer">              
+        
+                  <div class="form-actions">
+                  <div class="row">
+                    <div class="pull-right">
+                     
+                      <%= f.submit "Save", :class=>"btn btn-success btn-beatrice" %>
+                    </div>
+                    <div class="pull-left">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                  </div>
+                  </div>
+                  </div>
+              </div>
+              </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<% end %>
+
+   
+ 
+
+<script type="text/javascript">
+  $(document).ready(function(){
+  $('.datepicker').datepicker({ 
+    format: 'dd-mm-yyyy',orientation: 'auto',autoclose: true });
+
+  $('form').each(function(){
+$(this).on('submit',function(){
+    if($(this).valid()){
+    $('.loader').show();
+    }
+});
+
+   // $(this).validate();
+//     $('.selectpicker').each(function(){
+
+// if($(this).hasClass('error')){
+   
+//     var html_val = $(this).next('label.error').clone();
+
+//     $(this).next('label.error').remove();
+//     $(this).next('.bootstrap-select').parent('div').append(html_val);
+// }
+// });
+});
+  
+  });
+ 
+</script>
+<script>
+ FormsIcheck.init();
+</script>
+

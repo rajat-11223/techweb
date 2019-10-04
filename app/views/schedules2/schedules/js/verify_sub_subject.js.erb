@@ -1,0 +1,36 @@
+tg_hide_empty();
+lg_hide_empty();
+$('.select_lg_tg_div').empty();
+$('.updated_lg_tg').hide();
+$('.present_students').hide();
+$('.updated_lg_tg').empty();
+$('.present_students').empty();
+<% if @sub_subject_tutor.subject.is_ppa %>
+$('input.create[type="submit"]').prop('disabled', false);
+<%else%>
+// $('.learning_group_select').html("<%=escape_javascript(render 'schedules/partial/show_learning_groups')%>");
+$('.select_lg_tg_div').html("<%=escape_javascript(render 'schedules/partial/new/select_lg_tg')%>");
+$('input.create[type="submit"]').prop('disabled', false);
+$('.selectpicker').selectpicker();
+
+<%end%>
+FormsIcheck.init();
+
+//  <%if @tutor_group.present?%>
+
+//  $('.learning_group_select').html("<%=escape_javascript(render 'schedules/partial/show_tutor_details')%>");
+// $('.show_learning_group_students').empty();
+// $('.show_learning_group_students').html("<%=escape_javascript(render 'schedules/partial/show_tutor_students')%>");
+
+// $('input.create[type="submit"]').prop('disabled', false);
+
+
+// $('.selectpicker').selectpicker();
+
+// <%else%>
+//  $('.learning_group_select').html("Sorry, there is no tutor group assigned.");
+//  $('.show_learning_group_students').hide();
+//  $('.check_student').hide();
+// $('input.create[type="submit"]').prop('disabled', true);
+// <%end%>
+// $('.select_lg_tg_div').empty();

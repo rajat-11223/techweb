@@ -1,0 +1,85 @@
+    <div class="form-group m-b-20">
+    <div class="row">
+      <div class="col-md-3"></div>
+      <div class="col-md-9 align-justify">
+ <%=@global_pivat.description%>
+
+
+    </div>
+    </div>
+</div>
+
+    <div class="form-group">
+    <div class="row">
+                  <div class="col-md-3">
+                    <label class="control-label required">Select Description</label><br>
+                    <label style="display:none;color:red;" class="description_missing">Please select a description</label>
+                  </div>
+                  <div class="col-md-9">
+<% if @global_pivats_objectives_desc.present?%>
+
+
+<div class="overflow-table" style="max-height: 400px;    overflow-y: auto;">
+  <table class="table table-bordered">
+    <tbody>
+      <%@global_pivats_objectives_desc.each_with_index do |desc,index|%>  
+       
+          <tr class="pivats_description cursor-pointer" pivats-desc-value="<%= desc.description %> <%#=desc.global_pivats_objective.description
+%>" pivats-desc-id="<%=desc.id%>" pivats-plevel="<%=desc.global_pivats_objective.p_level%>" pivats-title-value="<%= desc.description %>" >
+        
+            <!-- <td class="col-md-1"><%#=desc.alphabet%></td> -->
+           <td class="col-md-12"> <%=desc.description%>
+          </td>
+        </tr>
+      <%end%>
+    </tbody>
+  </table>
+</div>
+<%else%>
+"No description available."
+<%end%>
+</div>
+</div>
+</div>
+
+<!--   <div class="form-group m-b-20 clearfix">
+    <div class="col-md-3">
+      <label class="control-label required"> Short Title</label>
+      <label class="control-label required"> Short Description</label>
+    </div>
+    <div class="col-md-9" style="padding-left:0px;">
+        <%#= text_field_tag :title,nil,:class=>"form-control pivats_title",:placeholder=>"Please enter title",:required=>true %>
+    </div>
+  </div> -->
+  <div class="col-md-12 no-p">
+<div class="form-group m-b-20">
+   <div class="col-md-3 no-p-l">
+      <label class="control-label required">Short Description:</label>
+    </div>
+  <div id="replace" class="col-md-9 m-b-20">
+    <div class="row"> 
+      <%= text_area_tag :description,nil, :class=>"pivats_description_field width-100 summernote_pivats", :rows=>"3",:style=>"border:1px solid #f0f0f0"  ,:required=>true%>
+      <%= hidden_field_tag :p_level,nil,:class=>"pivats_plevel" %>
+        <%=hidden_field_tag :global_lo_id,nil ,:class=>"pivats_description_id"%>
+          <%#=hidden_field_tag :student_id,nil ,:value=>@student.id%>
+    </div>
+  </div>
+</div>
+</div>
+
+ <div class="col-md-12 m-b-20 no-p">
+   <div class="col-md-3 no-p-l">
+      <label class="control-label">Custom P-Level:</label>
+    </div>
+   
+    <div class="col-md-2">
+      <%= select_tag("custom_plevel",options_for_select(@p_level.collect {|u| u }),{:include_blank=>"Select",:class=>"selectpicker m-b-20"}) %>
+      </div>
+
+    <div class="col-md-2">
+
+ <%= select_tag("custom_psublevel",options_for_select(@p_sublevel.collect {|u| u}),{:include_blank=>"Select",:class=>"selectpicker"}) %>
+    </div>
+   
+  </div>
+

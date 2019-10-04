@@ -1,0 +1,148 @@
+  <div class="col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2">
+
+  <%=nested_form_for @student_learning_objective_observation,:html => {:multipart=> true,},:url=>url_for(:controller=>'observations',:action=>'save_observation'),method: :post do |f| %>
+
+<%=f.hidden_field :student_learning_objective_id,:value=>params[:lo]%>
+ <div class="row form-group m-b-20">
+    <div class="col-md-3">
+      <label class="control-label">Student name:</label>
+    </div>
+    <div class="col-md-9">
+     <%=@student_lo.student.name%>
+    </div>    
+  </div>
+   <div class="row form-group m-b-20">
+    <div class="col-md-3">
+      <label class="control-label">Tutor group:</label>
+    </div>
+    <div class="col-md-9">
+      <%=  @student_lo.student.show_tutor_group_name(session[:global_academic_session])%>
+    </div>    
+  </div>
+   <div class="row form-group m-b-20">
+    <div class="col-md-3">
+      <label class="control-label required">Class:</label>
+    </div>
+    <div class="col-md-9">
+      <%= f.select(:sub_subject_id,@student_slot_schedule,{:include_blank=>"Select Subject"},:class=>"selectpicker add_ob_subject",:required=> true) %>
+      <span class="text-red font-size-10 err-ob display-none" >This field is required</span>
+             
+    </div>    
+  </div>
+
+   <div class="row form-group m-b-20">
+    <div class="col-md-3">
+      <label class="control-label required">Date:</label>
+    </div>
+    <div class="col-md-9">
+      <%= f.text_field :date,:class=>"form-control datepicker required",:placeholder=>"dd-mm-yyyy",:required=>true,:value=>Time.now.strftime('%d-%m-%Y'),:readonly=>true %>
+    </div>    
+  </div>
+ <div class="row form-group m-b-20">
+    <div class="col-md-3">
+      <label class="control-label">Learning Objective:</label>
+    </div>
+    <div class="col-md-9 bullets">
+    <!-- <b><%#=@student_lo.title%></b><br> -->
+      <p class="align-justify p_description"><%= raw @student_lo.description %></p>
+    </div>    
+  </div> 
+  <div class="row form-group m-b-20">
+    <div class="col-md-3">
+      <label class="control-label required">Evidence:</label>
+    </div>
+    <div class="col-md-9">
+      <%= f.text_area :description,rows: "5" ,:class=>"form-control",:required=>true %>
+    </div>
+
+
+    </div>
+      <div class="row form-group m-b-20">
+    <div class="col-md-3">
+      <label class="control-label">Attachments:</label> 
+    </div>
+
+<!--     <div class="col-md-9">
+        <a class="first_file btn btn-primary btn-sm m-t-20 pull-left"><i class="fa fa-plus"> Add new file</i></a>
+    </div> -->
+
+    <div class="col-md-9 file_main_div">
+      <%=f.fields_for :student_learning_objective_observation_files do |a| %>
+          <div class="m-b-20 file_upload_fields_for">
+           <div class="fileinput fileinput-new" data-provides="fileinput" style="position:relative;">
+            <span style="position:absolute;top:5px;right:5px;z-index: 1;"><%= a.link_to_remove  class: "btn btn-sm btn-danger pull-left"  do %>
+            <i class="fa fa-times"></i>
+          <% end %> </span>
+           <div class="fileinput-new thumbnail" style="width: 300px; height: 200px;">
+           </div>
+            <div class="fileinput-preview fileinput-exists thumbnail" style="width: 300px; height: 200px;position:relative;"> </div>
+                        <div>
+                          <span class="btn btn-default btn-file">
+                            <span class="fileinput-new">Select file</span>
+                            <span class="fileinput-exists">Change</span>
+                            <%= a.file_field :evidence %>
+                          </span>
+                          <!-- <a href="#" class="btn btn-default fileinput-exists" data-dismiss="fileinput">Remove</a> -->
+                        </div>
+
+          
+           </div>     
+          </div>
+          
+      <% end %> 
+      <%= f.link_to_add :student_learning_objective_observation_files, class: "btn btn-primary btn-sm m-t-20 pull-left add_new_file_link" do %>
+      <i class="fa fa-plus"></i> Add New
+
+   <%end%>
+    </div>
+
+
+<%#=f.hidden_field :student_learning_objective_id,:value=>@student_lo.id%>
+  </div>
+  <div class="modal-footer">
+    <div class="form-actions">
+      <div class="row">
+         <div class="pull-right">
+           <%= submit_tag "Save", :class=>"btn btn-success btn-beatrice add_ob_submit" %>
+          </div>
+          <div class="pull-left">
+             <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+       </div>
+     </div>
+ </div>
+
+  <%end%>
+</div>
+
+  <script type="text/javascript">
+  $(document).ready(function(){
+        $('.loader').fadeOut('slow')
+      })   
+  </script>
+
+  <script>
+  // $('.first_file').on('click',function(){
+  //     $('.file_main_div').removeClass('display-none');
+  //     $('.file_main_div').find('input[type=file]').first().trigger('click');
+  //     $(this).hide();
+  // });
+  // $(document).on('click','.add_new_file_link',function(){
+  //   $(this).parent('.file_main_div').find('.file_upload_fields_for').find('input[type=file]').last().trigger('click');
+  // });
+
+
+$('form').each(function(){
+$(this).on('submit',function(){
+    if($(this).valid()){
+    $('.loader').show();
+    }
+});
+});
+
+  </script>
+
+
+
+
+

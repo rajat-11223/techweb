@@ -1,0 +1,31 @@
+    <div class="row">
+      <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="panel">
+          <div class="panel-heading">
+            <div class="panel-title">
+              
+              <div class="row">
+                <%= form_tag reports_path ,method: :get do%>
+                  <div class="col-md-6">
+
+                    <span class="col-md-1">From </span>
+                    <span class="col-md-2"> <%=select_tag "range_min" ,options_for_select(@year_range ,:selected=>@min_range),:class=>"select_range_min selectpicker"%></span> 
+                    <span class="col-md-1">To </span>
+                    <span class="col-md-2"><%=select_tag "range_max" ,options_for_select(@year_range ,:selected=>@max_range),:class=>"select_range_max selectpicker"%></span>
+                    <%= hidden_field_tag "view", @view %>
+                  <%= submit_tag "Go", :class=>"btn btn-primary btn-xs" %>
+                  </div>
+                <% end %>
+              </div>
+
+          </div>
+
+          <%= render '/reports/partial/report_table' %>
+      
+        </div>
+      
+      </div>
+     
+    </div>
+    </div>
+

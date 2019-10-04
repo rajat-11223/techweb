@@ -1,0 +1,28 @@
+<% if subject_observation.summary.blank?%>
+
+<%=text_area_tag :reportsubjectobservation_summary,nil,:value=> subject_observation.summary,:rows=>"5",:style=>"width:100%;" ,:class=>"subject_observation_val"%>
+
+  <button type="button" class="btn btn-default save_reportsubjectobservation_summary show_loader" observation-id="<%=subject_observation.id%>">Save</button>
+
+
+<%else%>
+
+<div class="hide_summary">
+  <%=subject_observation.summary%>
+
+  <!-- <div class="pull-right"> -->
+<% if policy(subject_observation.report).editable_summary_check?(subject_observation.report.student_id, subject_observation.report, subject_observation.sub_subject_id) %>
+
+    &nbsp;<a class="edit_reportsubjectobservation_summary cursor-pointer" observation-id="<%=subject_observation.id%>" summary="<%=subject_observation.summary%>">(Edit)</a>
+  <!-- </div> -->
+<%end%> 
+</div>
+<%end%> 
+
+
+<div class="show_summary display-none">
+  <%=text_area_tag :reportsubjectobservation_summary,nil,:value=> subject_observation.summary,:rows=>"5",:style=>"width:100%;",:class=>"observation_val"%>
+
+    <button type="button" class="btn btn-default save_reportsubjectobservation_summary show_loader" observation-id="<%=subject_observation.id%>">Save</button>
+
+</div>

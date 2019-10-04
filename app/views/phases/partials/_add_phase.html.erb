@@ -1,0 +1,84 @@
+     <div class="col-md-10 col-md-offset-1 col-sm-10 col-sm-offset-1">
+<%= form_for @phase do |f| %>
+              <% if @phase.errors.any? %>
+                <div id="error_explanation">
+                  <h2><%= pluralize(@phase.errors.count, "error") %> prohibited this phase from being saved:</h2>
+
+                  <ul>
+                  <% @phase.errors.full_messages.each do |message| %>
+                    <li><%= message %></li>
+                  <% end %>
+                  </ul>
+                </div>
+              <% end %>
+         <div class="row">  
+           <!-- <div class="col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2"> -->
+      
+             <!-- form group start -->
+                  <div class="form-group m-b-20 row">
+                    <label class="control-label col-md-3 required">Phase Name</label>
+                    <div class="col-md-9">
+                      
+                          <%=f.text_field :name , :class=>"form-control", :placeholder=>"Enter name",:required=>true %>
+                     
+                    </div>
+                  </div><!--.form-group-->  
+
+                   <!-- form group start -->
+                  <div class="form-group m-b-20 row">
+                    <label class="control-label col-md-3 required"> Team Leader </label>
+                    <div class="col-md-9">
+                    <%#= fields_for :phase_leader do |pl| %>
+                        <%= f.select(:user_id, @team_leaders.collect{|tl| [tl.name, tl.id]},{:prompt => "Select Team Leader" }, :class => "selectpicker",:required=>true )%>
+
+                    <%# end %>
+                        </div>
+
+                  </div>   
+
+                  <!--.form-group-->                    
+ 
+
+                  <!-- form group start -->
+                  <div class="form-group m-b-20 row">
+                    <label class="control-label col-md-3"> Years </label>
+                    <div class="col-md-9">
+                  
+                  <%= fields_for :phase_years do |py| %>
+
+                    <% @master_grades.each do |y| %>
+                    <div class="icheck icheck-square-blue" style="display:inline-block">
+                      <%= py.check_box y.id %>
+                      </div> 
+                      <%= py.label y.display_name, {:class => !@unassigned_years.include?(y.id) ? "color-red" : ""} %> 
+                    <% end %>
+                    <% end %>
+
+                    </div>
+                  </div>  
+
+                  <div class="form-group">
+                  <label class="control-label col-md-3"> </label>
+                    <div class="col-md-9">
+                    <span class="color-red">Red</span> years are not assigned to a phase.
+                    </div>
+                  </div>
+               
+                </div> 
+                <div class="modal-footer">
+                  <div class="form-actions">
+                  <div class="row">
+                  <div class="pull-right">
+                      <%#= f.submit "Save", :class=>"btn btn-success btn-beatrice", :data=>{:confirm=>"Adding a year already assigned to any other phase would remove all students of that year from their existing tutor groups. Are you sure?"} %>
+                      <%= f.submit "Save", :class=>"btn btn-success btn-beatrice" %>
+                      
+                  </div>
+                  <div class="pull-left">    
+                       <button class="btn btn-default" data-dismiss ="modal">Cancel </button>
+                  </div>
+                  </div>
+                </div>
+                </div>
+
+                <% end %>
+                 </div>

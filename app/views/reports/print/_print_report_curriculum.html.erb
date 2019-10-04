@@ -1,0 +1,175 @@
+		<table>
+		<tr class="pg-break"><td colspan="12"><h4 class="pg-break m-b-0 aa" style="border-bottom: 3px solid #003A6A;">Curriculum Subjects</h4>
+			</td>
+		</tr>
+		<% @report_subjects.each do |rs|%>
+		<tr>
+			<td colspan="4"><b><%= rs.sub_subject.show_name %></b><br>
+				<%= rs.user.name %><br>
+			</td>
+			<td colspan="8" class="width-100">  <b class="pull-right">
+			<% if rs.sub_subject.level_count > 0 %>
+			<% level1 = rs.sub_subject.l1_sub_name%>
+			<% level2 = rs.sub_subject.l2_sub_name%>
+
+			<%else%>
+			<% level1 = "Level"%>
+			<%end%>
+
+			<%= level1%> <%= (rs.p_level_one.present? && rs.p_sublevel_one.present?) ? (rs.p_level_one.split(" ").join + " " + rs.p_sublevel_one): (rs.p_level_one.present? ? rs.p_level_one.split(" ").join  : rs.p_sublevel_one.present? ? rs.p_sublevel_one : "-")%><br>
+
+				<%= level2%>&nbsp;&nbsp; <%= (rs.p_level_two.present? && rs.p_sublevel_two.present?) ? (rs.p_level_two.split(" ").join + " " + rs.p_sublevel_two) : (rs.p_level_two.present? ? rs.p_level_two.split(" ").join  : rs.p_sublevel_two.present? ? rs.p_sublevel_two : "")%>
+
+				<%# if !(rs.p_level_one.blank? && rs.p_sublevel_one.blank?) %>
+				<!-- <%#=rs.sub_subject.l1_sub_name %> Level: -->
+				<%#= (rs.p_level_one + rs.p_sublevel_one).split(" ").join %>
+				<%# else %>
+				<!-- <%#= rs.sub_subject.l1_sub_name %> Level: -- -->
+				<%# end %>
+				 
+				<%# if rs.sub_subject.level_count > 0 %>
+				<%# if !(rs.p_level_two.blank? && rs.p_sublevel_two.blank?) %>
+				<!-- <%#=rs.sub_subject.l2_sub_name %> Level: -->
+				<!-- &nbsp;&nbsp;<%#= (rs.p_level_two + rs.p_sublevel_two).split(" ").join %> -->
+				<%# else %>
+				<!-- <%#=rs.sub_subject.l2_sub_name %> Level: -- -->
+				<%# end %>
+				<%# end %>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="12" class="align-justify">
+				<%=raw rs.summary%>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="12">
+				<table>
+					<tr>
+						<% 3.times do |report_index| %>
+						<%#if rs.report_subject_observations.joins(:report_subject_observation_evidences).where("report_subject_observation_evidences.on_observation = false").pluck("report_subject_observation_evidences.position").include?(report_index+1) %>
+						<%# file = rs.report_subject_observations.joins(:report_subject_observation_evidences).map{|a| a.report_subject_observation_evidences}.flatten.find{|a| a.position == report_index+1} %> 
+						   <%if rs.report_subject_observations.with_deleted.joins(:report_subject_observation_evidences).where("report_subject_observation_evidences.on_observation = false").pluck("report_subject_observation_evidences.position").include?(report_index+1) %>
+						   
+						   <% file = rs.report_subject_observations.with_deleted.map(&:report_subject_observation_evidences).flatten.collect{|s| s.on_observation == false ? s : nil}.compact.find{|a| a.position == report_index+1} %>   
+						<td>
+							<% if file.student_learning_objective_observation_file.evidence_content_type.in? ["image/jpg" ,"image/png","image/jpeg"]%>
+							<%if @print_type=="pdf"%>
+							<%=wicked_pdf_image_tag(file.student_learning_objective_observation_file.evidence(:thumb))%>
+							<%else%>
+							<%=image_tag(file.student_learning_objective_observation_file.evidence(:thumb))%>
+							<%end%>
+							<%else%>
+							<%if @print_type=="pdf"%>
+							<div style="position:relative;">
+								<%=wicked_pdf_image_tag(file.student_learning_objective_observation_file.evidence(:thumb))%>
+								<i class="fa fa-4x fa-play-circle-o text-white report-play-center" style="text-color: white"></i>
+							</div>
+							<%else%>
+							<div style="position:relative;text-color:white;">
+								<%=image_tag(file.student_learning_objective_observation_file.evidence(:thumb))%>
+								<i class="fa fa-4x fa-play-circle-o text-white report-play-center"></i>
+							</div>
+							<%end%>
+							<%end%>
+						</td>
+						<%else%>
+						<td colspan="1" style="width: 220px;">
+						</td>
+						<%end%>
+						<%end%>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="12">
+				<% if rs.report_subject_observations.present?  %>
+				<table>
+					<tr>
+						<% rs.report_subject_observations.order(:position).each do |observation| %>
+						<td colspan="12">
+							<b><%= observation.created_at.strftime("%d %b %Y") %> <%= observation.sub_subject.show_name %>, <%= observation.user.name %></b>	
+						</td>
+					</tr>
+					<tr>
+						<td colspan="12" class="align-justify">
+							<%=observation.summary%>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="12">
+							<table>
+								<tr>
+									<% 3.times do |slot_index| %>
+									<% if observation.report_subject_observation_evidences.where("report_subject_observation_evidences.on_observation =true").pluck("report_subject_observation_evidences.position").include?(slot_index+1) %>
+									<% file = observation.report_subject_observation_evidences.find_by(position: slot_index+1) %>  
+									<td>
+										<% if file.student_learning_objective_observation_file.evidence_content_type.in? ["image/jpg" ,"image/png","image/jpeg"]%>
+										<%if @print_type=="pdf"%>
+										<%=wicked_pdf_image_tag(file.student_learning_objective_observation_file.evidence(:thumb))%>
+										<%else%>
+										<%=link_to image_tag(file.student_learning_objective_observation_file.evidence(:thumb)),report_play_video_path(:file_id=>file.student_learning_objective_observation_file) ,:remote=>true,method: :post %>
+										<%end%>
+										<%else%>
+										<%if @print_type=="pdf"%>
+										<div style="position:relative;text-color:white;">
+											<%=wicked_pdf_image_tag(file.student_learning_objective_observation_file.evidence(:thumb))%>
+											<i class="fa fa-4x fa-play-circle-o text-white report-play-center" style="text-color: white"></i>
+										</div>
+										<%else%>
+										<div style="position:relative;">
+										<%=link_to image_tag(file.student_learning_objective_observation_file.evidence(:thumb)),report_play_video_path(:file_id=>file.student_learning_objective_observation_file) ,:remote=>true,method: :post %>
+											<%#=image_tag(file.student_learning_objective_observation_file.evidence(:thumb))%>
+											<i class="fa fa-4x fa-play-circle-o text-white report-play-center"></i>
+										</div>
+										<%end%>
+										<%end%>
+									</td>
+									<%else%>
+									<td colspan="1" style="width: 220px;">
+									</td>
+									<%end%>
+									<%end%>
+								</tr>
+								<%if rs.report_subject_observations.last.id != observation.id%>
+								<tr>
+									<td colspan="1"></td>
+									<td colspan="1"  style="border-bottom: 1px solid #E0E0E0;"></td>
+									<td colspan="1"></td>
+								</tr>
+								<% end%>
+							</table>
+						</td>
+					</tr>
+					<%end%>
+				</table>
+				<%end%>
+			</td>
+		</tr>
+		<%if @report_subjects.last.id !=rs.id%>
+		<tr>
+			<td colspan="12"  style="border-bottom: 1px solid black;"></td>
+		</tr>
+		<%end%>
+		<%end%>
+	</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

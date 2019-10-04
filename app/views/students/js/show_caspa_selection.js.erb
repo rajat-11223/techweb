@@ -1,0 +1,26 @@
+$('.export_caspa').modal('show');
+$('.modal-body').html("<%=escape_javascript(render '/students/partial/export_caspa')%>");
+
+
+$(document).ready(function(source){
+
+  $('.icheck').each(function(){
+     $(this).iCheck('uncheck');
+  });
+})
+
+$(function(){
+// $('.datepicker').datepicker({ 
+//     format: 'dd-mm-yyyy' });
+// $(".datepicker").mouseleave(function() {
+ 
+//     $(this).toggle();    })
+ $('.datepicker').datepicker({ 
+    format: 'dd-mm-yyyy',orientation: 'auto',autoclose: true });
+});
+$('form').each(function(){
+	$(this).validate();
+});
+$('.selectpicker').selectpicker();
+
+FormsIcheck.init();

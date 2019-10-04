@@ -1,0 +1,13 @@
+  <%=nested_form_for(@observation,:html => {:multipart=> true},:url =>save_edit_observation_path(:id => @observation),method: :post,remote: true,authenticity_token: true) do |f| %>
+<%= render partial: '/observations/common/common_edit_observstion', locals: { f: f}%>
+
+  <%end%>
+
+
+
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.loader').fadeOut('slow')
+      })   
+</script>

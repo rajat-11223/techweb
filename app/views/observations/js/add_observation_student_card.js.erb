@@ -1,0 +1,28 @@
+$('#add_observation_student_card').modal('show');
+$('#add_observation_student_card_body').html("<%=escape_javascript(render 'observations/partial/add_observation_student_card')%>");
+$('form').each(function(){
+	$(this).validate();
+});  
+ 
+
+$('.datepicker').datepicker({ 
+    format: 'dd-mm-yyyy' }).on('changeDate', function(ev){ $(this).datepicker('hide'); });
+
+    FormsIcheck.init();
+
+$('.selectpicker').selectpicker();
+
+FormsIcheck.init();
+ $(document).on("click", ".student_card_ob_submit",function(e){
+ 
+  	if($('.student_card_ob_subject').find('option:selected').val() ==""){
+  		 	$(".err-ob").show();
+  		 	e.preventDefault();
+
+  	}
+  	else
+  	{
+  		 	$(".err-ob").hide();
+
+  	}
+  })
